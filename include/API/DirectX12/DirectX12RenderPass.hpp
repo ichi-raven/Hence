@@ -1,0 +1,12 @@
+#ifndef HENCE_API_DIRECTX12_DIRECTX12RENDERPASS_HPP_
+#define HENCE_API_DIRECTX12_DIRECTX12RENDERPASS_HPP_
+
+namespace Hence
+{
+	class DirectX12RenderPass
+	{
+
+	};
+}
+
+#endif

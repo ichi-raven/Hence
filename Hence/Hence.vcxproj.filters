@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\API">
+      <UniqueIdentifier>{4f07e57f-3c6d-4e54-81a7-ce3c9a399da1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\API\Vulkan">
+      <UniqueIdentifier>{e6d8ede0-e1ff-4e6d-afa1-19d5631bf8b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\API\DirectX12">
+      <UniqueIdentifier>{90e31430-8831-41e6-9555-453ad4cbd00c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Utility">
+      <UniqueIdentifier>{ddd4f9f1-f913-4935-b667-ce847fa04a50}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\API.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\VulkanImpl.hpp">
+      <Filter>ヘッダー ファイル\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanDevice.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanVRAMAllocator.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanBuffer.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanImage.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanShader.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanBindGroup.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanCommand.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanRenderPass.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanGraphicsPipeline.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanComputePipeline.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanRaytracingPipeline.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12BindGroup.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12Buffer.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12Command.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12ComputePipeline.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12Device.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12GraphicsPipeline.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12Image.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12RaytracingPipeline.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12RenderPass.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12Shader.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12VRAMAllocator.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12Impl.hpp">
+      <Filter>ヘッダー ファイル\API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Device.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\VRAMAllocator.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Buffer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Image.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Utility\Macro.hpp">
+      <Filter>ヘッダー ファイル\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BindGroup.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Command.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ComputePipeline.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GraphicsPipeline.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\RaytracingPipeline.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\RenderPass.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Shader.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
