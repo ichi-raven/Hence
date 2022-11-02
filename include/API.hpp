@@ -1,3 +1,11 @@
+/*****************************************************************//**
+ * @file   API.hpp
+ * @brief  APIごとのtrait及び実装分岐を定義する
+ * 
+ * @author ichi-raven
+ * @date   November 2022
+ *********************************************************************/
+
 #ifndef HENCE_API_HPP_
 #define HENCE_API_HPP_
 
@@ -6,19 +14,31 @@
 
 namespace Hence
 {
+    /**
+     * @brief  Vulkan APIを表す型，APIとしてこの型を渡せばVulkan APIをバックエンドとして動作する
+     */
+    struct Vulkan 
+    {
+        constexpr static auto APIName = "Vulkan";
+    };
 
-    struct Vulkan {};
+    /**
+     * @brief  DirectX12を表す型，APIとしてこの型を渡せばDirectX12をバックエンドとして動作する
+     */
+    struct DirectX12 
+    {
+        constexpr static auto APIName = "DirectX12";
+    };
 
-    struct DirectX12 {};
-
+    /**
+     * @brief  APIのtrait，この特殊化を用いてAPIごとの実装分岐を表現する
+     */
     template<typename API>
     struct APITrait;
 
     template<>
     struct APITrait<Vulkan>
     {
-        constexpr static auto APIName = "Vulkan";
-
         using Device                    = VulkanDevice;
         using VRAMAllocatorImpl         = VulkanVRAMAllocator;
         using BufferImpl                = VulkanBuffer;
@@ -35,8 +55,6 @@ namespace Hence
     template<>
     struct APITrait<DirectX12>
     {
-        constexpr static auto APIName = "DirectX12";
-
         using Device                    = DirectX12Device;
         using VRAMAllocatorImpl         = DirectX12VRAMAllocator;
         using BufferImpl                = DirectX12Buffer;

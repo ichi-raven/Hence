@@ -1,3 +1,11 @@
+/*****************************************************************//**
+ * @file   Device.hpp
+ * @brief  デバイスクラス，ここを起点としてライブラリの各機能を使用する
+ * 
+ * @author ichi-raven
+ * @date   November 2022
+ *********************************************************************/
+
 #ifndef HENCE_DEVICE_HPP_
 #define HENCE_DEVICE_HPP_
 
@@ -29,5 +37,7 @@ namespace Hence
         static APIDevice mAPIDeviceInstance;
     };
 }
+
+#include "../src/Device.inl"
 
 #endif
