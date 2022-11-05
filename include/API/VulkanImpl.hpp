@@ -2,6 +2,7 @@
 #define HENCE_API_VULKANIMPL_HPP_
 
 #include "Vulkan/VulkanDevice.hpp"
+#include "Vulkan/VulkanWindow.hpp"
 #include "Vulkan/VulkanVRAMAllocator.hpp"
 #include "Vulkan/VulkanBuffer.hpp"
 #include "Vulkan/VulkanImage.hpp"

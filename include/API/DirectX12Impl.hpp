@@ -2,6 +2,7 @@
 #define HENCE_API_DIRECTX12IMPL_HPP_
 
 #include "DirectX12/DirectX12Device.hpp"
+#include "DirectX12/DirectX12Window.hpp"
 #include "DirectX12/DirectX12VRAMAllocator.hpp"
 #include "DirectX12/DirectX12Buffer.hpp"
 #include "DirectX12/DirectX12Image.hpp"
