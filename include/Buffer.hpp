@@ -10,6 +10,7 @@
 
 #include "API.hpp"
 #include "Utility/Macro.hpp"
+#include "Utility/Result.hpp"
 
 namespace Hense
 {
@@ -17,7 +18,6 @@ namespace Hense
     template<typename API>
     class Device;
 
-    // destructできない構造が必要
     /**
      * @brief  バッファ(VRAM上のデータ領域)を表すクラス
      * @tparam API バックエンドに使用するAPI型(API.hpp内で定義されている)
@@ -48,16 +48,18 @@ namespace Hense
 
         /**
          * @brief バッファにデータを書き込む(ステージング及びコマンド実行コストがかかる)
-         * @tparam DataType 書き込むデータの**各要素**の型
+         * @tparam DataType 書き込むデータの型
          * @param data 書き込むデータのArrayProxy(配列/array/vector/initializer_list)
          */
         template <typename DataType>
-        void writeData(const ArrayProxy<DataType> data);
+        Result writeData(const ArrayProxy<DataType> data);
 
     private:
         using APIDevice = APITrait<API>::Device;
 
-        APIDevice& mDevice;
+        //! デバイスの内部実装
+        APIDevice& mAPIDevice;
+        //! 内部実装
         Impl mImpl;
     };
 }

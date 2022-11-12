@@ -40,6 +40,7 @@ namespace Hence
     struct APITrait<Vulkan>
     {
         using Device                    = VulkanDevice;
+        using WindowImpl                = VulkanWindow;
         using VRAMAllocatorImpl         = VulkanVRAMAllocator;
         using BufferImpl                = VulkanBuffer;
         using ImageImpl                 = VulkanImage;
@@ -56,6 +57,7 @@ namespace Hence
     struct APITrait<DirectX12>
     {
         using Device                    = DirectX12Device;
+        using WindowImpl                = DirectX12Window;
         using VRAMAllocatorImpl         = DirectX12VRAMAllocator;
         using BufferImpl                = DirectX12Buffer;
         using ImageImpl                 = DirectX12Image;

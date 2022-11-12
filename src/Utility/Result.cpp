@@ -11,25 +11,23 @@
 namespace Hence
 {
 	Result::Result() noexcept
-		: APIerrorID(0)
+		: succeeded(true)
+		, nativeResult(0)
 	{}
 
-	Result::Result(const int APIerror) noexcept
-		: APIerrorID(APIerror)
+	Result::Result(const std::int32_t nativeError) noexcept
+		: succeeded(false)
+		, nativeResult(nativeError)
 	{}
 
-	explicit Result::operator bool() noexcept
+	explicit Result::operator bool() const noexcept
 	{
-		return succeeded();
+		return succeeded;
 	}
 
-	inline bool Result::succeeded() noexcept
+	bool Result::operator!() const noexcept
 	{
-		return APIerrorID == 0;
+		return !static_cast<bool>(*this);
 	}
 
-	inline bool Result::failed() noexcept
-	{
-		return !succeeded();
-	}
 }

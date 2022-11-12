@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * @file   Device.hpp
- * @brief  デバイスクラス，ここを起点としてライブラリの各機能を使用する
+ * @brief  デバイスクラスのヘッダファイル
  * 
  * @author ichi-raven
  * @date   November 2022
@@ -12,32 +12,57 @@
 #include "API.hpp"
 #include "Utility/Macro.hpp"
 
+#include <optional>
+
 namespace Hence
 {
+    /**
+     * @brief  デバイスクラス，ここを起点としてライブラリの各機能を使用する
+     * @tparam API バックエンドに使用するAPI型(API.hpp内で定義されている)
+     */
     template<typename API>
     class Device
     {
     public:
         using APIDevice = APITrait<API>::Device;
 
+        /** 
+         * @brief  デフォルトコンストラクタ
+         *  
+         */
         Device();
 
+        /** 
+         * @brief  デストラクタ
+         *  
+         */
         ~Device();
 
+        // コピー不可
         NONCOPYABLE(Device)
 
-        void initialize();
+        ///** 
+        // * @brief  明示的に初期化する
+        // *  
+        // */
+        //void initialize();
 
-        void destroy();
 
-        APIDevice& getInternalDevice();
+        ///** 
+        // * @brief  明示的に破棄する
+        // *  
+        // */
+        //void destroy();
+
+        APIDevice& getInternalAPIDevice();
 
     private:
 
-        static APIDevice mAPIDeviceInstance;
+        static std::optional<APIDevice> mAPIDeviceInstance;
     };
 }
 
+// 実装展開
 #include "../src/Device.inl"
 
 #endif

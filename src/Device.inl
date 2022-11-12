@@ -17,14 +17,20 @@ namespace Hence
 	template<typename API>
 	Device::Device()
 	{
-		mAPIDeviceInstance = APIDevice();
+		if (!mAPIDeviceInstance)
+		{
+			mAPIDeviceInstance = APIDevice();
+		}
 	}
 
 	template<typename API>
 	Device::~Device()
 	{
-		mAPIDevice->~APIDevice();
-		mAPIDevice = std::nullopt();
+		if (mAPIDevice)
+		{
+			mAPIDevice->~APIDevice();
+			mAPIDevice = std::nullopt();
+		}
 	}
 
 	//template<typename API>
@@ -42,9 +48,8 @@ namespace Hence
 	template<typename API>
 	Device::APIDevice& Device::getInternalDevice()
 	{
-#ifdef DEBUG
 		assert(mAPIDeviceInstance || !"invalid device instance!");
-#endif
+
 		return *mAPIDeviceInstance;
 	}
 }
