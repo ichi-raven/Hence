@@ -11,12 +11,17 @@
 #include "API.hpp"
 #include "Utility/Macro.hpp"
 #include "Utility/Result.hpp"
+#include "Utility/ArrayProxy.hpp"
 
-namespace Hense
+namespace Hence
 {
     // 前方宣言
     template<typename API>
     class Device;
+
+    // 前方宣言
+    template<typename API>
+    class VRAMAllocator;
 
     /**
      * @brief  バッファ(VRAM上のデータ領域)を表すクラス
@@ -31,15 +36,12 @@ namespace Hense
 
         /**
          * @brief  コンストラクタ
-         *
-         * @param device 基とするデバイス
-         * @param impl 内部実装
+         * @param VRAMAllocator このバッファの割り当てに用いるVRAMAllocator
          */
-        Buffer(Device<API>& device, Impl& impl);
+        Buffer(VRAMAllocator<API>& VRAMAllocator);
 
         /** 
          * @brief  デストラクタ
-         *  
          */
         ~Buffer();
 
@@ -55,10 +57,10 @@ namespace Hense
         Result writeData(const ArrayProxy<DataType> data);
 
     private:
-        using APIDevice = APITrait<API>::Device;
+        using APIVRAMAllocator = APITrait<API>::VRAMAllocatorImpl;
 
-        //! デバイスの内部実装
-        APIDevice& mAPIDevice;
+        APIVRAMAllocator& mAPIVRAMAllocator;
+
         //! 内部実装
         Impl mImpl;
     };

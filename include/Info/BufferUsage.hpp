@@ -15,13 +15,13 @@
 namespace Hence
 {
 	/**
- * @brief  画像リソースの使用方法を示すビットフラグ
- */
+	 * @brief  画像リソースの使用方法を示すビットフラグ
+	 */
 	enum class BufferUsageBit : std::int32_t
 	{
-		Vertex,
-		Index,
-		Uniform,
+		Uniform = 0x00000010,
+		Index	= 0x00000040,
+		Vertex	= 0x00000080,
 	};
 
 	/**
@@ -32,12 +32,12 @@ namespace Hence
 		/**
 		 * @brief  論理和用演算子オーバーロード
 		 */
-		BufferUsageFlag operator| (UsageFlag other) const noexcept;
+		BufferUsageFlag operator| (BufferUsageFlag other) const noexcept;
 
 		/**
 		 * @brief  論理和用演算子オーバーロード(UsageBit版)
 		 */
-		BufferUsageFlag operator|(UsageBit bit) const noexcept;
+		BufferUsageFlag operator|(BufferUsageBit bit) const noexcept;
 
 		const std::int32_t result{};
 	};
@@ -80,6 +80,13 @@ namespace Hence
 		 * @param flag BufferUsageFlag型の値
 		 */
 		BufferUsageFlag operator=(BufferUsageFlag flag) noexcept;
+
+		/**
+		 * @brief  そのusageを含んでいるか判定する
+		 * @param  checkUsage 含んでいるか判定するBufferUsageBit
+		 * @return 含んでいればtrue
+		 */
+		bool contains(BufferUsageBit checkUsageBit) const noexcept;
 
 		//! 最終的なUsage情報
 		const std::int32_t usage{};

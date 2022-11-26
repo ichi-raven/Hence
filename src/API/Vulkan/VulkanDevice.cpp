@@ -14,6 +14,7 @@
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
 
 #include <vector>
+#include <optional>
 
 namespace Hence
 {
@@ -103,7 +104,7 @@ namespace Hence
 		appInfo.apiVersion = VK_API_VERSION_1_2;
 		appInfo.engineVersion = VK_MAKE_API_VERSION(version[0], version[1], version[2], version[3]);
 
-		// get extention properties
+		// エクステンションプロパティ取得
 		std::vector<VkExtensionProperties> props;
 
 		{
@@ -137,10 +138,9 @@ namespace Hence
 		ci.ppEnabledExtensionNames = extensions.data();
 		ci.pApplicationInfo = &appInfo;
 
-		// debug layer
-		const char* layers[] = { "VK_LAYER_KHRONOS_validation" };
-
 #ifndef NDEBUG
+		// デバッグレイヤ名
+		const char* layers[] = { "VK_LAYER_KHRONOS_validation" };
 		{
 			ci.enabledLayerCount = 1;
 			ci.ppEnabledLayerNames = layers;
@@ -166,7 +166,6 @@ namespace Hence
 			res = checkVkResult(vkCreateInstance(&ci, nullptr, &instance));
 
 #endif
-			Logger::error("failed to create VkInstance!");
 			return Result(res);
 		}
 
@@ -205,7 +204,7 @@ namespace Hence
 			std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 			vkGetPhysicalDeviceQueueFamilyProperties(pd, &queueFamilyCount, queueFamilies.data());
 
-			for (int i = 0; const auto & queueFamily : queueFamilies)
+			for (std::uint32_t i = 0; const auto & queueFamily : queueFamilies)
 			{
 				if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 				{

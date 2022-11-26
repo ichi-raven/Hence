@@ -51,4 +51,10 @@ namespace Hence
 	{
 		usage = flag.result;
 	}
+
+	bool contains(ImageUsageBit checkUsageBit) const noexcept
+	{
+		return usage & static_cast<std::uint32_t>(checkUsageBit);
+	}
+
 }

@@ -45,12 +45,12 @@ namespace Hence
 		/**
 		 * @brief  論理和用演算子オーバーロード
 		 */
-		ImageUsageFlag operator| (UsageFlag other) const noexcept;
+		ImageUsageFlag operator| (ImageUsageFlag other) const noexcept;
 
 		/**
 		 * @brief  論理和用演算子オーバーロード(UsageBit版)
 		 */
-		ImageUsageFlag operator|(UsageBit bit) const noexcept;
+		ImageUsageFlag operator|(ImageUsageBit bit) const noexcept;
 
 		const std::int32_t result{};
 	};
@@ -93,6 +93,13 @@ namespace Hence
 		 * @param flag ImageUsageFlag型の値
 		 */
 		ImageUsageFlag operator=(ImageUsageFlag flag) noexcept;
+
+		/**
+		 * @brief  そのusageを含んでいるか判定する
+		 * @param  checkUsage 含んでいるか判定するBufferUsageBit
+		 * @return 含んでいればtrue
+		 */
+		bool contains(ImageUsageBit checkUsageBit) const noexcept;
 
 		//! 最終的なUsage情報
 		const std::int32_t usage{};

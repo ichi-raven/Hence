@@ -15,8 +15,8 @@ namespace Hence
 	 */
 	enum class Dimension
 	{
-		2D,
-		3D,
+		two,
+		three,
 	};
 }
 

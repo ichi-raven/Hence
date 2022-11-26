@@ -11,6 +11,7 @@
 #include "ImageUsage.hpp"
 #include "Format.hpp"
 #include "Dimension.hpp"
+#include "Sampler.hpp"
 
 namespace Hence
 {
@@ -18,75 +19,75 @@ namespace Hence
     {
         ImageInfo() {}
 
-        ImageInfo(uint32_t width, uint32_t height, uint32_t depth = 1u, Format format = Format::R8G8B8A8Unorm, ImageUsage usage = ImageUsageBit::, bool isHostVisible = true, Dimension dimension = Dimension::e2D, SamplerType samplerType = SamplerType::eDefault)
+        ImageInfo(uint32_t width, uint32_t height, Sampler sampler, uint32_t depth = 1u, Format format = Format::R8G8B8A8Unorm, ImageUsage usage = ImageUsageBit::Storage, bool isHostVisible = true, Dimension dimension = Dimension::two)
             : width(width)
             , height(height)
             , depth(depth)
             , usage(usage)
             , dimension(dimension)
             , format(format)
-            , samplerType(samplerType)
+            , sampler(sampler)
             , isHostVisible(isHostVisible)
         {
 
         }
 
-        inline void setSRTex2D(uint32_t _width, uint32_t _height, bool _isHostVisible, Format _format = Format::R8G8B8A8Unorm, SamplerType _samplerType = SamplerType::eDefault)
+        inline void setSRTex2D(uint32_t _width, uint32_t _height, Sampler _sampler, bool _isHostVisible, Format _format = Format::R8G8B8A8Unorm, Sampler _sampler)
         {
             width = _width;
             height = _height;
             depth = 1;
-            dimension = Dimension::e2D;
+            dimension = Dimension::two;
             format = _format;
             isHostVisible = _isHostVisible;
             format = format;
-            samplerType = _samplerType;
-            usage = TextureUsage::eShaderResource;
+            sampler = _sampler;
+            usage = ImageUsageBit::Sampled;
         }
 
-        inline void setRTTex2D(uint32_t _width, uint32_t _height, Format _format = Format::R8G8B8A8Unorm, bool _isHostVisible = true, SamplerType _samplerType = SamplerType::eDefault)
+        inline void setRTTex2D(uint32_t _width, uint32_t _height, Sampler _sampler, Format _format = Format::R8G8B8A8Unorm, bool _isHostVisible = true, Sampler _sampler)
         {
             width = _width;
             height = _height;
             depth = 1;
-            dimension = Dimension::e2D;
+            dimension = Dimension::two;
             format = _format;
             isHostVisible = _isHostVisible;
             format = format;
-            samplerType = _samplerType;
+            sampler = _sampler;
             usage = ImageUsageBit::ColorAttachment;
         }
 
-        inline void setRTTex2DColor(uint32_t _width, uint32_t _height, Format _format = Format::R8G8B8A8Unorm, bool _isHostVisible = true, SamplerType _samplerType = SamplerType::eDefault)
+        inline void setRTTex2DColor(uint32_t _width, uint32_t _height, Sampler _sampler, Format _format = Format::R8G8B8A8Unorm, bool _isHostVisible = true, Sampler _sampler)
         {
             width = _width;
             height = _height;
             depth = 1;
-            dimension = Dimension::e2D;
+            dimension = Dimension::three;
             format = _format;
             isHostVisible = _isHostVisible;
             format = format;
-            samplerType = _samplerType;
+            sampler = _sampler;
             usage = ImageUsageBit::ColorAttachment;
         }
 
-        inline void setRTTex2DDepth(uint32_t _width, uint32_t _height, Format _format = Format::R8G8B8A8Unorm, bool _isHostVisible = true, SamplerType _samplerType = SamplerType::eDefault)
+        inline void setRTTex2DDepth(uint32_t _width, uint32_t _height, Sampler _sampler, Format _format = Format::R8G8B8A8Unorm, bool _isHostVisible = true)
         {
             width = _width;
             height = _height;
             depth = 1;
-            dimension = Dimension::e2D;
+            dimension = Dimension::two;
             format = _format;
             isHostVisible = _isHostVisible;
             format = format;
-            samplerType = _samplerType;
+            sampler = _sampler;
             usage = ImageUsageBit::DepthStencilAttachment;
         }
 
         ImageUsage usage;
         Dimension dimension;
         Format format;
-        SamplerType samplerType;
+        Sampler sampler;
         bool isHostVisible;
         std::uint32_t width;
         std::uint32_t height;

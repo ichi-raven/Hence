@@ -51,4 +51,9 @@ namespace Hence
 	{
 		usage = flag.result;
 	}
+
+	bool contains(BufferUsageBit checkUsageBit) const noexcept
+	{
+		return usage & static_cast<std::uint32_t>(checkUsageBit);
+	}
 }

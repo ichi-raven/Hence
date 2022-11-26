@@ -10,6 +10,8 @@
 
 #include "../include/API.hpp"
 
+#include "../include/Utility/Logger.hpp"
+
 #include <cassert>
 
 namespace Hence
@@ -17,6 +19,8 @@ namespace Hence
 	template<typename API>
 	Device::Device()
 	{
+		Logger::info("API Name : {}\ninitialize start...", APITrait<API>::APIName);
+
 		if (!mAPIDeviceInstance)
 		{
 			mAPIDeviceInstance = APIDevice();
@@ -31,6 +35,8 @@ namespace Hence
 			mAPIDevice->~APIDevice();
 			mAPIDevice = std::nullopt();
 		}
+
+		Logger::info("destroyed all device data");
 	}
 
 	//template<typename API>

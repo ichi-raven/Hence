@@ -10,7 +10,7 @@
 
 #include "../../Utility/Result.hpp"
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 
 #include <optional>
 #include <cstdint>
@@ -66,6 +66,17 @@ namespace Hence
 
     private:
 
+        /**
+         * @brief VkDebugLayerの出力表示用コールバック関数 
+         * @detail 各引数はVulkanの仕様準拠 
+         */
+        static VkBool32 VKAPI_CALL DebugReportCallback
+        (
+            VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objactTypes,
+            uint64_t object, size_t location, int32_t messageCode,
+            const char* pLayerPrefix, const char* pMessage, void* pUserData
+        );
+
         /** 
          * @brief  VkInstance作成
          *  
@@ -94,6 +105,16 @@ namespace Hence
          */
         inline Result createCommandPool() noexcept;
 
+        /**
+         * @brief  デバッグレポート出力を有効化する
+         */
+        inline Result enableDebugReport() noexcept;
+
+        /**
+         * @brief  デバッグレポート出力を無効化する
+         */
+        inline Result disableDebugReport() noexcept;
+
         //! Vulkanインスタンス
         static std::optional<VkInstance>    mInstance;
         
@@ -116,9 +137,9 @@ namespace Hence
         VkCommandPool                       mCommandPool;
 
         // デバッグレポート関連
-        PFN_vkCreateDebugReportCallbackEXT  mvkCreateDebugReportCallbackEXT;
-        PFN_vkDebugReportMessageEXT         mvkDebugReportMessageEXT;
-        PFN_vkDestroyDebugReportCallbackEXT mvkDestroyDebugReportCallbackEXT;
+        PFN_vkCreateDebugReportCallbackEXT  mpfnVkCreateDebugReportCallbackEXT;
+        PFN_vkDebugReportMessageEXT         mpfnVkDebugReportMessageEXT;
+        PFN_vkDestroyDebugReportCallbackEXT mpfnVkDestroyDebugReportCallbackEXT;
         VkDebugReportCallbackEXT            mDebugReport;
 	};
 }
