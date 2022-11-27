@@ -6,7 +6,7 @@
  * @date   November 2022
  *********************************************************************/
 
-#include "../include/Info/BufferUsage.hpp"
+#include "../../include/Info/BufferUsage.hpp"
 
 namespace Hence
 {
@@ -42,17 +42,17 @@ namespace Hence
 
 	}
 
-	BufferUsageFlag operator=(BufferUsageBit bit) noexcept
+	BufferUsageFlag BufferUsage::operator=(BufferUsageBit bit) noexcept
 	{
 		usage = static_cast<std::underlying_type_t<BufferUsageBit>>(bit);
 	}
 
-	BufferUsageFlag operator=(BufferUsageFlag flag) noexcept
+	BufferUsageFlag BufferUsage::operator=(BufferUsageFlag flag) noexcept
 	{
 		usage = flag.result;
 	}
 
-	bool contains(BufferUsageBit checkUsageBit) const noexcept
+	bool BufferUsage::contains(BufferUsageBit checkUsageBit) const noexcept
 	{
 		return usage & static_cast<std::uint32_t>(checkUsageBit);
 	}

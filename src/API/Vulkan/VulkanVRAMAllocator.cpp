@@ -6,11 +6,14 @@
  * @date   November 2022
  *********************************************************************/
 
+#include "../../../include/API/Vulkan/VulkanDevice.hpp"
 #include "../../../include/API/Vulkan/VulkanVRAMAllocator.hpp"
 #include "../../../include/API/Vulkan/VulkanBuffer.hpp"
 #include "../../../include/API/Vulkan/VulkanImage.hpp"
 
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
+
+#include "../../../include/Utility/Logger.hpp"
 
 namespace Hence
 {
@@ -25,8 +28,8 @@ namespace Hence
 
 	}
 
-	VulkanBuffer VulkanVRAMAllocator::allocate(BufferInfo bufferInfo) noexcept
-	{
+    Either<VulkanBuffer, Result> VulkanVRAMAllocator::allocate(BufferInfo bufferInfo) noexcept
+    {
         // VkBuffer
         VkBuffer buffer;
         {
@@ -42,7 +45,7 @@ namespace Hence
                 return Result(0);
             }
 
-            if (info.size == 0)
+            if (bufferInfo.memorySize == 0)
             {
                 Logger::error("cannot create empty size buffer!");
                 return Result(0);
@@ -51,7 +54,7 @@ namespace Hence
             ci.size = bufferInfo.memorySize;
 
 
-            auto res = vkCreateBuffer(mDevice, &ci, nullptr, &buffer);
+            auto res = vkCreateBuffer(mDevice.getDevice(), &ci, nullptr, &buffer);
             if (FAILED(res))
             {
                 return Result(res);
@@ -76,7 +79,7 @@ namespace Hence
             }
 
             VkMemoryRequirements reqs;
-            vkGetBufferMemoryRequirements(mDevice, buffer, &reqs);
+            vkGetBufferMemoryRequirements(mDevice.getDevice(), buffer, &reqs);
             VkMemoryAllocateInfo ai{};
             ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             ai.allocationSize = reqs.size;
@@ -84,7 +87,7 @@ namespace Hence
 
             // VRAM割り当て
             {
-                auto res = vkAllocateMemory(mDevice, &ai, nullptr, &memory);
+                auto res = vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory);
                 if (FAILED(res))
                 {
                     Logger::error("failed to allocate VkDeviceMemory to the VkBuffer!");
@@ -93,7 +96,7 @@ namespace Hence
             }
 
             // bufferと紐づけ
-            auto res = vkBindBufferMemory(mDevice, buffer, memory, 0);
+            auto res = vkBindBufferMemory(mDevice.getDevice(), buffer, memory, 0);
             if (FAILED(res))
             {
                 Logger::error("failed to bind VkDeviceMemory to the VkBuffer!");
@@ -101,12 +104,14 @@ namespace Hence
             }
         }
 
-        VulkanBuffer rtn(buffer, memory, size, offset);
+        VkDeviceSize offset = 0;
+
+        VulkanBuffer rtn(buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset);
 
         return rtn;
 	}
 
-	VulkanImage VulkanVRAMAllocator::allocate(ImageInfo imageInfo) noexcept
+    Either<VulkanImage, Result> VulkanVRAMAllocator::allocate(ImageInfo imageInfo) noexcept
 	{
         VkImageCreateInfo ci{};
 
@@ -117,19 +122,19 @@ namespace Hence
             ci.pNext = nullptr;
             ci.format = static_cast<VkFormat>(imageInfo.format);
 
-            switch (info.dimension)
+            switch (imageInfo.dimension)
             {
             case Dimension::two:
                 ci.imageType = VK_IMAGE_TYPE_2D;
                 ci.extent = { uint32_t(imageInfo.width), uint32_t(imageInfo.height), 1 };
-                if (info.depth != 1)
+                if (imageInfo.depth != 1)
                 {
                     Logger::warn("invalid depth param is ignored");
                 }
                 break;
             case Dimension::three:
                 ci.imageType = VK_IMAGE_TYPE_3D;
-                ci.extent = { uint32_t(info.width), uint32_t(info.height), uint32_t(info.depth) };
+                ci.extent = { uint32_t(imageInfo.width), uint32_t(imageInfo.height), uint32_t(imageInfo.depth) };
                 break;
             default:
                 Logger::error("invalid dimention of image!");
@@ -137,16 +142,15 @@ namespace Hence
                 break;
             }
 
-            ci.usage = static_cast<VkImageUsageFlags>(imageInfo.usage);
+            ci.usage = static_cast<VkImageUsageFlags>(imageInfo.usage.usage);
 
             ci.arrayLayers = 1;
             ci.mipLevels = 1;
             ci.samples = VK_SAMPLE_COUNT_1_BIT;
             ci.tiling = VK_IMAGE_TILING_OPTIMAL;
             ci.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            io.extent = ci.extent;
 
-            auto res = vkCreateImage(mDevice, &ci, nullptr, &image);
+            auto res = vkCreateImage(mDevice.getDevice(), &ci, nullptr, &image);
             if (FAILED(res))
             {
                 Logger::error("failed to create VkImage!");
@@ -158,7 +162,7 @@ namespace Hence
         VkDeviceMemory memory;
         {
             VkMemoryRequirements reqs;
-            vkGetImageMemoryRequirements(mDevice, image, &reqs);
+            vkGetImageMemoryRequirements(mDevice.getDevice(), image, &reqs);
             VkMemoryAllocateInfo ai{};
             ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             ai.allocationSize = reqs.size;
@@ -177,7 +181,7 @@ namespace Hence
 
             ai.memoryTypeIndex = getMemoryTypeIndex(reqs.memoryTypeBits, fb);
             // VRAM割り当て
-            auto res = vkAllocateMemory(mDevice, &ai, nullptr, &memory);
+            auto res = vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory);
             if (FAILED(res))
             {
                 Logger::error("failed to allocate VkDeviceMemory to the VkImage!");
@@ -185,7 +189,7 @@ namespace Hence
             }
 
             // imageと紐づけ
-            auto res = vkBindImageMemory(mDevice, image, memory, 0);
+            auto res = vkBindImageMemory(mDevice.getDevice(), image, memory, 0);
             if (FAILED(res))
             {
                 Logger::error("failed to bind VkDeviceMemory to the VkImage!");
@@ -200,7 +204,7 @@ namespace Hence
             VkImageViewCreateInfo ci{};
             ci.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 
-            switch (info.dimension)
+            switch (imageInfo.dimension)
             {
             case Dimension::two:
                 ci.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -216,7 +220,8 @@ namespace Hence
 
             ci.image = image;
             ci.format = static_cast<VkFormat>(imageInfo.format);
-            ci.components = {
+            ci.components = 
+            {
                 VK_COMPONENT_SWIZZLE_R,
                 VK_COMPONENT_SWIZZLE_G,
                 VK_COMPONENT_SWIZZLE_B,
@@ -230,18 +235,7 @@ namespace Hence
 
             ci.subresourceRange = { aspectFlag, 0, 1, 0, 1 };
 
-            switch (imageInfo.usage)
-            {
-            case TextureUsage::eDepthStencilTarget:
-                aspectFlag = VK_IMAGE_ASPECT_DEPTH_BIT;// | VK_IMAGE_ASPECT_STENCIL_BIT;
-                ci.subresourceRange = io.range = { aspectFlag, 0, 1, 0, 1 };
-                break;
-            default:
-                ci.subresourceRange = io.range = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-                break;
-            }
-
-            auto res = vkCreateImageView(mDevice, &ci, nullptr, &imageView);
+            auto res = vkCreateImageView(mDevice.getDevice(), &ci, nullptr, &imageView);
             if (FAILED(res))
             {
                 Logger::error("failed to create vkImageView!");
@@ -251,75 +245,172 @@ namespace Hence
 
         // VkImageLayoutを設定
         {
-            VkImageLayout layout = 0;
+            VkImageLayout layout = VK_IMAGE_LAYOUT_UNDEFINED;
             if (imageInfo.usage.contains(ImageUsageBit::Sampled))
             {
-                layout |= VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             }
 
             if (imageInfo.usage.contains(ImageUsageBit::ColorAttachment))
             {
-                layout |= VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             }
 
-            if (imageInfo.usage, contains(ImageUsageBit::DepthStencilAttachment))
+            if (imageInfo.usage.contains(ImageUsageBit::DepthStencilAttachment))
             {
-                layout |= VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+                layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
             }
 
-            VkCommandBuffer command;
+            if (layout != VK_IMAGE_LAYOUT_UNDEFINED)
             {
-                VkCommandBufferAllocateInfo ai{};
-                ai.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-                ai.commandBufferCount = 1;
-                ai.commandPool = mDevice.getCommandPool();
-                ai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-                vkAllocateCommandBuffers(mDevice.getDevice(), &ai, &command);
+
+                VkCommandBuffer command;
+                {
+                    VkCommandBufferAllocateInfo ai{};
+                    ai.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+                    ai.commandBufferCount = 1;
+                    ai.commandPool = mDevice.getCommandPool();
+                    ai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+                    vkAllocateCommandBuffers(mDevice.getDevice(), &ai, &command);
+                }
+
+                VkCommandBufferBeginInfo commandBI{};
+                commandBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+                vkBeginCommandBuffer(command, &commandBI);
+
+                auto res = setImageMemoryBarrier(command, image, VK_IMAGE_LAYOUT_UNDEFINED, layout, aspectFlag);
+                
+                if (!res)
+                {
+                    return res;
+                }
+                
+                vkEndCommandBuffer(command);
+
+                VkSubmitInfo submitInfo{};
+                submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+                submitInfo.commandBufferCount = 1;
+                submitInfo.pCommandBuffers = &command;
+                vkQueueSubmit(mDevice.getDeviceQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+
+                // レイアウト遷移終了
+                vkDeviceWaitIdle(mDevice.getDevice());
+                vkFreeCommandBuffers(mDevice.getDevice(), mDevice.getCommandPool(), 1, &command);
             }
-
-            VkCommandBufferBeginInfo commandBI{};
-            commandBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-            vkBeginCommandBuffer(command, &commandBI);
-
-            setImageMemoryBarrier(command, image, VK_IMAGE_LAYOUT_UNDEFINED,
-                layout, aspectFlag);
-            vkEndCommandBuffer(command);
-
-            VkSubmitInfo submitInfo{};
-            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-            submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &command;
-            vkQueueSubmit(mDevice.getDeviceQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-
-            // レイアウト遷移終了
-            vkDeviceWaitIdle(mDevice.getDevice());
-            vkFreeCommandBuffers(mDevice.getDevice(), mDevice.getCommandPool(), 1, &command);
+            else
+            {
+                Logger::warn("undefined layout image was created");
+            }
         }
 
         VulkanImage rtn(image, memory, imageView);
+
         return rtn;
 	}
 
 	void VulkanVRAMAllocator::deallocate(VulkanBuffer& vulkanBuffer) noexcept
 	{
-        auto& vkDevice = mDevice.getDevice();
+        auto vkDevice = mDevice.getDevice();
 
         vkQueueWaitIdle(mDevice.getDeviceQueue());
 
         vkDestroyBuffer(vkDevice, vulkanBuffer.getVkBuffer(), nullptr);
-        // 割り当て方法を変える場合はここに注意
+        // !割り当て方法を変える場合はここに注意
         vkFreeMemory(vkDevice, vulkanBuffer.getVkDeviceMemory(), nullptr);
 	}
 
 	void VulkanVRAMAllocator::deallocate(VulkanImage& vulkanImage) noexcept
 	{
-        auto& vkDevice = mDevice.getDevice();
+        auto vkDevice = mDevice.getDevice();
 
         vkQueueWaitIdle(mDevice.getDeviceQueue());
 
         vkDestroyImageView(vkDevice, vulkanImage.getVkImageView(), nullptr);
         vkDestroyImage(vkDevice, vulkanImage.getVkImage(), nullptr);
-        // 割り当て方法を変える場合はここに注意
+        // !割り当て方法を変える場合はここに注意
         vkFreeMemory(vkDevice, vulkanImage.getVkDeviceMemory(), nullptr);
 	}
+
+    std::uint32_t VulkanVRAMAllocator::getMemoryTypeIndex(std::uint32_t requestBits, VkMemoryPropertyFlags requestProps) const
+    {
+        std::uint32_t result = 0;
+        for (std::uint32_t i = 0; i < mDevice.getPhysMemProps().memoryTypeCount; ++i)
+        {
+            if (requestBits & 1)
+            {
+                const auto& types = mDevice.getPhysMemProps().memoryTypes[i];
+                if ((types.propertyFlags & requestProps) == requestProps)
+                {
+                    result = i;
+                    break;
+                }
+            }
+
+            requestBits >>= 1;
+        }
+        return result;
+    }
+
+    Result VulkanVRAMAllocator::setImageMemoryBarrier(VkCommandBuffer command, VkImage image,
+        VkImageLayout oldLayout,
+        VkImageLayout newLayout,
+        VkImageAspectFlags aspectFlags)
+    {
+
+        VkImageMemoryBarrier imb{};
+        imb.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        imb.oldLayout = oldLayout;
+        imb.newLayout = newLayout;
+        imb.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        imb.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        imb.subresourceRange = { aspectFlags, 0, 1, 0, 1 };
+        imb.image = image;
+
+        // final stage that write to resource in pipelines
+        VkPipelineStageFlags srcStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+        // next state that write to resource in pipelines
+        VkPipelineStageFlags dstStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+
+        switch (oldLayout)
+        {
+        case VK_IMAGE_LAYOUT_UNDEFINED:
+            imb.srcAccessMask = 0;
+            break;
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+            imb.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            break;
+        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+            imb.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            break;
+        }
+
+        switch (newLayout)
+        {
+        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+            imb.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+            dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            break;
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+            imb.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+            break;
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+            imb.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            break;
+        }
+
+        vkCmdPipelineBarrier(command, srcStage, dstStage, 0,
+            0,  // memoryBarrierCount
+            nullptr,
+            0,  // bufferMemoryBarrierCount
+            nullptr,
+            1,  // imageMemoryBarrierCount
+            &imb);
+
+        return Result();
+    }
 }
+
+

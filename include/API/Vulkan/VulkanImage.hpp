@@ -24,7 +24,7 @@ namespace Hence
 
 		VkDeviceMemory getVkDeviceMemory() noexcept;
 
-		VkImageView getVkImageView() const noexcept;
+		VkImageView getVkImageView() noexcept;
 
 	private:
 

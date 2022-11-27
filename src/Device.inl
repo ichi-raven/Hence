@@ -52,7 +52,7 @@ namespace Hence
 	//}
 
 	template<typename API>
-	Device::APIDevice& Device::getInternalDevice()
+	Device::APIDevice& Device::getInternalAPIDevice()
 	{
 		assert(mAPIDeviceInstance || !"invalid device instance!");
 

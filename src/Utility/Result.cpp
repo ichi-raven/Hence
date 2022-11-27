@@ -20,7 +20,7 @@ namespace Hence
 		, nativeResult(nativeError)
 	{}
 
-	explicit Result::operator bool() const noexcept
+	Result::operator bool() const noexcept
 	{
 		return succeeded;
 	}

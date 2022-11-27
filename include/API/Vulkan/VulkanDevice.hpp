@@ -64,6 +64,14 @@ namespace Hence
          */
         VkCommandPool getCommandPool() const noexcept;
 
+
+        /** 
+         * @brief  VkPhysicalDeviceMemoryProperties‚ðŽæ“¾‚·‚é
+         *  
+         * @return VkPhysicalDeviceMemoryProperties
+         */
+        VkPhysicalDeviceMemoryProperties getPhysMemProps() const noexcept;
+
     private:
 
         /**

@@ -12,10 +12,15 @@
 #include "../../Info/BufferInfo.hpp"
 #include "../../Info/ImageInfo.hpp"
 
+#include "../../Utility/Result.hpp"
+#include "../../Utility/Either.hpp"
 #include "../../Utility/Macro.hpp"
 
 namespace Hence
 {
+	class VulkanBuffer;
+	class VulkanImage;
+
 	/**
 	 * @brief  VRAMAllocatorのVulkan実装
 	 */
@@ -40,17 +45,23 @@ namespace Hence
 		/**
 		 * @brief  バッファの割り当てを行う
 		 */
-		VulkanBuffer allocate(BufferInfo bi) noexcept;
+		Either<VulkanBuffer, Result> allocate(BufferInfo bufferInfo) noexcept;
 		
-		VulkanImage allocate(ImageInfo ii) noexcept;
+		Either<VulkanImage, Result> allocate(ImageInfo imageInfo) noexcept;
 
 		void deallocate(VulkanBuffer& vulkanBuffer) noexcept;
 
 		void deallocate(VulkanImage& vulkanImage) noexcept;
 
 	private:
-		VulkanDevice& mDevice;
+		std::uint32_t getMemoryTypeIndex(std::uint32_t requestBits, VkMemoryPropertyFlags requestProps) const;
 
+		Result setImageMemoryBarrier(VkCommandBuffer command, VkImage image, VkImageLayout oldLayout,
+			VkImageLayout newLayout,
+			VkImageAspectFlags aspectFlags);
+
+
+		VulkanDevice& mDevice;
 
 	};
 }

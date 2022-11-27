@@ -38,7 +38,7 @@ namespace Hence
          * @brief  コンストラクタ
          * @param VRAMAllocator このバッファの割り当てに用いるVRAMAllocator
          */
-        Buffer(VRAMAllocator<API>& VRAMAllocator);
+        Buffer(VRAMAllocator<API>& VRAMAllocator, const BufferInfo& bufferInfo);
 
         /** 
          * @brief  デストラクタ

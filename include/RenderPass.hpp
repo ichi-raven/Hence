@@ -25,9 +25,9 @@ namespace Hence
 
         NONCOPYABLE(RenderPass)
 
-        void create(Image& colorTarget, Image& depthTarget);
+        void create(Image<API>& colorTarget, Image<API>& depthTarget);
 
-        void create(std::vector<Image>& colorTargets, Image& depthTarget);
+        void create(std::vector<Image<API>>& colorTargets, Image<API>& depthTarget);
 
         const Impl& getInternalImpl() const;
 

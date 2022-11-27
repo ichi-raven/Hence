@@ -74,8 +74,9 @@ namespace Hence
 		std::uint32_t  mCount;
 		T const* mPtr;
 	};
-}
 
-#include "../src/Utility/ArrayProxy.inl"
+#include "../../src/Utility/ArrayProxy.inl"
+
+}
 
 #endif

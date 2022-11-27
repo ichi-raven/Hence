@@ -20,30 +20,34 @@ namespace Hence
 {
 	VulkanDevice::VulkanDevice() noexcept
 	{
-
-		if (!(auto res = createInstance()))
+		
+		
+		if (auto res = createInstance(); !res)
 		{
 			Logger::error("failed to create VkInstance!(native error : {})", res.nativeResult);
 		}
 
 #ifndef NDEBUG
-		if (!(auto res = enableDebugReport()))
+		
+		if (auto res = enableDebugReport(); !res)
 		{
 			Logger::error("failed to create VkDebugReportCallbackEXT!(native error : {})", res.nativeResult);
 		}
 #endif
-
-		if (!(auto res = selectPhysicalDevice()))
+		
+		if (auto res = selectPhysicalDevice(); !res)
 		{
 			Logger::error("failed to select suitable VkPhysicalDevice!(native error : {})", res.nativeResult);
 		}
 
-		if (!(auto res = createDevice()))
+		
+		if (auto res = createDevice(); !res)
 		{
 			Logger::error("failed to create VkDevice!(native error : {})", res.nativeResult);
 		}
 
-		if (!(auto res = createCommandPool()))
+		
+		if (auto res = createCommandPool(); !res)
 		{
 			Logger::error("failed to create VkCommandPool!(native error : {})", res.nativeResult);
 		}
@@ -54,7 +58,7 @@ namespace Hence
 
 		if (FAILED(vkDeviceWaitIdle(mDevice)))
 		{
-			Logger::error("Failed to wait device idol!");
+			Logger::error("failed to wait device idol!");
 		}
 
 		vkDestroyCommandPool(mDevice, mCommandPool, nullptr);
@@ -68,7 +72,7 @@ namespace Hence
 		vkDestroyDevice(mDevice, nullptr);
 		Logger::info("destroyed device");
 
-		vkDestroyInstance(mInstance, nullptr);
+		vkDestroyInstance(mInstance.value(), nullptr);
 		Logger::info("destroyed instance");
 	}
 
@@ -94,30 +98,35 @@ namespace Hence
 		return mCommandPool;
 	}
 
-	inline Result VulkanDevice::createInstance()
+	VkPhysicalDeviceMemoryProperties VulkanDevice::getPhysMemProps() const noexcept
+	{
+		return mPhysMemProps;
+	}
+
+	inline Result VulkanDevice::createInstance() noexcept
 	{
 		std::vector<const char*> extensions;
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		appInfo.pApplicationName = mAppName.c_str();
+		appInfo.pApplicationName = kEngineName;
 		appInfo.pEngineName = kEngineName;
 		appInfo.apiVersion = VK_API_VERSION_1_2;
-		appInfo.engineVersion = VK_MAKE_API_VERSION(version[0], version[1], version[2], version[3]);
+		appInfo.engineVersion = VK_MAKE_API_VERSION(kVersion[0], kVersion[1], kVersion[2], kVersion[3]);
 
 		// エクステンションプロパティ取得
 		std::vector<VkExtensionProperties> props;
 
 		{
 			uint32_t count = 0;
-			auto res = vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr));
+			auto res = vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);
 			if (FAILED(res))
 			{
 				return Result(res);
 			}
 
 			props.resize(count);
-			auto res = vkEnumerateInstanceExtensionProperties(nullptr, &count, props.data());
-			if (FAILED(res))
+			
+			if (auto res = vkEnumerateInstanceExtensionProperties(nullptr, &count, props.data()); FAILED(res))
 			{
 				return Result(res);
 			}
@@ -163,10 +172,13 @@ namespace Hence
 			ci.enabledLayerCount = 0;
 			ci.ppEnabledLayerNames = nullptr;
 
-			res = checkVkResult(vkCreateInstance(&ci, nullptr, &instance));
-
-#endif
+			if (res = vkCreateInstance(&ci, nullptr, &instance); FAILED(res))
+			{
+				return Result(res);
+			}
+#else
 			return Result(res);
+#endif
 		}
 
 		mInstance = instance;
@@ -178,17 +190,18 @@ namespace Hence
 	{
 		std::uint32_t devCount = 0;
 
-		if (FAILED(auto res = vkEnumeratePhysicalDevices(*mInstance, &devCount, nullptr))
+		auto res = vkEnumeratePhysicalDevices(*mInstance, &devCount, nullptr);
+		if (FAILED(res))
 		{
 			return Result(res);
 		}
 
 		std::vector<VkPhysicalDevice> physDevs(devCount);
 
-			if (FAILED(auto res = vkEnumeratePhysicalDevices(*mInstance, &devCount, physDevs.data())))
-			{
-				return Result(res);
-			}
+		if (auto res = vkEnumeratePhysicalDevices(*mInstance, &devCount, physDevs.data()); FAILED(res))
+		{
+			return Result(res);
+		}
 
 		Logger::info("physical device number : {}", physDevs.size());
 
@@ -234,16 +247,15 @@ namespace Hence
 
 		{
 			uint32_t count = 0;
-			auto res = vkEnumerateDeviceExtensionProperties(mPhysDev, nullptr, &count, nullptr);
-			if (FAILED(res))
+			
+			if (auto res = vkEnumerateDeviceExtensionProperties(mPhysDev, nullptr, &count, nullptr); FAILED(res))
 			{
 				Logger::error("failed to enumerate device extension properties!");
 				return Result(res);
 			}
 
 			devExtProps.resize(count);
-			auto res = vkEnumerateDeviceExtensionProperties(mPhysDev, nullptr, &count, devExtProps.data());
-			if (FAILED(res))
+			if (auto res = vkEnumerateDeviceExtensionProperties(mPhysDev, nullptr, &count, devExtProps.data()); FAILED(res))
 			{
 				return Result(res);
 			}
@@ -258,11 +270,12 @@ namespace Hence
 			devQueueCI.pQueuePriorities = &defaultQueuePriority;
 
 			std::vector<const char*> extensions;
-			extensions.reserve()
-				for (const auto& v : devExtProps)
-				{
-					extensions.emplace_back(v.extensionName);
-				}
+			extensions.reserve(devExtProps.size());
+
+			for (const auto& v : devExtProps)
+			{
+				extensions.emplace_back(v.extensionName);
+			}
 
 			VkDeviceCreateInfo ci{};
 			ci.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -271,8 +284,7 @@ namespace Hence
 			ci.ppEnabledExtensionNames = extensions.data();
 			ci.enabledExtensionCount = uint32_t(extensions.size());
 
-			auto res = checkVkResult(vkCreateDevice(mPhysDev, &ci, nullptr, &mDevice));
-			if (FAILED(res))
+			if (auto res = vkCreateDevice(mPhysDev, &ci, nullptr, &mDevice); FAILED(res))
 			{
 				return Result(res);
 			}
@@ -291,9 +303,8 @@ namespace Hence
 		ci.queueFamilyIndex = mGraphicsQueueIndex;
 		ci.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-		auto res = checkVkResult(vkCreateCommandPool(mDevice, &ci, nullptr, &mCommandPool));
 		
-		if (FAILED(res))
+		if (auto res = vkCreateCommandPool(mDevice, &ci, nullptr, &mCommandPool); FAILED(res))
 		{
 			return Result(res);
 		}
@@ -325,9 +336,9 @@ namespace Hence
 	inline Result VulkanDevice::enableDebugReport() noexcept
 	{
 		
-		mpfnVkCreateDebugReportCallbackEXT		= reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(mInstance, "vkCreateDebugReportCallbackEXT"));
-		mpfnVkDebugReportMessageEXT				= reinterpret_cast<PFN_vkDebugReportMessageEXT>(vkGetInstanceProcAddr(mInstance, "vkDebugReportMessageEXT"));
-		mpfnVkDestroyDebugReportCallbackEXT		= reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(vkGetInstanceProcAddr(mInstance, "vkDestroyDebugReportCallbackEXT"));
+		mpfnVkCreateDebugReportCallbackEXT		= reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(*mInstance, "vkCreateDebugReportCallbackEXT"));
+		mpfnVkDebugReportMessageEXT				= reinterpret_cast<PFN_vkDebugReportMessageEXT>(vkGetInstanceProcAddr(*mInstance, "vkDebugReportMessageEXT"));
+		mpfnVkDestroyDebugReportCallbackEXT		= reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(vkGetInstanceProcAddr(*mInstance, "vkDestroyDebugReportCallbackEXT"));
 
 		VkDebugReportFlagsEXT flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
 
@@ -335,7 +346,7 @@ namespace Hence
 		drcci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 		drcci.flags = flags;
 		drcci.pfnCallback = &DebugReportCallback;
-		mpfnVkCreateDebugReportCallbackEXT(mInstance, &drcci, nullptr, &mDebugReport);
+		mpfnVkCreateDebugReportCallbackEXT(*mInstance, &drcci, nullptr, &mDebugReport);
 
 		Logger::info("enabled debug mode");
 
@@ -346,10 +357,11 @@ namespace Hence
 	{
 		assert(mpfnVkDestroyDebugReportCallbackEXT || !"function pointer to VkDestroyDebugReportCallbackEXT is NULL!");
 
-		mpfnvkDestroyDebugReportCallbackEXT(mInstance, mDebugReport, nullptr);
+		mpfnVkDestroyDebugReportCallbackEXT(*mInstance, mDebugReport, nullptr);
 
 		Logger::info("disabled debug mode");
 
 		return Result();
 	}
+
 }

@@ -89,7 +89,7 @@ namespace Hence
 		bool contains(BufferUsageBit checkUsageBit) const noexcept;
 
 		//! ÅI“I‚ÈUsageî•ñ
-		const std::int32_t usage{};
+		std::int32_t usage{};
 	};
 }
 

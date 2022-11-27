@@ -30,7 +30,7 @@ namespace Hence
 		{
 			memorySize = vertexCount * sizeof(VertexType);
 			usage = BufferUsageBit::Vertex;
-			isHostVisible = true;
+			hostVisible = true;
 		}
 
 		template <typename IndexType>

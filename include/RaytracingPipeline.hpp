@@ -20,7 +20,7 @@ namespace Hence
 
         ~RaytracingPipeline();
 
-        NONCOPYABLE(GraphicsPipeline)
+        NONCOPYABLE(RaytracingPipeline)
 
         const Impl& getInternalImpl() const;
 

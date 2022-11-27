@@ -36,9 +36,10 @@ namespace Hence
 
 		/**
 		 * @brief  論理否定演算子オーバーロード
-		 * @detail Result func()の場合if(!func()){エラー処理}の様に用いる
 		 */
 		bool operator!() const noexcept;
+
+		Result operator=(Result other) noexcept;
 
 		//! 成功したかどうか
 		const bool	succeeded;

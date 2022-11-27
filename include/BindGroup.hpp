@@ -21,7 +21,6 @@
 
 namespace Hence
 {
-
 	/**
 	 * @brief シェーダ内で参照するVRAMリソースの紐づけを示す
 	 * @tparam API バックエンドに使用するAPI型(API.hpp内で定義されている)
@@ -39,7 +38,7 @@ namespace Hence
 		 * @param device 基とするデバイス
 		 * @param shader このシェーダのレイアウトから紐づけるリソース型を決定する
 		 */
-		BindGroup(Device<API>& device, const Shader& shader) noexcept;
+		BindGroup(Device<API>& device, const Shader<API>& shader) noexcept;
 
 		/**
 		 * @brief  デストラクタ

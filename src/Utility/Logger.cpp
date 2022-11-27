@@ -35,7 +35,7 @@ namespace Hence
 		mFStream.close();
 	}
 
-	static Logger& Logger::getInstance() noexcept;
+	Logger& Logger::getInstance() noexcept;
 	{
 		static Logger instance();
 

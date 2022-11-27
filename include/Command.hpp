@@ -36,6 +36,9 @@ namespace Hence
     template<typename API>
     class BindGroup;
 
+    template<typename API>
+    class RenderPass;
+
     /**
      * @brief  GPUに送信するコマンドを表すクラス
      * @tparam API バックエンドに使用するAPI型(API.hpp内で定義されている)
@@ -67,7 +70,7 @@ namespace Hence
          *  
          * @param renderpass 描画を行うRenderPass
          */
-        Result begin(RenderPass& renderpass);
+        Result begin(RenderPass<API>& renderpass);
 
         /** 
          * @brief コンピュートモードでコマンド書き込み開始

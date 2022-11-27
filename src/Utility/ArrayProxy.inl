@@ -9,43 +9,43 @@
 namespace Hence
 {
 	template <typename T>
-	constexpr ArrayProxy::ArrayProxy() noexcept
+	constexpr ArrayProxy<T>::ArrayProxy() noexcept
 		: mCount(0)
 		, mPtr(nullptr)
 	{}
 
 	template <typename T>
-	constexpr ArrayProxy(std::nullptr_t) noexcept
+	constexpr ArrayProxy<T>::ArrayProxy(std::nullptr_t dummy) noexcept
 		: mCount(0)
 		, mPtr(nullptr)
 	{}
 
 	template <typename T>
-	ArrayProxy(T const& value) noexcept
+	ArrayProxy<T>::ArrayProxy(T const& value) noexcept
 		: mCount(1)
 		, mPtr(&value)
 	{}
 	
 	template <typename T>
-	ArrayProxy(std::uint32_t count, T const* ptr) noexcept
+	ArrayProxy<T>::ArrayProxy(std::uint32_t count, T const* ptr) noexcept
 		: mCount(count)
 		, mPtr(ptr)
 	{}
 
 	template <typename T, std::size_t C>
-	ArrayProxy(T const (&ptr)[C]) noexcept
+	ArrayProxy<T>::ArrayProxy(T const (&ptr)[C]) noexcept
 		: mCount(C)
 		, mPtr(ptr)
 	{}
 
 	template <typename T>
-	ArrayProxy(std::initializer_list<T> const& list) noexcept
+	ArrayProxy<T>::ArrayProxy(std::initializer_list<T> const& list) noexcept
 		: mCount(static_cast<std::uint32_t>(list.size()))
 		, mPtr(list.begin())
 	{}
 
 	template <typename T, typename B = T, typename std::enable_if<std::is_const<B>::value, int>::type = 0>
-	ArrayProxy(std::initializer_list<typename std::remove_const<T>::type> const& list) noexcept
+	ArrayProxy<T>::ArrayProxy(std::initializer_list<typename std::remove_const<T>::type> const& list) noexcept
 		: mCount(static_cast<std::uint32_t>(list.size()))
 		, mPtr(list.begin())
 	{
@@ -57,51 +57,51 @@ namespace Hence
 		typename std::enable_if<
 		std::is_convertible<decltype(std::declval<V>().data()), T*>::value&&
 		std::is_convertible<decltype(std::declval<V>().size()), std::size_t>::value>::type* = nullptr>
-	ArrayProxy(V const& v) noexcept
+	ArrayProxy<T>::ArrayProxy(V const& v) noexcept
 		: mCount(static_cast<std::uint32_t>(v.size()))
 		, mPtr(v.data())
 	{}
 
 	template <typename T>
-	const T* begin() const noexcept
+	const T* ArrayProxy<T>::begin() const noexcept
 	{
 		return mPtr;
 	}
 
 	template <typename T>
-	const T* end() const noexcept
+	const T* ArrayProxy<T>::end() const noexcept
 	{
 		return mPtr + mCount;
 	}
 
 	template <typename T>
-	const T& front() const noexcept
+	const T& ArrayProxy<T>::front() const noexcept
 	{
 		assert(mCount && mPtr);
 		return *mPtr;
 	}
 
 	template <typename T>
-	const T& back() const noexcept
+	const T& ArrayProxy<T>::back() const noexcept
 	{
 		assert(mCount && mPtr);
 		return *(mPtr + mCount - 1);
 	}
 
 	template <typename T>
-	bool empty() const noexcept
+	bool ArrayProxy<T>::empty() const noexcept
 	{
 		return (mCount == 0);
 	}
 
 	template <typename T>
-	std::uint32_t size() const noexcept
+	std::uint32_t ArrayProxy<T>::size() const noexcept
 	{
 		return mCount;
 	}
 
 	template <typename T>
-	T const* data() const noexcept
+	T const* ArrayProxy<T>::data() const noexcept
 	{
 		return mPtr;
 	}

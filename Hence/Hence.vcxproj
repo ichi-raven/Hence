@@ -150,7 +150,9 @@
     <ClInclude Include="..\include\API\DirectX12\DirectX12RenderPass.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12Shader.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12VRAMAllocator.hpp" />
+    <ClInclude Include="..\include\API\DirectX12\DirectX12Window.hpp" />
     <ClInclude Include="..\include\API\VulkanImpl.hpp" />
+    <ClInclude Include="..\include\API\Vulkan\Utility\Macro.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanBindGroup.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanBuffer.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanCommand.hpp" />
@@ -162,22 +164,52 @@
     <ClInclude Include="..\include\API\Vulkan\VulkanRenderPass.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanShader.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanVRAMAllocator.hpp" />
+    <ClInclude Include="..\include\API\Vulkan\VulkanWindow.hpp" />
     <ClInclude Include="..\include\BindGroup.hpp" />
     <ClInclude Include="..\include\Buffer.hpp" />
     <ClInclude Include="..\include\Command.hpp" />
     <ClInclude Include="..\include\ComputePipeline.hpp" />
     <ClInclude Include="..\include\Device.hpp" />
     <ClInclude Include="..\include\GraphicsPipeline.hpp" />
+    <ClInclude Include="..\include\Hence.hpp" />
     <ClInclude Include="..\include\Image.hpp" />
+    <ClInclude Include="..\include\Info\BufferInfo.hpp" />
+    <ClInclude Include="..\include\Info\BufferUsage.hpp" />
+    <ClInclude Include="..\include\Info\Dimension.hpp" />
+    <ClInclude Include="..\include\Info\Format.hpp" />
+    <ClInclude Include="..\include\Info\ImageInfo.hpp" />
+    <ClInclude Include="..\include\Info\ImageUsage.hpp" />
+    <ClInclude Include="..\include\Info\Sampler.hpp" />
     <ClInclude Include="..\include\RaytracingPipeline.hpp" />
     <ClInclude Include="..\include\RenderPass.hpp" />
     <ClInclude Include="..\include\Shader.hpp" />
+    <ClInclude Include="..\include\Utility\ArrayProxy.hpp" />
+    <ClInclude Include="..\include\Utility\Constants.hpp" />
+    <ClInclude Include="..\include\Utility\Either.hpp" />
+    <ClInclude Include="..\include\Utility\Logger.hpp" />
     <ClInclude Include="..\include\Utility\Macro.hpp" />
+    <ClInclude Include="..\include\Utility\Result.hpp" />
     <ClInclude Include="..\include\VRAMAllocator.hpp" />
-    <ClInclude Include="..\src\ArrayProxy.hpp" />
+    <ClInclude Include="..\include\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\API\Vulkan\VulkanBuffer.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanDevice.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanImage.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanVRAMAllocator.cpp" />
     <ClCompile Include="..\src\Device.inl" />
+    <ClCompile Include="..\src\Info\BufferInfo.cpp" />
+    <ClCompile Include="..\src\Info\BufferUsage.cpp" />
+    <ClCompile Include="..\src\Info\ImageUsage.cpp" />
+    <ClCompile Include="..\src\Utility\Logger.cpp" />
+    <ClCompile Include="..\src\Utility\Result.cpp" />
+    <ClCompile Include="..\testmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\BindGroup.inl" />
+    <None Include="..\src\Utility\ArrayProxy.inl" />
+    <None Include="..\src\Utility\Either.inl" />
+    <None Include="..\src\VRAMAllocator.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

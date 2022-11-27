@@ -10,35 +10,35 @@
 namespace Hence
 {
 	template<typename API>
-	VRAMAllocator::VRAMAllocator(Device<API>& device) noexcept
+	VRAMAllocator<API>::VRAMAllocator(Device<API>& device) noexcept
 		: mAPIDevice(device.getInternalDevice())
 		, mImpl(Impl(mAPIDevice))
 	{}
 
 	template<typename API>
-	VRAMAllocator::~VRAMAllocator() noexcept
+	VRAMAllocator<API>::~VRAMAllocator() noexcept
 	{}
 
 	template<typename API>
-	Buffer<API>& VRAMAllocator::allocate(const BufferInfo& bci) noexcept
+	Buffer<API>& VRAMAllocator<API>::allocate(const BufferInfo& bci) noexcept
 	{
 		mImpl.allocate(bci);
 	}
 
 	template<typename API>
-	Image<API>& VRAMAllocator::allocate(const ImageInfo& ici) noexcept
+	Image<API>& VRAMAllocator<API>::allocate(const ImageInfo& ici) noexcept
 	{
 		mImpl.allocate(ici);
 	}
 
 	template<typename API>
-	void VRAMAllocator::deallocate(Buffer<API>& buffer) noexcept
+	void VRAMAllocator<API>::deallocate(Buffer<API>& buffer) noexcept
 	{
 		mImpl.deallocate(buffer);
 	}
 
 	template<typename API>
-	void VRAMAllocator::deallocate(Image<API>& image) noexcept
+	void VRAMAllocator<API>::deallocate(Image<API>& image) noexcept
 	{
 		mImpl.deallocate(image);
 	}

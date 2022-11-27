@@ -25,6 +25,27 @@
     <Filter Include="ヘッダー ファイル\Utility">
       <UniqueIdentifier>{ddd4f9f1-f913-4935-b667-ce847fa04a50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\API\Vulkan\Utility">
+      <UniqueIdentifier>{f68bb6ad-3bf8-4a69-ad1a-73ca660adced}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Info">
+      <UniqueIdentifier>{d4c5ed6d-ddc6-4c44-804f-c471abc7b3fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\API">
+      <UniqueIdentifier>{a6c375aa-0a81-4970-9ebc-b84f982c9b28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\API\DirectX12">
+      <UniqueIdentifier>{346c45f3-cb60-4877-bae7-cf2cdcf47ba9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\API\Vulkan">
+      <UniqueIdentifier>{9d80b6aa-998a-4df6-aae8-14e7a22b0639}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Info">
+      <UniqueIdentifier>{66d2b407-872f-4c67-8963-78244959e81d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Utility">
+      <UniqueIdentifier>{f65289bc-38bc-4ee6-80c0-1446972d4200}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\API.hpp">
@@ -138,13 +159,105 @@
     <ClInclude Include="..\include\Shader.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ArrayProxy.hpp">
+    <ClInclude Include="..\include\API\DirectX12\DirectX12Window.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanWindow.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\Utility\Macro.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Window.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\BufferInfo.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\BufferUsage.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\Dimension.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\Format.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\ImageInfo.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\ImageUsage.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\Sampler.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Utility\ArrayProxy.hpp">
       <Filter>ヘッダー ファイル\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Utility\Constants.hpp">
+      <Filter>ヘッダー ファイル\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Utility\Logger.hpp">
+      <Filter>ヘッダー ファイル\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Utility\Result.hpp">
+      <Filter>ヘッダー ファイル\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Utility\Either.hpp">
+      <Filter>ヘッダー ファイル\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Hence.hpp">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Device.inl">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanBuffer.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanDevice.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanImage.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanVRAMAllocator.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Info\BufferInfo.cpp">
+      <Filter>ソース ファイル\Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Info\BufferUsage.cpp">
+      <Filter>ソース ファイル\Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Info\ImageUsage.cpp">
+      <Filter>ソース ファイル\Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Utility\Logger.cpp">
+      <Filter>ソース ファイル\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Utility\Result.cpp">
+      <Filter>ソース ファイル\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\testmain.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\BindGroup.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\VRAMAllocator.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\Utility\ArrayProxy.inl">
+      <Filter>ソース ファイル\Utility</Filter>
+    </None>
+    <None Include="..\src\Utility\Either.inl">
+      <Filter>ソース ファイル\Info</Filter>
+    </None>
   </ItemGroup>
 </Project>
