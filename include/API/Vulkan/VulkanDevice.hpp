@@ -44,6 +44,13 @@ namespace Hence
         VkInstance getInstance() const noexcept;
 
         /** 
+         * @brief  VkPhysicalDeviceを取得する
+         *  
+         * @return VkPhysicalDevice
+         */
+        VkPhysicalDevice getPhysicalDevice() const noexcept;
+
+        /** 
          * @brief  VkDeviceを取得する
          *  
          * @return VkDevice
@@ -58,12 +65,18 @@ namespace Hence
         VkQueue getDeviceQueue() const noexcept;
 
         /** 
+         * @brief graphics queueのindexを取得する
+         *  
+         * @return index
+         */
+        std::uint32_t getGraphicsQueueIndex() const noexcept;
+      
+        /** 
          * @brief  VkCommandPoolを取得する
          *  
          * @return VkCommandPool
          */
         VkCommandPool getCommandPool() const noexcept;
-
 
         /** 
          * @brief  VkPhysicalDeviceMemoryPropertiesを取得する
@@ -71,6 +84,8 @@ namespace Hence
          * @return VkPhysicalDeviceMemoryProperties
          */
         VkPhysicalDeviceMemoryProperties getPhysMemProps() const noexcept;
+
+        std::uint32_t getMemoryTypeIndex(std::uint32_t requestBits, VkMemoryPropertyFlags requestProps) const noexcept;
 
     private:
 
@@ -124,7 +139,7 @@ namespace Hence
         inline Result disableDebugReport() noexcept;
 
         //! Vulkanインスタンス
-        static std::optional<VkInstance>    mInstance;
+        VkInstance                          mInstance;
         
         //! 物理デバイス
         VkPhysicalDevice                    mPhysDev;

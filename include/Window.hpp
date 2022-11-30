@@ -10,6 +10,7 @@
 
 #include "API.hpp"
 #include "Utility/Macro.hpp"
+#include "Info/WindowInfo.hpp"
 
 namespace Hence
 {
@@ -68,5 +69,7 @@ namespace Hence
 		Impl mImpl;
 	};
 }
+
+#include "../src/Window.inl"
 
 #endif

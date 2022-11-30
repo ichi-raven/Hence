@@ -26,6 +26,17 @@ namespace Hence
 
 	}
 
+	//VulkanBuffer& VulkanBuffer::operator=(VulkanBuffer&& other) noexcept
+	//{
+	//	mBuffer		= std::move(other.mBuffer);
+	//	mMemory		= std::move(other.mMemory);
+	//	mSize		= std::move(other.mSize);
+	//	mOffset		= std::move(other.mOffset);
+
+	//	return *this;
+	//}
+
+
 	VkBuffer VulkanBuffer::getVkBuffer() noexcept
 	{
 		return mBuffer;

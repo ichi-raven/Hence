@@ -8,8 +8,6 @@
 
 #ifdef HENCE_DEVICE_HPP_
 
-#include "../include/API.hpp"
-
 #include "../include/Utility/Logger.hpp"
 
 #include <cassert>
@@ -29,7 +27,7 @@ namespace Hence
 	{
 		mAPIDevice.reset();
 
-		Logger::info("destroyed all device data");
+		Logger::info("destroyed all device memory");
 	}
 
 	//template<typename API>
@@ -45,9 +43,9 @@ namespace Hence
 	//}
 
 	template<typename API>
-	Device<API>::APIDevice& Device<API>::getInternalAPIDevice()
+	Device<API>::template APIDevice& Device<API>::getInternalAPIDevice()
 	{
-		assert(mAPIDevice || !"invalid device instance!");
+		//assert(mAPIDevice || !"invalid device instance!");
 
 		return *mAPIDevice;
 	}

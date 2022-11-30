@@ -24,6 +24,7 @@ namespace Hence
 		if (FAILED(res, createInstance()))
 		{
 			Logger::error("failed to create VkInstance!(native error : {})", res.nativeResult);
+			return;
 		}
 
 #ifndef NDEBUG
@@ -31,24 +32,28 @@ namespace Hence
 		if (FAILED(res, enableDebugReport()))
 		{
 			Logger::error("failed to create VkDebugReportCallbackEXT!(native error : {})", res.nativeResult);
+			return;
 		}
 #endif
 		
 		if (FAILED(res, selectPhysicalDevice()))
 		{
 			Logger::error("failed to select suitable VkPhysicalDevice!(native error : {})", res.nativeResult);
+			return;
 		}
 
 		
 		if (FAILED(res, createDevice()))
 		{
 			Logger::error("failed to create VkDevice!(native error : {})", res.nativeResult);
+			return;
 		}
 
 		
 		if (FAILED(res, createCommandPool()))
 		{
 			Logger::error("failed to create VkCommandPool!(native error : {})", res.nativeResult);
+			return;
 		}
 	}
 
@@ -61,7 +66,7 @@ namespace Hence
 		}
 
 		vkDestroyCommandPool(mDevice, mCommandPool, nullptr);
-		Logger::info("destroyed command poo");
+		Logger::info("destroyed command pool");
 
 #ifndef NDEBUG
 		disableDebugReport();
@@ -71,15 +76,18 @@ namespace Hence
 		vkDestroyDevice(mDevice, nullptr);
 		Logger::info("destroyed device");
 
-		vkDestroyInstance(mInstance.value(), nullptr);
+		vkDestroyInstance(mInstance, nullptr);
 		Logger::info("destroyed instance");
 	}
 
 	VkInstance VulkanDevice::getInstance() const noexcept
 	{
-		assert(mInstance || !"VkInstance is invalid(empty)!");
+		return mInstance;
+	}
 
-		return *mInstance;
+	VkPhysicalDevice VulkanDevice::getPhysicalDevice() const noexcept
+	{
+		return mPhysDev;
 	}
 
 	VkDevice VulkanDevice::getDevice() const noexcept
@@ -92,6 +100,11 @@ namespace Hence
 		return mDeviceQueue;
 	}
 
+	std::uint32_t VulkanDevice::getGraphicsQueueIndex() const noexcept
+	{
+		return mGraphicsQueueIndex;
+	}
+
 	VkCommandPool VulkanDevice::getCommandPool() const noexcept
 	{
 		return mCommandPool;
@@ -100,6 +113,26 @@ namespace Hence
 	VkPhysicalDeviceMemoryProperties VulkanDevice::getPhysMemProps() const noexcept
 	{
 		return mPhysMemProps;
+	}
+
+	std::uint32_t VulkanDevice::getMemoryTypeIndex(std::uint32_t requestBits, VkMemoryPropertyFlags requestProps) const noexcept
+	{
+		std::uint32_t result = 0;
+		for (std::uint32_t i = 0; i < mPhysMemProps.memoryTypeCount; ++i)
+		{
+			if (requestBits & 1)
+			{
+				const auto& types = mPhysMemProps.memoryTypes[i];
+				if ((types.propertyFlags & requestProps) == requestProps)
+				{
+					result = i;
+					break;
+				}
+			}
+
+			requestBits >>= 1;
+		}
+		return result;
 	}
 
 	inline Result VulkanDevice::createInstance() noexcept
@@ -159,7 +192,7 @@ namespace Hence
 		}
 #endif
 
-		VkInstance instance;
+		VkInstance instance = VK_NULL_HANDLE;
 
 		if (VK_FAILED(res, vkCreateInstance(&ci, nullptr, &instance)))
 		{
@@ -187,14 +220,14 @@ namespace Hence
 	{
 		std::uint32_t devCount = 0;
 
-		if (VK_FAILED(res, vkEnumeratePhysicalDevices(*mInstance, &devCount, nullptr)))
+		if (VK_FAILED(res, vkEnumeratePhysicalDevices(mInstance, &devCount, nullptr)))
 		{
 			return Result(res);
 		}
 
 		std::vector<VkPhysicalDevice> physDevs(devCount);
 
-		if (VK_FAILED(res, vkEnumeratePhysicalDevices(*mInstance, &devCount, physDevs.data())))
+		if (VK_FAILED(res, vkEnumeratePhysicalDevices(mInstance, &devCount, physDevs.data())))
 		{
 			return Result(res);
 		}
@@ -331,9 +364,9 @@ namespace Hence
 	inline Result VulkanDevice::enableDebugReport() noexcept
 	{
 		
-		mpfnVkCreateDebugReportCallbackEXT		= reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(*mInstance, "vkCreateDebugReportCallbackEXT"));
-		mpfnVkDebugReportMessageEXT				= reinterpret_cast<PFN_vkDebugReportMessageEXT>(vkGetInstanceProcAddr(*mInstance, "vkDebugReportMessageEXT"));
-		mpfnVkDestroyDebugReportCallbackEXT		= reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(vkGetInstanceProcAddr(*mInstance, "vkDestroyDebugReportCallbackEXT"));
+		mpfnVkCreateDebugReportCallbackEXT		= reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(mInstance, "vkCreateDebugReportCallbackEXT"));
+		mpfnVkDebugReportMessageEXT				= reinterpret_cast<PFN_vkDebugReportMessageEXT>(vkGetInstanceProcAddr(mInstance, "vkDebugReportMessageEXT"));
+		mpfnVkDestroyDebugReportCallbackEXT		= reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(vkGetInstanceProcAddr(mInstance, "vkDestroyDebugReportCallbackEXT"));
 
 		VkDebugReportFlagsEXT flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
 
@@ -341,7 +374,7 @@ namespace Hence
 		drcci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 		drcci.flags = flags;
 		drcci.pfnCallback = &DebugReportCallback;
-		mpfnVkCreateDebugReportCallbackEXT(*mInstance, &drcci, nullptr, &mDebugReport);
+		mpfnVkCreateDebugReportCallbackEXT(mInstance, &drcci, nullptr, &mDebugReport);
 
 		Logger::info("enabled debug mode");
 
@@ -350,9 +383,13 @@ namespace Hence
 
 	inline Result VulkanDevice::disableDebugReport() noexcept
 	{
-		assert(mpfnVkDestroyDebugReportCallbackEXT || !"function pointer to VkDestroyDebugReportCallbackEXT is NULL!");
+		if (!mpfnVkDestroyDebugReportCallbackEXT)
+		{
+			Logger::error("function pointer to VkDestroyDebugReportCallbackEXT is NULL!");
+			return Result(0);
+		}
 
-		mpfnVkDestroyDebugReportCallbackEXT(*mInstance, mDebugReport, nullptr);
+		mpfnVkDestroyDebugReportCallbackEXT(mInstance, mDebugReport, nullptr);
 
 		Logger::info("disabled debug mode");
 

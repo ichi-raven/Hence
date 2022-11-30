@@ -11,7 +11,7 @@ namespace Hence
 {
 	template<typename API>
 	VRAMAllocator<API>::VRAMAllocator(Device<API>& device) noexcept
-		: mAPIDevice(device.getInternalDevice())
+		: mAPIDevice(device.getInternalAPIDevice())
 		, mImpl(Impl(mAPIDevice))
 	{}
 

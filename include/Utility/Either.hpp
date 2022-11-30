@@ -16,29 +16,29 @@ namespace Hence
 	class Either
 	{
 	public:
+		using Value = std::variant<SuccessType, FailureType>;
 
 		Either(const SuccessType& success) noexcept;
 		Either(const FailureType& failure) noexcept;
 
+		~Either() noexcept;
+
 	    /**
 		 *@brief  bool型変換オーバーロード
 		 */
-		explicit operator bool() const  noexcept;
+		explicit operator bool() const noexcept;
 
 		/**
 		 * @brief  論理否定演算子オーバーロード
 		 */
 		bool operator!() const noexcept;
 
-		const SuccessType& get() const noexcept;
-
-		const FailureType& failed() const noexcept;
+		const Value& get() const noexcept;
 
 	private:
-		using Value = std::variant<SuccessType, FailureType>;
 
-		Value mValue;
-		bool mSucceeded;
+		const Value mValue;
+
 	};
 }
 

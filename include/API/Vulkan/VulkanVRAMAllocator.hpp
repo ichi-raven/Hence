@@ -54,11 +54,8 @@ namespace Hence
 		void deallocate(VulkanImage& vulkanImage) noexcept;
 
 	private:
-		std::uint32_t getMemoryTypeIndex(std::uint32_t requestBits, VkMemoryPropertyFlags requestProps) const;
 
-		Result setImageMemoryBarrier(VkCommandBuffer command, VkImage image, VkImageLayout oldLayout,
-			VkImageLayout newLayout,
-			VkImageAspectFlags aspectFlags);
+		Result setImageMemoryBarrier(VkCommandBuffer command, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) const noexcept;
 
 
 		VulkanDevice& mDevice;

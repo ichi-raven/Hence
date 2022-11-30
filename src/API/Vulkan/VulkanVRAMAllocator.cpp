@@ -31,7 +31,7 @@ namespace Hence
     Either<VulkanBuffer, Result> VulkanVRAMAllocator::allocate(BufferInfo bufferInfo) noexcept
     {
         // VkBuffer
-        VkBuffer buffer;
+        VkBuffer buffer = VK_NULL_HANDLE;
         {
             VkBufferCreateInfo ci{};
             ci.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -55,15 +55,15 @@ namespace Hence
 
             if (VK_FAILED(res, vkCreateBuffer(mDevice.getDevice(), &ci, nullptr, &buffer)))
             {
-                return Result(res);
+                return Either<VulkanBuffer, Result>(Result(res));
             }
 
         }
 
         // VkDeviceMemory
-        VkDeviceMemory memory;
+        VkDeviceMemory memory = VK_NULL_HANDLE;
         {
-            VkMemoryPropertyFlagBits fb;
+            VkMemoryPropertyFlagBits fb{};
 
             if (bufferInfo.hostVisible)
             {
@@ -81,14 +81,14 @@ namespace Hence
             VkMemoryAllocateInfo ai{};
             ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             ai.allocationSize = reqs.size;
-            ai.memoryTypeIndex = getMemoryTypeIndex(reqs.memoryTypeBits, fb);
+            ai.memoryTypeIndex = mDevice.getMemoryTypeIndex(reqs.memoryTypeBits, fb);
 
             // VRAMŠ„‚è“–‚Ä
             {
                 if (VK_FAILED(res, vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory)))
                 {
                     Logger::error("failed to allocate VkDeviceMemory to the VkBuffer!");
-                    return Result(static_cast<std::int32_t>(res));
+                    return Either<VulkanBuffer, Result>(Result(static_cast<std::int32_t>(res)));
                 }
             }
 
@@ -96,15 +96,13 @@ namespace Hence
             if (VK_FAILED(res, vkBindBufferMemory(mDevice.getDevice(), buffer, memory, 0)))
             {
                 Logger::error("failed to bind VkDeviceMemory to the VkBuffer!");
-                return Result(static_cast<std::int32_t>(res));
+                return Either<VulkanBuffer, Result>(Result(static_cast<std::int32_t>(res)));
             }
         }
 
         VkDeviceSize offset = 0;
 
-        VulkanBuffer rtn(buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset);
-
-        return rtn;
+        return Either<VulkanBuffer, Result>(VulkanBuffer(buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset));
 	}
 
     Either<VulkanImage, Result> VulkanVRAMAllocator::allocate(ImageInfo imageInfo) noexcept
@@ -134,7 +132,7 @@ namespace Hence
                 break;
             default:
                 Logger::error("invalid dimention of image!");
-                return Result(0);
+                return Either<VulkanImage, Result>(Result(0));
                 break;
             }
 
@@ -149,7 +147,7 @@ namespace Hence
             if (VK_FAILED(res, vkCreateImage(mDevice.getDevice(), &ci, nullptr, &image)))
             {
                 Logger::error("failed to create VkImage!");
-                return Result(static_cast<std::int32_t>(res));
+                return Either<VulkanImage, Result>(Result(static_cast<std::int32_t>(res)));
             }
         }
 
@@ -174,19 +172,19 @@ namespace Hence
                     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
             }
 
-            ai.memoryTypeIndex = getMemoryTypeIndex(reqs.memoryTypeBits, fb);
+            ai.memoryTypeIndex = mDevice.getMemoryTypeIndex(reqs.memoryTypeBits, fb);
             // VRAMŠ„‚è“–‚Ä
             if (VK_FAILED(res, vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory)))
             {
                 Logger::error("failed to allocate VkDeviceMemory to the VkImage!");
-                return Result(static_cast<std::int32_t>(res));
+                return Either<VulkanImage, Result>(Result(static_cast<std::int32_t>(res)));
             }
 
             // image‚Æ•R‚Ã‚¯
             if (VK_FAILED(res, vkBindImageMemory(mDevice.getDevice(), image, memory, 0)))
             {
                 Logger::error("failed to bind VkDeviceMemory to the VkImage!");
-                return Result(static_cast<std::int32_t>(res));
+                return Either<VulkanImage, Result>(Result(static_cast<std::int32_t>(res)));
             }
         }
 
@@ -231,7 +229,7 @@ namespace Hence
             if (VK_FAILED(res, vkCreateImageView(mDevice.getDevice(), &ci, nullptr, &imageView)))
             {
                 Logger::error("failed to create vkImageView!");
-                return Result(res);
+                return Either<VulkanImage, Result>(Result(res));
             }
         }
 
@@ -269,12 +267,10 @@ namespace Hence
                 VkCommandBufferBeginInfo commandBI{};
                 commandBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
                 vkBeginCommandBuffer(command, &commandBI);
-
-                auto res = setImageMemoryBarrier(command, image, VK_IMAGE_LAYOUT_UNDEFINED, layout, aspectFlag);
                 
-                if (!res)
+                if (FAILED(res, setImageMemoryBarrier(command, image, VK_IMAGE_LAYOUT_UNDEFINED, layout, aspectFlag)))
                 {
-                    return res;
+                    return Either<VulkanImage, Result>(res);
                 }
                 
                 vkEndCommandBuffer(command);
@@ -302,7 +298,7 @@ namespace Hence
 
 	void VulkanVRAMAllocator::deallocate(VulkanBuffer& vulkanBuffer) noexcept
 	{
-        auto vkDevice = mDevice.getDevice();
+        const auto vkDevice = mDevice.getDevice();
 
         vkQueueWaitIdle(mDevice.getDeviceQueue());
 
@@ -313,7 +309,7 @@ namespace Hence
 
 	void VulkanVRAMAllocator::deallocate(VulkanImage& vulkanImage) noexcept
 	{
-        auto vkDevice = mDevice.getDevice();
+        const auto vkDevice = mDevice.getDevice();
 
         vkQueueWaitIdle(mDevice.getDeviceQueue());
 
@@ -323,30 +319,10 @@ namespace Hence
         vkFreeMemory(vkDevice, vulkanImage.getVkDeviceMemory(), nullptr);
 	}
 
-    std::uint32_t VulkanVRAMAllocator::getMemoryTypeIndex(std::uint32_t requestBits, VkMemoryPropertyFlags requestProps) const
-    {
-        std::uint32_t result = 0;
-        for (std::uint32_t i = 0; i < mDevice.getPhysMemProps().memoryTypeCount; ++i)
-        {
-            if (requestBits & 1)
-            {
-                const auto& types = mDevice.getPhysMemProps().memoryTypes[i];
-                if ((types.propertyFlags & requestProps) == requestProps)
-                {
-                    result = i;
-                    break;
-                }
-            }
-
-            requestBits >>= 1;
-        }
-        return result;
-    }
-
     Result VulkanVRAMAllocator::setImageMemoryBarrier(VkCommandBuffer command, VkImage image,
         VkImageLayout oldLayout,
         VkImageLayout newLayout,
-        VkImageAspectFlags aspectFlags)
+        VkImageAspectFlags aspectFlags) const noexcept
     {
 
         VkImageMemoryBarrier imb{};

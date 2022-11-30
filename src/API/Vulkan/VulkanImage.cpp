@@ -22,6 +22,15 @@ namespace Hence
 
 	}
 
+	//VulkanImage& VulkanImage::operator=(VulkanImage&& other) noexcept
+	//{
+	//	mImage		= std::move(other.mImage);
+	//	mMemory		= std::move(other.mMemory);
+	//	mImageView	= std::move(other.mImageView);
+
+	//	return *this;
+	//}
+
 	VkImage VulkanImage::getVkImage() noexcept
 	{
 		return mImage;

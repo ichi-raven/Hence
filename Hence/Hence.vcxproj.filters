@@ -210,6 +210,9 @@
     <ClInclude Include="..\include\Hence.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Info\WindowInfo.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Device.inl">
@@ -245,6 +248,12 @@
     <ClCompile Include="..\testmain.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Info\WindowInfo.cpp">
+      <Filter>ソース ファイル\Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanWindow.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\BindGroup.inl">
@@ -258,6 +267,9 @@
     </None>
     <None Include="..\src\Utility\Either.inl">
       <Filter>ソース ファイル\Info</Filter>
+    </None>
+    <None Include="..\src\Window.inl">
+      <Filter>ソース ファイル</Filter>
     </None>
   </ItemGroup>
 </Project>

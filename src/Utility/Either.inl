@@ -11,42 +11,36 @@
 
 namespace Hence
 {
-	template<typename S, typename F>
-	Either<S, F>::Either(const S& success) noexcept
+	template<typename SuccessType, typename FailureType>
+	inline Either<SuccessType, FailureType>::Either(const SuccessType& success) noexcept
 		: mValue(success)
 	{}
 
-	template<typename S, typename F>
-	Either<S, F>::Either(const F& failure) noexcept
+	template<typename SuccessType, typename FailureType>
+	inline Either<SuccessType, FailureType>::Either(const FailureType& failure) noexcept
 		: mValue(failure)
 	{}
 
-	template<typename S, typename F>
-	Either<S, F>::operator bool() const  noexcept
+	template<typename SuccessType, typename FailureType>
+	inline Either<SuccessType, FailureType>::~Either() noexcept
+	{}
+
+	template<typename SuccessType, typename FailureType>
+	inline Either<SuccessType, FailureType>::operator bool() const  noexcept
 	{
-		return mSucceeded;
+		return std::holds_alternative<SuccessType>(mValue);
 	}
 
-	template<typename S, typename F>
-	bool Either<S, F>::operator!() const noexcept
+	template<typename SuccessType, typename FailureType>
+	inline bool Either<SuccessType, FailureType>::operator!() const noexcept
 	{
 		return !static_cast<bool>(*this);
 	}
 
-	template<typename S, typename F>
-	const S& Either<S, F>::get() const noexcept
+	template<typename SuccessType, typename FailureType>
+	const Either<SuccessType, FailureType>::template Value& Either<SuccessType, FailureType>::get() const noexcept
 	{
-		assert(std::holds_alternative<S>(mValue) || !"failed! could not get succeeded value!");
-
-		return std::get<S>(mValue);
-	}
-
-	template<typename S, typename F>
-	const F& Either<S, F>::failed() const noexcept
-	{
-		assert(std::holds_alternative<F>(mValue) || !"succeeded! could not get failed value!");
-
-		return std::get<F>(mValue);
+		return mValue;
 	}
 
 }

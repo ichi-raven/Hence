@@ -182,6 +182,7 @@
     <ClInclude Include="..\include\Info\ImageInfo.hpp" />
     <ClInclude Include="..\include\Info\ImageUsage.hpp" />
     <ClInclude Include="..\include\Info\Sampler.hpp" />
+    <ClInclude Include="..\include\Info\WindowInfo.hpp" />
     <ClInclude Include="..\include\RaytracingPipeline.hpp" />
     <ClInclude Include="..\include\RenderPass.hpp" />
     <ClInclude Include="..\include\Shader.hpp" />
@@ -199,10 +200,12 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanDevice.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanImage.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanVRAMAllocator.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanWindow.cpp" />
     <ClCompile Include="..\src\Device.inl" />
     <ClCompile Include="..\src\Info\BufferInfo.cpp" />
     <ClCompile Include="..\src\Info\BufferUsage.cpp" />
     <ClCompile Include="..\src\Info\ImageUsage.cpp" />
+    <ClCompile Include="..\src\Info\WindowInfo.cpp" />
     <ClCompile Include="..\src\Utility\Logger.cpp" />
     <ClCompile Include="..\src\Utility\Result.cpp" />
     <ClCompile Include="..\testmain.cpp" />
@@ -212,6 +215,7 @@
     <None Include="..\src\Utility\ArrayProxy.inl" />
     <None Include="..\src\Utility\Either.inl" />
     <None Include="..\src\VRAMAllocator.inl" />
+    <None Include="..\src\Window.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -20,6 +20,8 @@ namespace Hence
 
 		~VulkanImage();
 
+		//VulkanImage& operator=(VulkanImage&& other) noexcept;
+
 		VkImage getVkImage() noexcept;
 
 		VkDeviceMemory getVkDeviceMemory() noexcept;
