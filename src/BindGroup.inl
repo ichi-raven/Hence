@@ -10,7 +10,7 @@
 namespace Hence
 {
 	template<typename API>
-	BindGroup<API>::BindGroup(Device<API>& device, const Shader<API>& shader)
+	BindGroup<API>::BindGroup(Device<API>& device, const Shader<API>& shader) noexcept
 	{
 
 	}

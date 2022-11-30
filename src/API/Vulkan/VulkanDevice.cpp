@@ -10,6 +10,7 @@
 
 #include "../../../include/Utility/Constants.hpp"
 #include "../../../include/Utility/Logger.hpp"
+#include "../../../include/Utility/Macro.hpp"
 
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
 
@@ -20,34 +21,32 @@ namespace Hence
 {
 	VulkanDevice::VulkanDevice() noexcept
 	{
-		
-		
-		if (auto res = createInstance(); !res)
+		if (FAILED(res, createInstance()))
 		{
 			Logger::error("failed to create VkInstance!(native error : {})", res.nativeResult);
 		}
 
 #ifndef NDEBUG
 		
-		if (auto res = enableDebugReport(); !res)
+		if (FAILED(res, enableDebugReport()))
 		{
 			Logger::error("failed to create VkDebugReportCallbackEXT!(native error : {})", res.nativeResult);
 		}
 #endif
 		
-		if (auto res = selectPhysicalDevice(); !res)
+		if (FAILED(res, selectPhysicalDevice()))
 		{
 			Logger::error("failed to select suitable VkPhysicalDevice!(native error : {})", res.nativeResult);
 		}
 
 		
-		if (auto res = createDevice(); !res)
+		if (FAILED(res, createDevice()))
 		{
 			Logger::error("failed to create VkDevice!(native error : {})", res.nativeResult);
 		}
 
 		
-		if (auto res = createCommandPool(); !res)
+		if (FAILED(res, createCommandPool()))
 		{
 			Logger::error("failed to create VkCommandPool!(native error : {})", res.nativeResult);
 		}
@@ -56,13 +55,13 @@ namespace Hence
 	VulkanDevice::~VulkanDevice() noexcept
 	{
 
-		if (FAILED(vkDeviceWaitIdle(mDevice)))
+		if (FAILED(res, vkDeviceWaitIdle(mDevice)))
 		{
-			Logger::error("failed to wait device idol!");
+			Logger::error("failed to wait device idol! (native result : {})", static_cast<std::int32_t>(res));
 		}
 
 		vkDestroyCommandPool(mDevice, mCommandPool, nullptr);
-		Logger::info("destroyed command pool");
+		Logger::info("destroyed command poo");
 
 #ifndef NDEBUG
 		disableDebugReport();
@@ -118,15 +117,14 @@ namespace Hence
 
 		{
 			uint32_t count = 0;
-			auto res = vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);
-			if (FAILED(res))
+			if (VK_FAILED(res, vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr)))
 			{
 				return Result(res);
 			}
 
 			props.resize(count);
 			
-			if (auto res = vkEnumerateInstanceExtensionProperties(nullptr, &count, props.data()); FAILED(res))
+			if (VK_FAILED(res, vkEnumerateInstanceExtensionProperties(nullptr, &count, props.data())))
 			{
 				return Result(res);
 			}
@@ -137,7 +135,7 @@ namespace Hence
 			for (const auto& v : props)
 			{
 				extensions.emplace_back(v.extensionName);
-				Logger::info(v.extensionName);
+				Logger::info("{}", v.extensionName);
 			}
 		}
 
@@ -163,8 +161,7 @@ namespace Hence
 
 		VkInstance instance;
 
-		auto res = vkCreateInstance(&ci, nullptr, &instance);
-		if (FAILED(res))
+		if (VK_FAILED(res, vkCreateInstance(&ci, nullptr, &instance)))
 		{
 #ifndef NDEBUG
 
@@ -172,7 +169,7 @@ namespace Hence
 			ci.enabledLayerCount = 0;
 			ci.ppEnabledLayerNames = nullptr;
 
-			if (res = vkCreateInstance(&ci, nullptr, &instance); FAILED(res))
+			if (VK_FAILED(res, vkCreateInstance(&ci, nullptr, &instance)))
 			{
 				return Result(res);
 			}
@@ -190,15 +187,14 @@ namespace Hence
 	{
 		std::uint32_t devCount = 0;
 
-		auto res = vkEnumeratePhysicalDevices(*mInstance, &devCount, nullptr);
-		if (FAILED(res))
+		if (VK_FAILED(res, vkEnumeratePhysicalDevices(*mInstance, &devCount, nullptr)))
 		{
 			return Result(res);
 		}
 
 		std::vector<VkPhysicalDevice> physDevs(devCount);
 
-		if (auto res = vkEnumeratePhysicalDevices(*mInstance, &devCount, physDevs.data()); FAILED(res))
+		if (VK_FAILED(res, vkEnumeratePhysicalDevices(*mInstance, &devCount, physDevs.data())))
 		{
 			return Result(res);
 		}
@@ -248,14 +244,14 @@ namespace Hence
 		{
 			uint32_t count = 0;
 			
-			if (auto res = vkEnumerateDeviceExtensionProperties(mPhysDev, nullptr, &count, nullptr); FAILED(res))
+			if (VK_FAILED(res, vkEnumerateDeviceExtensionProperties(mPhysDev, nullptr, &count, nullptr)))
 			{
 				Logger::error("failed to enumerate device extension properties!");
 				return Result(res);
 			}
 
 			devExtProps.resize(count);
-			if (auto res = vkEnumerateDeviceExtensionProperties(mPhysDev, nullptr, &count, devExtProps.data()); FAILED(res))
+			if (VK_FAILED(res, vkEnumerateDeviceExtensionProperties(mPhysDev, nullptr, &count, devExtProps.data())))
 			{
 				return Result(res);
 			}
@@ -284,7 +280,7 @@ namespace Hence
 			ci.ppEnabledExtensionNames = extensions.data();
 			ci.enabledExtensionCount = uint32_t(extensions.size());
 
-			if (auto res = vkCreateDevice(mPhysDev, &ci, nullptr, &mDevice); FAILED(res))
+			if (VK_FAILED(res, vkCreateDevice(mPhysDev, &ci, nullptr, &mDevice)))
 			{
 				return Result(res);
 			}
@@ -303,8 +299,7 @@ namespace Hence
 		ci.queueFamilyIndex = mGraphicsQueueIndex;
 		ci.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-		
-		if (auto res = vkCreateCommandPool(mDevice, &ci, nullptr, &mCommandPool); FAILED(res))
+		if (VK_FAILED(res, vkCreateCommandPool(mDevice, &ci, nullptr, &mCommandPool)))
 		{
 			return Result(res);
 		}

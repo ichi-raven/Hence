@@ -29,6 +29,8 @@ namespace Hence
 	 */
 	struct BufferUsageFlag
 	{
+		BufferUsageFlag(const std::int32_t res);
+
 		/**
 		 * @brief  論理和用演算子オーバーロード
 		 */

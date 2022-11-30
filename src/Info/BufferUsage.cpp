@@ -10,6 +10,10 @@
 
 namespace Hence
 {
+	BufferUsageFlag::BufferUsageFlag(const std::int32_t res)
+		:result(res)
+	{}
+
 	BufferUsageFlag BufferUsageFlag::operator|(BufferUsageFlag other) const noexcept
 	{
 		return BufferUsageFlag{ result | other.result };
@@ -36,7 +40,7 @@ namespace Hence
 
 	}
 
-	BufferUsage::BufferUsage(BufferUsageFlag flag)
+	BufferUsage::BufferUsage(BufferUsageFlag flag) noexcept
 		: usage(flag.result)
 	{
 
@@ -45,11 +49,13 @@ namespace Hence
 	BufferUsageFlag BufferUsage::operator=(BufferUsageBit bit) noexcept
 	{
 		usage = static_cast<std::underlying_type_t<BufferUsageBit>>(bit);
+		return BufferUsageFlag(usage);
 	}
 
 	BufferUsageFlag BufferUsage::operator=(BufferUsageFlag flag) noexcept
 	{
 		usage = flag.result;
+		return BufferUsageFlag(usage);
 	}
 
 	bool BufferUsage::contains(BufferUsageBit checkUsageBit) const noexcept

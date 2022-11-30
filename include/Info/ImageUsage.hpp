@@ -42,6 +42,8 @@ namespace Hence
 	 */
 	struct ImageUsageFlag
 	{
+		ImageUsageFlag(const std::int32_t res);
+
 		/**
 		 * @brief  論理和用演算子オーバーロード
 		 */
@@ -102,7 +104,7 @@ namespace Hence
 		bool contains(ImageUsageBit checkUsageBit) const noexcept;
 
 		//! 最終的なUsage情報
-		const std::int32_t usage{};
+		std::int32_t usage{};
 	};
 }
 

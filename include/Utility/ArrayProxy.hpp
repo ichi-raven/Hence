@@ -75,8 +75,8 @@ namespace Hence
 		T const* mPtr;
 	};
 
-#include "../../src/Utility/ArrayProxy.inl"
-
 }
+
+#include "../../src/Utility/ArrayProxy.inl"
 
 #endif

@@ -53,9 +53,7 @@ namespace Hence
 
             ci.size = bufferInfo.memorySize;
 
-
-            auto res = vkCreateBuffer(mDevice.getDevice(), &ci, nullptr, &buffer);
-            if (FAILED(res))
+            if (VK_FAILED(res, vkCreateBuffer(mDevice.getDevice(), &ci, nullptr, &buffer)))
             {
                 return Result(res);
             }
@@ -87,8 +85,7 @@ namespace Hence
 
             // VRAMŠ„‚è“–‚Ä
             {
-                auto res = vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory);
-                if (FAILED(res))
+                if (VK_FAILED(res, vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory)))
                 {
                     Logger::error("failed to allocate VkDeviceMemory to the VkBuffer!");
                     return Result(static_cast<std::int32_t>(res));
@@ -96,8 +93,7 @@ namespace Hence
             }
 
             // buffer‚Æ•R‚Ã‚¯
-            auto res = vkBindBufferMemory(mDevice.getDevice(), buffer, memory, 0);
-            if (FAILED(res))
+            if (VK_FAILED(res, vkBindBufferMemory(mDevice.getDevice(), buffer, memory, 0)))
             {
                 Logger::error("failed to bind VkDeviceMemory to the VkBuffer!");
                 return Result(static_cast<std::int32_t>(res));
@@ -116,7 +112,7 @@ namespace Hence
         VkImageCreateInfo ci{};
 
         // VkImage
-        VkImage image;
+        VkImage image = VK_NULL_HANDLE;
         {
             ci.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             ci.pNext = nullptr;
@@ -150,8 +146,7 @@ namespace Hence
             ci.tiling = VK_IMAGE_TILING_OPTIMAL;
             ci.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-            auto res = vkCreateImage(mDevice.getDevice(), &ci, nullptr, &image);
-            if (FAILED(res))
+            if (VK_FAILED(res, vkCreateImage(mDevice.getDevice(), &ci, nullptr, &image)))
             {
                 Logger::error("failed to create VkImage!");
                 return Result(static_cast<std::int32_t>(res));
@@ -159,7 +154,7 @@ namespace Hence
         }
 
         // VkDeviceMemory
-        VkDeviceMemory memory;
+        VkDeviceMemory memory = VK_NULL_HANDLE;
         {
             VkMemoryRequirements reqs;
             vkGetImageMemoryRequirements(mDevice.getDevice(), image, &reqs);
@@ -181,16 +176,14 @@ namespace Hence
 
             ai.memoryTypeIndex = getMemoryTypeIndex(reqs.memoryTypeBits, fb);
             // VRAMŠ„‚è“–‚Ä
-            auto res = vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory);
-            if (FAILED(res))
+            if (VK_FAILED(res, vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory)))
             {
                 Logger::error("failed to allocate VkDeviceMemory to the VkImage!");
                 return Result(static_cast<std::int32_t>(res));
             }
 
             // image‚Æ•R‚Ã‚¯
-            auto res = vkBindImageMemory(mDevice.getDevice(), image, memory, 0);
-            if (FAILED(res))
+            if (VK_FAILED(res, vkBindImageMemory(mDevice.getDevice(), image, memory, 0)))
             {
                 Logger::error("failed to bind VkDeviceMemory to the VkImage!");
                 return Result(static_cast<std::int32_t>(res));
@@ -198,7 +191,7 @@ namespace Hence
         }
 
         // VkImageView
-        VkImageView imageView;
+        VkImageView imageView = VK_NULL_HANDLE;
         VkImageAspectFlags aspectFlag = VK_IMAGE_ASPECT_COLOR_BIT;
         {
             VkImageViewCreateInfo ci{};
@@ -235,8 +228,7 @@ namespace Hence
 
             ci.subresourceRange = { aspectFlag, 0, 1, 0, 1 };
 
-            auto res = vkCreateImageView(mDevice.getDevice(), &ci, nullptr, &imageView);
-            if (FAILED(res))
+            if (VK_FAILED(res, vkCreateImageView(mDevice.getDevice(), &ci, nullptr, &imageView)))
             {
                 Logger::error("failed to create vkImageView!");
                 return Result(res);

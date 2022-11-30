@@ -17,7 +17,17 @@ namespace Hence
 {
     struct ImageInfo
     {
-        ImageInfo() {}
+        ImageInfo() 
+            : width(64)
+            , height(64)
+            , depth(1)
+            , usage(ImageUsageBit::Sampled)
+            , dimension(Dimension::two)
+            , format(Format::B8G8R8A8Unorm)
+            , hostVisible(true) 
+        {
+            // ŒÄ‚Î‚È‚¢‚Ù‚¤‚ª—Ç‚¢
+        }
 
         ImageInfo(uint32_t width, uint32_t height, uint32_t depth = 1u, Format format = Format::R8G8B8A8Unorm, ImageUsage usage = ImageUsageBit::Storage, bool hostVisible = true, Dimension dimension = Dimension::two)
             : width(width)

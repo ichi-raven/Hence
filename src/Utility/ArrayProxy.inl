@@ -32,11 +32,17 @@ namespace Hence
 		, mPtr(ptr)
 	{}
 
-	template <typename T, std::size_t C>
+	template<typename T>
+	template <std::size_t C>
 	ArrayProxy<T>::ArrayProxy(T const (&ptr)[C]) noexcept
 		: mCount(C)
 		, mPtr(ptr)
 	{}
+
+#  if __GNUC__ >= 9
+#    pragma GCC diagnostic push
+#    pragma GCC diagnostic ignored "-Winit-list-lifetime"
+#  endif
 
 	template <typename T>
 	ArrayProxy<T>::ArrayProxy(std::initializer_list<T> const& list) noexcept
@@ -44,19 +50,25 @@ namespace Hence
 		, mPtr(list.begin())
 	{}
 
-	template <typename T, typename B = T, typename std::enable_if<std::is_const<B>::value, int>::type = 0>
+	template<typename T>
+	template <typename B, typename std::enable_if<std::is_const<B>::value, int>::type>
 	ArrayProxy<T>::ArrayProxy(std::initializer_list<typename std::remove_const<T>::type> const& list) noexcept
 		: mCount(static_cast<std::uint32_t>(list.size()))
 		, mPtr(list.begin())
 	{
 	}
 
+#if __GNUC__ >= 9
+#    pragma GCC diagnostic pop
+#  endif
+
 	// Any type with a .data() return type implicitly convertible to T*, and a .size() return type implicitly
 	// convertible to size_t. The const version can capture temporaries, with lifetime ending at end of statement.
-	template <typename T, typename V,
+	template<typename T>
+	template <typename V,
 		typename std::enable_if<
 		std::is_convertible<decltype(std::declval<V>().data()), T*>::value&&
-		std::is_convertible<decltype(std::declval<V>().size()), std::size_t>::value>::type* = nullptr>
+		std::is_convertible<decltype(std::declval<V>().size()), std::size_t>::value>::type*>
 	ArrayProxy<T>::ArrayProxy(V const& v) noexcept
 		: mCount(static_cast<std::uint32_t>(v.size()))
 		, mPtr(v.data())

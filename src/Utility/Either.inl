@@ -13,15 +13,13 @@ namespace Hence
 {
 	template<typename S, typename F>
 	Either<S, F>::Either(const S& success) noexcept
-	{
-		mValue = success;
-	}
+		: mValue(success)
+	{}
 
 	template<typename S, typename F>
 	Either<S, F>::Either(const F& failure) noexcept
-	{
-		mValue = failure;
-	}
+		: mValue(failure)
+	{}
 
 	template<typename S, typename F>
 	Either<S, F>::operator bool() const  noexcept

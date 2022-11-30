@@ -8,6 +8,8 @@
 #ifndef HENCE_MACRO_HPP_
 #define HENCE_MACRO_HPP_
 
+#define FAILED(resultVar, func) const auto resultVar = func; !resultVar
+
 // クラスのコピー不可定義
 #define NONCOPYABLE(TypeName)\
     TypeName(const TypeName& other) = delete;\

@@ -20,10 +20,7 @@ namespace Hence
 
 		BufferInfo();
 
-		BufferInfo(size_t bufferMemorySize, BufferUsage usage, bool isHostVisible)
-			: memorySize(bufferMemorySize), usage(usage), hostVisible(isHostVisible)
-		{
-		}
+		BufferInfo(size_t bufferMemorySize, BufferUsage usage, bool isHostVisible);
 
 		template <typename VertexType>
 		inline void setVertexBuffer(size_t vertexCount)

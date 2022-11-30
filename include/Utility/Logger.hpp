@@ -56,10 +56,10 @@ namespace Hence
          * @param args 書式入力に対する可変長引数
          */
         template<typename ... Args>
-        static void info(const std::string_view format, Args&& ... args)
+        static void info(const char* format, Args&& ... args)
         {
-            /* 書式フォーマットしてシングルトンインスタンスのInformationログ出力呼び出し */
-            Logger::getInstance().logInfo(std::format(format, std::forward<Args>(args) ...));
+            /* 書式フォーマットしてシングルトンインスタンスのInfoログ出力呼び出し */
+            Logger::getInstance().logInfo(std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
         }
 
 
@@ -70,10 +70,10 @@ namespace Hence
          * @param args 書式入力に対する可変長引数
          */
         template<typename ... Args>
-        static void warn(const std::string_view format, Args&& ... args)
+        static void warn(const char* format, Args&& ... args)
         {
-            /* 書式フォーマットしてシングルトンインスタンスのWarningログ出力呼び出し */
-            Logger::getInstance().logWarn(std::format(format, std::forward<Args>(args) ...));
+            /* 書式フォーマットしてシングルトンインスタンスのWarnログ出力呼び出し */
+            Logger::getInstance().logWarn(std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
         }
 
 
@@ -84,10 +84,10 @@ namespace Hence
          * @param args 書式入力に対する可変長引数
          */
         template<typename ... Args>
-        static void error(const std::string_view format, Args&& ... args)
+        static void error(const char* format, Args&& ... args)
         {
             /* 書式フォーマットしてシングルトンインスタンスのErrorログ出力呼び出し */
-            Logger::getInstance().logError(std::format(format, std::forward<Args>(args) ...));
+            Logger::getInstance().logError(std::vformat(format, std::make_format_args(std::forward<Args>(args)...)));
         }
 
 
@@ -95,11 +95,11 @@ namespace Hence
         /**
          * @brief  infoを出力する内部メソッド
          */
-        inline void logInfo(const std::string_view message);
+        inline void logInfo(const std::string&& message);
         /* Warningログ出力 */
-        inline void logWarn(const std::string_view message);
+        inline void logWarn(const std::string&& message);
         /* Errorログ出力 */
-        inline void logError(const std::string_view message);
+        inline void logError(const std::string&& message);
 
     private:
         //! スレッドセーフ用
@@ -107,54 +107,6 @@ namespace Hence
         //! 出力先
         std::ofstream mFStream;
     };
-
-//    class DebugLogger
-//    {
-//
-//        /**
-//         * @brief  informationを出力する
-//         * @tparam Args フォーマット型
-//         * @param format 書式
-//         * @param args 書式入力に対する可変長引数
-//         */
-//        template<typename ... Args>
-//        static void info(const std::string_view format, Args&& ... args)
-//        {
-//#ifndef NDEBUG
-//            Logger::info(format, args...);
-//#endif
-//        }
-//
-//
-//        /**
-//         * @brief  warningを出力する
-//         * @tparam Args フォーマット型
-//         * @param format 書式
-//         * @param args 書式入力に対する可変長引数
-//         */
-//        template<typename ... Args>
-//        static void warn(const std::string_view format, Args&& ... args)
-//        {
-//#ifndef NDEBUG
-//            Logger::warn(format, args...);
-//#endif
-//        }
-//
-//
-//        /**
-//         * @brief  errorを出力する
-//         * @tparam Args フォーマット型
-//         * @param format 書式
-//         * @param args 書式入力に対する可変長引数
-//         */
-//        template<typename ... Args>
-//        static void error(const std::string_view format, Args&& ... args)
-//        {
-//#ifndef NDEBUG
-//            Logger::error(format, args...);
-//#endif
-//        }
-//    };
 }
 
 #endif

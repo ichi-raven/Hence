@@ -9,7 +9,7 @@
 
 namespace Hence
 {
-	VulkanImage::VulkanImage(VkImage image, VkDeviceMemory memory, VkImageView view)
+	VulkanImage::VulkanImage(VkImage image, VkDeviceMemory memory, VkImageView imageView)
 		: mImage(image)
 		, mMemory(memory)
 		, mImageView(imageView)
@@ -29,7 +29,7 @@ namespace Hence
 
 	VkDeviceMemory VulkanImage::getVkDeviceMemory() noexcept
 	{
-		return mMemory:
+		return mMemory;
 	}
 
 	VkImageView VulkanImage::getVkImageView() noexcept

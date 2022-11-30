@@ -8,7 +8,7 @@
 #ifndef HENCE_API_VULKAN_UTILITY_MACRO_HPP_
 #define HENCE_API_VULKAN_UTILITY_MACRO_HPP_
 
-#define FAILED(result) (result) != VK_SUCCESS
+#define VK_FAILED(resultVar, func) const auto resultVar = func; resultVar != VK_SUCCESS
 
 
 #endif

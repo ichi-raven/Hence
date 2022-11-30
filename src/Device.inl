@@ -17,24 +17,17 @@
 namespace Hence
 {
 	template<typename API>
-	Device::Device()
+	Device<API>::Device()
 	{
 		Logger::info("API Name : {}\ninitialize start...", APITrait<API>::APIName);
 
-		if (!mAPIDeviceInstance)
-		{
-			mAPIDeviceInstance = APIDevice();
-		}
+		mAPIDevice = std::optional<APIDevice>(APIDevice());
 	}
 
 	template<typename API>
-	Device::~Device()
+	Device<API>::~Device()
 	{
-		if (mAPIDevice)
-		{
-			mAPIDevice->~APIDevice();
-			mAPIDevice = std::nullopt();
-		}
+		mAPIDevice.reset();
 
 		Logger::info("destroyed all device data");
 	}
@@ -52,11 +45,11 @@ namespace Hence
 	//}
 
 	template<typename API>
-	Device::APIDevice& Device::getInternalAPIDevice()
+	Device<API>::APIDevice& Device<API>::getInternalAPIDevice()
 	{
-		assert(mAPIDeviceInstance || !"invalid device instance!");
+		assert(mAPIDevice || !"invalid device instance!");
 
-		return *mAPIDeviceInstance;
+		return *mAPIDevice;
 	}
 }
 

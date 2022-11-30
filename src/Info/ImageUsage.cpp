@@ -6,10 +6,14 @@
  * @date   November 2022
  *********************************************************************/
 
-#include "../include/Info/ImageUsage.hpp"
+#include "../../include/Info/ImageUsage.hpp"
 
 namespace Hence
 {
+	ImageUsageFlag::ImageUsageFlag(const std::int32_t res)
+		: result(res)
+	{}
+
 	ImageUsageFlag ImageUsageFlag::operator|(ImageUsageFlag other) const noexcept
 	{
 		return ImageUsageFlag{ result | other.result };
@@ -32,27 +36,25 @@ namespace Hence
 
 	ImageUsage::ImageUsage(ImageUsageBit bit) noexcept
 		: usage(static_cast<std::underlying_type_t<ImageUsageBit>>(bit))
-	{
+	{}
 
-	}
-
-	ImageUsage::ImageUsage(ImageUsageFlag flag)
+	ImageUsage::ImageUsage(ImageUsageFlag flag) noexcept
 		: usage(flag.result)
-	{
+	{}
 
+	ImageUsageFlag ImageUsage::operator=(ImageUsageBit bit) noexcept
+	{
+		usage = static_cast<std::underlying_type_t<ImageUsageBit>>(bit);
+		return ImageUsageFlag(usage);
 	}
 
-	ImageUsageFlag operator=(ImageUsageBit bit) noexcept
-	{
-		usage = static_cast<std::underlying_type_t<BufferUsageBit>>(bit);
-	}
-
-	ImageUsageFlag operator=(ImageUsageFlag flag) noexcept
+	ImageUsageFlag ImageUsage::operator=(ImageUsageFlag flag) noexcept
 	{
 		usage = flag.result;
+		return ImageUsageFlag(usage);
 	}
 
-	bool contains(ImageUsageBit checkUsageBit) const noexcept
+	bool ImageUsage::contains(ImageUsageBit checkUsageBit) const noexcept
 	{
 		return usage & static_cast<std::uint32_t>(checkUsageBit);
 	}

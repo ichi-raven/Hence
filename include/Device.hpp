@@ -5,7 +5,6 @@
  * @author ichi-raven
  * @date   November 2022
  *********************************************************************/
-
 #ifndef HENCE_DEVICE_HPP_
 #define HENCE_DEVICE_HPP_
 
@@ -58,7 +57,7 @@ namespace Hence
 
     private:
 
-        static std::optional<APIDevice> mAPIDeviceInstance;
+        std::optional<APIDevice> mAPIDevice;
     };
 }
 

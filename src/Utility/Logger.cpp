@@ -35,31 +35,31 @@ namespace Hence
 		mFStream.close();
 	}
 
-	Logger& Logger::getInstance() noexcept;
+	Logger& Logger::getInstance() noexcept
 	{
-		static Logger instance();
+		static Logger instance;
 
 		return instance;
 	}
 
-	inline void Logger::logInfo(const std::string_view message)
+	inline void Logger::logInfo(const std::string&& message)
 	{
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
 		mFStream << kConsoleColorCyan << "[info] : " << message << "\n" << kConsoleColorReset;
 	}
 
-	inline void Logger::logWarn(const std::string_view message)
+	inline void Logger::logWarn(const std::string&& message)
 	{
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
 		mFStream << kConsoleColorYellow << "[warning] : " << message << "\n" << kConsoleColorReset;
 	}
 
-	inline void Logger::logError(const std::string_view message)
+	inline void Logger::logError(const std::string&& message)
 	{
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
-		mFStream << kConsoleColorRed<< "[error] : " << message << "\n" << kConsoleColorReset;
+		mFStream << kConsoleColorRed << "[error] : " << message << "\n" << kConsoleColorReset;
 	}
 }
