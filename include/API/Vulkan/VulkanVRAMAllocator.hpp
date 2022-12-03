@@ -55,9 +55,6 @@ namespace Hence
 
 	private:
 
-		Result setImageMemoryBarrier(VkCommandBuffer command, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) const noexcept;
-
-
 		VulkanDevice& mDevice;
 
 	};

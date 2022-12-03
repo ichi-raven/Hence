@@ -12,6 +12,7 @@
 #include "../../../include/API/Vulkan/VulkanImage.hpp"
 
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
+#include "../../../include/API/Vulkan/Utility/HelperFunctions.hpp"
 
 #include "../../../include/Utility/Logger.hpp"
 
@@ -102,12 +103,19 @@ namespace Hence
 
         VkDeviceSize offset = 0;
 
-        return Either<VulkanBuffer, Result>(VulkanBuffer(buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset));
+        return Either<VulkanBuffer, Result>(VulkanBuffer(mDevice, buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset));
 	}
 
     Either<VulkanImage, Result> VulkanVRAMAllocator::allocate(ImageInfo imageInfo) noexcept
 	{
         VkImageCreateInfo ci{};
+
+        VkExtent3D extent
+        {
+            .width  = imageInfo.width,
+            .height = imageInfo.height,
+            .depth  = imageInfo.depth
+        };
 
         // VkImage
         VkImage image = VK_NULL_HANDLE;
@@ -291,7 +299,7 @@ namespace Hence
             }
         }
 
-        VulkanImage rtn(image, memory, imageView);
+        VulkanImage rtn(mDevice, image, memory, imageView, extent, );
 
         return rtn;
 	}
@@ -318,67 +326,6 @@ namespace Hence
         // !äÑÇËìñÇƒï˚ñ@ÇïœÇ¶ÇÈèÍçáÇÕÇ±Ç±Ç…íçà”
         vkFreeMemory(vkDevice, vulkanImage.getVkDeviceMemory(), nullptr);
 	}
-
-    Result VulkanVRAMAllocator::setImageMemoryBarrier(VkCommandBuffer command, VkImage image,
-        VkImageLayout oldLayout,
-        VkImageLayout newLayout,
-        VkImageAspectFlags aspectFlags) const noexcept
-    {
-
-        VkImageMemoryBarrier imb{};
-        imb.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-        imb.oldLayout = oldLayout;
-        imb.newLayout = newLayout;
-        imb.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-        imb.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-        imb.subresourceRange = { aspectFlags, 0, 1, 0, 1 };
-        imb.image = image;
-
-        // final stage that write to resource in pipelines
-        VkPipelineStageFlags srcStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-        // next state that write to resource in pipelines
-        VkPipelineStageFlags dstStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-
-        switch (oldLayout)
-        {
-        case VK_IMAGE_LAYOUT_UNDEFINED:
-            imb.srcAccessMask = 0;
-            break;
-        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            imb.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-            break;
-        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-            imb.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-            break;
-        }
-
-        switch (newLayout)
-        {
-        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-            imb.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-            dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-            break;
-        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-            imb.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-            dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-            break;
-        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-            imb.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-            dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-            break;
-        }
-
-        vkCmdPipelineBarrier(command, srcStage, dstStage, 0,
-            0,  // memoryBarrierCount
-            nullptr,
-            0,  // bufferMemoryBarrierCount
-            nullptr,
-            1,  // imageMemoryBarrierCount
-            &imb);
-
-        return Result();
-    }
 }
 
 

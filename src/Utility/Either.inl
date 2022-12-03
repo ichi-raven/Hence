@@ -38,9 +38,15 @@ namespace Hence
 	}
 
 	template<typename SuccessType, typename FailureType>
-	const Either<SuccessType, FailureType>::template Value& Either<SuccessType, FailureType>::get() const noexcept
+	const SuccessType& Either<SuccessType, FailureType>::get() const noexcept
 	{
-		return mValue;
+		return std::get<0>(mValue);
+	}
+
+	template<typename SuccessType, typename FailureType>
+	const FailureType& Either<SuccessType, FailureType>::failed() const noexcept
+	{
+		return std::get<1>(mValue);
 	}
 
 }

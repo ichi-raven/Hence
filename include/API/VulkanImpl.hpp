@@ -6,6 +6,7 @@
 #include "Vulkan/VulkanVRAMAllocator.hpp"
 #include "Vulkan/VulkanBuffer.hpp"
 #include "Vulkan/VulkanImage.hpp"
+#include "Vulkan/VulkanSampler.hpp"
 #include "Vulkan/VulkanShader.hpp"
 #include "Vulkan/VulkanBindGroup.hpp"
 #include "Vulkan/VulkanCommand.hpp"

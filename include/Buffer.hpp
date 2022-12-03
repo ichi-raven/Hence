@@ -66,4 +66,6 @@ namespace Hence
     };
 }
 
+#include "../src/Buffer.inl"
+
 #endif

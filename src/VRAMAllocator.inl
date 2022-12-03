@@ -12,7 +12,7 @@ namespace Hence
 	template<typename API>
 	VRAMAllocator<API>::VRAMAllocator(Device<API>& device) noexcept
 		: mAPIDevice(device.getInternalAPIDevice())
-		, mImpl(Impl(mAPIDevice))
+		, mImpl(mAPIDevice)
 	{}
 
 	template<typename API>
@@ -20,28 +20,34 @@ namespace Hence
 	{}
 
 	template<typename API>
-	Buffer<API>& VRAMAllocator<API>::allocate(const BufferInfo& bci) noexcept
+	VRAMAllocator<API>::template Impl VRAMAllocator<API>::getInternalImpl()
 	{
-		mImpl.allocate(bci);
+		return mImpl;
 	}
 
-	template<typename API>
-	Image<API>& VRAMAllocator<API>::allocate(const ImageInfo& ici) noexcept
-	{
-		mImpl.allocate(ici);
-	}
+	//template<typename API>
+	//Buffer<API>& VRAMAllocator<API>::allocate(const BufferInfo& bci) noexcept
+	//{
+	//	mImpl.allocate(bci);
+	//}
 
-	template<typename API>
-	void VRAMAllocator<API>::deallocate(Buffer<API>& buffer) noexcept
-	{
-		mImpl.deallocate(buffer);
-	}
+	//template<typename API>
+	//Image<API>& VRAMAllocator<API>::allocate(const ImageInfo& ici) noexcept
+	//{
+	//	mImpl.allocate(ici);
+	//}
 
-	template<typename API>
-	void VRAMAllocator<API>::deallocate(Image<API>& image) noexcept
-	{
-		mImpl.deallocate(image);
-	}
+	//template<typename API>
+	//void VRAMAllocator<API>::deallocate(Buffer<API>& buffer) noexcept
+	//{
+	//	mImpl.deallocate(buffer);
+	//}
+
+	//template<typename API>
+	//void VRAMAllocator<API>::deallocate(Image<API>& image) noexcept
+	//{
+	//	mImpl.deallocate(image);
+	//}
 }
 
 #endif

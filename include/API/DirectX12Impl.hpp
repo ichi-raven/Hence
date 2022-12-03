@@ -6,6 +6,7 @@
 #include "DirectX12/DirectX12VRAMAllocator.hpp"
 #include "DirectX12/DirectX12Buffer.hpp"
 #include "DirectX12/DirectX12Image.hpp"
+#include "DirectX12/DirectX12Sampler.hpp"
 #include "DirectX12/DirectX12Shader.hpp"
 #include "DirectX12/DirectX12BindGroup.hpp"
 #include "DirectX12/DirectX12Command.hpp"

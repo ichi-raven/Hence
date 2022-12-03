@@ -1,20 +1,18 @@
 /*****************************************************************//**
- * @file   Sampler.hpp
- * @brief  Sampler構造体のヘッダファイル
- * 
+ * @file   BorderColor.hpp
+ * @brief  BorderColor列挙型のヘッダファイル
+ *  
  * @author ichi-raven
- * @date   November 2022
+ * @date   December 2022
  *********************************************************************/
-#ifndef HENCE_INFO_SAMPLER_HPP_
-#define HENCE_INFO_SAMPLER_HPP_
+#ifndef HENCE_INFO_BORDERCOLOR_HPP_
+#define HENCE_INFO_BORDERCOLOR_HPP_
 
 namespace Hence
 {
-	struct Sampler
+	enum class BorderColor
 	{
-		Sampler();
 
-		~Sampler();
 	};
 }
 

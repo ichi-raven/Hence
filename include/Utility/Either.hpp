@@ -33,7 +33,9 @@ namespace Hence
 		 */
 		bool operator!() const noexcept;
 
-		const Value& get() const noexcept;
+		const SuccessType& get() const noexcept;
+
+		const FailureType& failed() const noexcept;
 
 	private:
 

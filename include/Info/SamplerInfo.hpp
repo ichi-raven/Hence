@@ -1,0 +1,33 @@
+/*****************************************************************//**
+ * @file   SamplerInfo.hpp
+ * @brief  SamplerInfo構造体のヘッダファイル
+ * 
+ * @author ichi-raven
+ * @date   November 2022
+ *********************************************************************/
+#ifndef HENCE_INFO_SAMPLERINFO_HPP_
+#define HENCE_INFO_SAMPLERINFO_HPP_
+
+#include "Filter.hpp"
+#include "AddressMode.hpp"
+
+namespace Hence
+{
+	struct SamplerInfo
+	{
+		SamplerInfo();
+
+		~SamplerInfo();
+
+
+		Filter minFilter;
+		Filter magFilter;
+		AddressMode addressModeU;
+		AddressMode addressModeV;
+		AddressMode addressModeW;
+		BorderColor borderColor;
+		float maxAnisotropy;
+	};
+}
+
+#endif

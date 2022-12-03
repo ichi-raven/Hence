@@ -46,6 +46,9 @@
     <Filter Include="ソース ファイル\Utility">
       <UniqueIdentifier>{f65289bc-38bc-4ee6-80c0-1446972d4200}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\API\Vulkan\Utility">
+      <UniqueIdentifier>{0c0fc488-737c-42d9-af0d-1ef9db35e52a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\API.hpp">
@@ -189,7 +192,7 @@
     <ClInclude Include="..\include\Info\ImageUsage.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\Info\Sampler.hpp">
+    <ClInclude Include="..\include\Info\SamplerInfo.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Utility\ArrayProxy.hpp">
@@ -211,6 +214,27 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Info\WindowInfo.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\Utility\HelperFunctions.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Sampler.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanSampler.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12Sampler.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\Filter.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\AddressMode.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\BorderColor.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
   </ItemGroup>
@@ -254,6 +278,9 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanWindow.cpp">
       <Filter>ソース ファイル\API\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\Utility\HelperFunctions.cpp">
+      <Filter>ソース ファイル\API\Vulkan\Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\BindGroup.inl">
@@ -269,6 +296,9 @@
       <Filter>ソース ファイル\Info</Filter>
     </None>
     <None Include="..\src\Window.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\Buffer.inl">
       <Filter>ソース ファイル</Filter>
     </None>
   </ItemGroup>

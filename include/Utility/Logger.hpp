@@ -49,6 +49,15 @@ namespace Hence
         // ムーブ不可
         NONMOVABLE(Logger)
 
+       /**
+        * @brief  出力先ファイルを指定(変更)する
+        *
+        * @param path 出力先ファイルパス
+        * @return ファイルストリームを開けたらtrue
+        */
+        static bool setOutputFile(std::string_view path) noexcept;
+
+
         /**
          * @brief  informationを出力する
          * @tparam Args フォーマット型
@@ -95,11 +104,11 @@ namespace Hence
         /**
          * @brief  infoを出力する内部メソッド
          */
-        inline void logInfo(const std::string&& message);
+        inline void logInfo(std::string_view message);
         /* Warningログ出力 */
-        inline void logWarn(const std::string&& message);
+        inline void logWarn(std::string_view message);
         /* Errorログ出力 */
-        inline void logError(const std::string&& message);
+        inline void logError(std::string_view message);
 
     private:
         //! スレッドセーフ用

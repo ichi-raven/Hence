@@ -50,31 +50,33 @@ namespace Hence
 		~VRAMAllocator() noexcept;
 
 		// コピー不可
-		NONCOPYABLE(VRAMAllocator)
+		NONCOPYABLE(VRAMAllocator);
 
-		/**
-		 * @brief  バッファの割り当てを行う
-		 * @param bci 割り当てるバッファの情報
-		 */
-		Buffer<API>& allocate(const BufferInfo& bci) noexcept;
+		Impl getInternalImpl();
 
-		/**
-		 * @brief  画像データの割り当てを行う
-		 * @param ici 割り当てる画像データの情報
-		 */
-		Image<API>& allocate(const ImageInfo& ici) noexcept;
+		///**
+		// * @brief  バッファの割り当てを行う
+		// * @param bci 割り当てるバッファの情報
+		// */
+		//Buffer<API>& allocate(const BufferInfo& bci) noexcept;
 
-		/**
-		 * @brief  バッファを解放する
-		 * @param buffer 解放するバッファ
-		 */
-		void deallocate(Buffer<API>& buffer) noexcept;
+		///**
+		// * @brief  画像データの割り当てを行う
+		// * @param ici 割り当てる画像データの情報
+		// */
+		//Image<API>& allocate(const ImageInfo& ici) noexcept;
 
-		/**
-		 * @brief  画像データを解放する
-		 * @param image 解放する画像データ
-		 */
-		void deallocate(Image<API>& image) noexcept;
+		///**
+		// * @brief  バッファを解放する
+		// * @param buffer 解放するバッファ
+		// */
+		//void deallocate(Buffer<API>& buffer) noexcept;
+
+		///**
+		// * @brief  画像データを解放する
+		// * @param image 解放する画像データ
+		// */
+		//void deallocate(Image<API>& image) noexcept;
 
 	private:
 		using APIDevice = APITrait<API>::Device;

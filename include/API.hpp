@@ -41,6 +41,7 @@ namespace Hence
         using VRAMAllocatorImpl         = VulkanVRAMAllocator;
         using BufferImpl                = VulkanBuffer;
         using ImageImpl                 = VulkanImage;
+        using SamplerImpl               = VulkanSampler;
         using ShaderImpl                = VulkanShader;
         using BindGroupImpl             = VulkanBindGroup;
         using CommandImpl               = VulkanCommand;
@@ -60,6 +61,7 @@ namespace Hence
         using VRAMAllocatorImpl         = DirectX12VRAMAllocator;
         using BufferImpl                = DirectX12Buffer;
         using ImageImpl                 = DirectX12Image;
+        using SamplerImpl               = DirectX12Sampler;
         using ShaderImpl                = DirectX12Shader;
         using BindGroupImpl             = DirectX12BindGroup;
         using CommandImpl               = DirectX12Command;

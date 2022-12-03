@@ -42,21 +42,30 @@ namespace Hence
 		return instance;
 	}
 
-	inline void Logger::logInfo(const std::string&& message)
+	bool Logger::setOutputFile(std::string_view path) noexcept
+	{
+		auto& fs = getInstance().mFStream;
+		fs.close();
+		fs.open(path.data());
+		
+		return !!fs;
+	}
+
+	inline void Logger::logInfo(std::string_view message)
 	{
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
 		mFStream << kConsoleColorCyan << "[info] : " << message << "\n" << kConsoleColorReset;
 	}
 
-	inline void Logger::logWarn(const std::string&& message)
+	inline void Logger::logWarn(std::string_view message)
 	{
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
 		mFStream << kConsoleColorYellow << "[warning] : " << message << "\n" << kConsoleColorReset;
 	}
 
-	inline void Logger::logError(const std::string&& message)
+	inline void Logger::logError(std::string_view message)
 	{
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
