@@ -10,6 +10,7 @@
 
 #include "Filter.hpp"
 #include "AddressMode.hpp"
+#include "BorderColor.hpp"
 
 namespace Hence
 {

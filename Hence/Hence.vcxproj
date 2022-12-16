@@ -179,6 +179,7 @@
     <ClInclude Include="..\include\Hence.hpp" />
     <ClInclude Include="..\include\Image.hpp" />
     <ClInclude Include="..\include\Info\AddressMode.hpp" />
+    <ClInclude Include="..\include\Info\BindLayout.hpp" />
     <ClInclude Include="..\include\Info\BorderColor.hpp" />
     <ClInclude Include="..\include\Info\BufferInfo.hpp" />
     <ClInclude Include="..\include\Info\BufferUsage.hpp" />

@@ -237,6 +237,9 @@
     <ClInclude Include="..\include\Info\BorderColor.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Info\BindLayout.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Device.inl">
