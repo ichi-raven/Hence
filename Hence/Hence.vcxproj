@@ -142,6 +142,7 @@
     <ClInclude Include="..\include\API.hpp" />
     <ClInclude Include="..\include\API\DirectX12Impl.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12BindGroup.hpp" />
+    <ClInclude Include="..\include\API\DirectX12\DirectX12BindLayout.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12Buffer.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12Command.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12ComputePipeline.hpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="..\include\API\Vulkan\Utility\HelperFunctions.hpp" />
     <ClInclude Include="..\include\API\Vulkan\Utility\Macro.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanBindGroup.hpp" />
+    <ClInclude Include="..\include\API\Vulkan\VulkanBindLayout.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanBuffer.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanCommand.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanComputePipeline.hpp" />
@@ -171,6 +173,7 @@
     <ClInclude Include="..\include\API\Vulkan\VulkanVRAMAllocator.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanWindow.hpp" />
     <ClInclude Include="..\include\BindGroup.hpp" />
+    <ClInclude Include="..\include\BindLayout.hpp" />
     <ClInclude Include="..\include\Buffer.hpp" />
     <ClInclude Include="..\include\Command.hpp" />
     <ClInclude Include="..\include\ComputePipeline.hpp" />
@@ -179,7 +182,6 @@
     <ClInclude Include="..\include\Hence.hpp" />
     <ClInclude Include="..\include\Image.hpp" />
     <ClInclude Include="..\include\Info\AddressMode.hpp" />
-    <ClInclude Include="..\include\Info\BindLayout.hpp" />
     <ClInclude Include="..\include\Info\BorderColor.hpp" />
     <ClInclude Include="..\include\Info\BufferInfo.hpp" />
     <ClInclude Include="..\include\Info\BufferUsage.hpp" />

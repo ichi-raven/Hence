@@ -43,6 +43,7 @@ namespace Hence
         using ImageImpl                 = VulkanImage;
         using SamplerImpl               = VulkanSampler;
         using ShaderImpl                = VulkanShader;
+        using BindLayoutImpl            = VulkanBindLayout;
         using BindGroupImpl             = VulkanBindGroup;
         using CommandImpl               = VulkanCommand;
         using RenderPassImpl            = VulkanRenderPass;
@@ -63,6 +64,7 @@ namespace Hence
         using ImageImpl                 = DirectX12Image;
         using SamplerImpl               = DirectX12Sampler;
         using ShaderImpl                = DirectX12Shader;
+        using BindLayoutImpl            = DirectX12BindLayout;
         using BindGroupImpl             = DirectX12BindGroup;
         using CommandImpl               = DirectX12Command;
         using RenderPassImpl            = DirectX12RenderPass;

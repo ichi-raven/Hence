@@ -15,11 +15,13 @@ namespace Hence
 	public:
 		using Impl = APITrait<API>::ShaderImpl;
 
-		Shader(Device<API>& device);
+		Shader(Device<API>& device, std::string_view path);
+
 		~Shader();
 
-		NONCOPYABLE(Shader)
+		NONCOPYABLE(Shader);
 
+		Impl& getInternalImpl();
 
 	private:
 		using APIDevice = APITrait<API>::Device;

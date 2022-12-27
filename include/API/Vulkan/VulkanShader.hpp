@@ -1,10 +1,18 @@
 #ifndef HENCE_API_VULKAN_VULKANSHADER_HPP_
 #define HENCE_API_VULKAN_VULKANSHADER_HPP_
 
+#include <vulkan/vulkan.hpp>
+
 namespace Hence
 {
 	class VulkanShader
 	{
+	public:
+
+
+	private:
+		VkShader mShader;
+
 
 	};
 }

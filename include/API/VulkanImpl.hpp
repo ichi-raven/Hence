@@ -8,6 +8,7 @@
 #include "Vulkan/VulkanImage.hpp"
 #include "Vulkan/VulkanSampler.hpp"
 #include "Vulkan/VulkanShader.hpp"
+#include "Vulkan/VulkanBindLayout.hpp"
 #include "Vulkan/VulkanBindGroup.hpp"
 #include "Vulkan/VulkanCommand.hpp"
 #include "Vulkan/VulkanRenderPass.hpp"

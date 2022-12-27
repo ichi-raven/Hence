@@ -52,7 +52,7 @@ namespace Hence
 		// コピー不可
 		NONCOPYABLE(VRAMAllocator);
 
-		Impl getInternalImpl();
+		Impl& getInternalImpl();
 
 		///**
 		// * @brief  バッファの割り当てを行う

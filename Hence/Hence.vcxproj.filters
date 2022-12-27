@@ -237,8 +237,14 @@
     <ClInclude Include="..\include\Info\BorderColor.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\Info\BindLayout.hpp">
-      <Filter>ヘッダー ファイル\Info</Filter>
+    <ClInclude Include="..\include\BindLayout.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\VulkanBindLayout.hpp">
+      <Filter>ヘッダー ファイル\API\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\DirectX12\DirectX12BindLayout.hpp">
+      <Filter>ヘッダー ファイル\API\DirectX12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
