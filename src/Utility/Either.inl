@@ -40,6 +40,7 @@ namespace Hence
 	template<typename SuccessType, typename FailureType>
 	const SuccessType& Either<SuccessType, FailureType>::get() const noexcept
 	{
+		assert()
 		return std::get<0>(mValue);
 	}
 

@@ -24,7 +24,7 @@ namespace Hence
 
 		BindLayout(const Shader<API>& shader);
 
-		BindLayout(ArrayProxy<uint8_t> bufferBinding, ArrayProxy<uint8_t> imageBinding, ArrayProxy<uint8_t> samplerBinding);
+		BindLayout(const ArrayProxy<std::uint8_t> bufferBinding, const ArrayProxy<std::uint8_t> imageBinding, const ArrayProxy<std::uint8_t> samplerBinding);
 
 		NONCOPYABLE(BindLayout);
 

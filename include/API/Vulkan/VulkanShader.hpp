@@ -8,11 +8,10 @@ namespace Hence
 	class VulkanShader
 	{
 	public:
-
+		VulkanShader(VulkanDevice& vulkanDevice, std::string_view path)
 
 	private:
-		VkShader mShader;
-
+		std::vector<char> mFileData;
 
 	};
 }
