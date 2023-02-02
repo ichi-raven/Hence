@@ -207,9 +207,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\API\Vulkan\Utility\HelperFunctions.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanBindLayout.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanBuffer.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanDevice.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanImage.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanShader.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanVRAMAllocator.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanWindow.cpp" />
     <ClCompile Include="..\src\Device.inl" />

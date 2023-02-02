@@ -290,6 +290,12 @@
     <ClCompile Include="..\src\API\Vulkan\Utility\HelperFunctions.cpp">
       <Filter>ソース ファイル\API\Vulkan\Utility</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanBindLayout.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanShader.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\BindGroup.inl">
