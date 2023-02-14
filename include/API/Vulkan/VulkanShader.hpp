@@ -5,6 +5,10 @@
 
 #include "../../Utility/Result.hpp"
 
+#include "../../../include/Info/ResourceType.hpp"
+#include "../../../include/Info/ShaderStage.hpp"
+#include "../../../include/Info/Format.hpp"
+
 #include <map>
 
 namespace Hence
@@ -19,13 +23,27 @@ namespace Hence
 
 		const VkPipelineShaderStageCreateInfo& getShaderStageCreateInfo() const noexcept;
 
-		const std::map<std::uint8_t, 
+		const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& getResourceLayoutTable() const noexcept;
+
+		const std::vector<Format>& getInputVariables() const noexcept;
+
+		const std::vector<Format>& getOutputVariables() const noexcept;
+
+		std::string_view getEntryPoint() const noexcept;
 
 	private:
-		inline Result createShaderModule();
+		inline Result loadShaderReflection() noexcept;
 
 		std::vector<char> mFileData;
 
+		std::string mEntryPoint;
+		std::map<std::pair<uint8_t, uint8_t>, ResourceType> mResourceLayoutTable;
+		std::vector<Format> mInputVariables;
+		std::vector<Format> mOutputVariables;
+
+		ShaderStage mShaderStage;
+		VkShaderModule mShaderModule;
+		VkPipelineShaderStageCreateInfo mShaderStageCreateInfo;
 	};
 }
 

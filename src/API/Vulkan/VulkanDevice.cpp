@@ -16,6 +16,8 @@
 
 #include <vector>
 #include <optional>
+// DEBUG
+#include <iostream>
 
 namespace Hence
 {
@@ -55,6 +57,12 @@ namespace Hence
 			Logger::error("failed to create VkCommandPool!(native error : {})", res.nativeResult);
 			return;
 		}
+
+		if (FAILED(res, createDescriptorPool()))
+		{
+			Logger::error("failed to create VkDescriptorPool!(native error : {})", res.nativeResult);
+			return;
+		}
 	}
 
 	VulkanDevice::~VulkanDevice() noexcept
@@ -64,6 +72,9 @@ namespace Hence
 		{
 			Logger::error("failed to wait device idol! (native result : {})", static_cast<std::int32_t>(res));
 		}
+
+		vkDestroyDescriptorPool(mDevice, mDescriptorPool, nullptr);
+		Logger::info("destroyed descriptor pool");
 
 		vkDestroyCommandPool(mDevice, mCommandPool, nullptr);
 		Logger::info("destroyed command pool");
@@ -80,22 +91,22 @@ namespace Hence
 		Logger::info("destroyed instance");
 	}
 
-	VkInstance VulkanDevice::getInstance() const noexcept
+	VkInstance VulkanDevice::getInstance() noexcept
 	{
 		return mInstance;
 	}
 
-	VkPhysicalDevice VulkanDevice::getPhysicalDevice() const noexcept
+	VkPhysicalDevice VulkanDevice::getPhysicalDevice() noexcept
 	{
 		return mPhysDev;
 	}
 
-	VkDevice VulkanDevice::getDevice() const noexcept
+	VkDevice VulkanDevice::getDevice() noexcept
 	{
 		return mDevice;
 	}
 
-	VkQueue VulkanDevice::getDeviceQueue() const noexcept
+	VkQueue VulkanDevice::getDeviceQueue() noexcept
 	{
 		return mDeviceQueue;
 	}
@@ -105,9 +116,14 @@ namespace Hence
 		return mGraphicsQueueIndex;
 	}
 
-	VkCommandPool VulkanDevice::getCommandPool() const noexcept
+	VkCommandPool VulkanDevice::getCommandPool() noexcept
 	{
 		return mCommandPool;
+	}
+
+	VkDescriptorPool VulkanDevice::getDescriptorPool() noexcept
+	{
+		return mDescriptorPool;
 	}
 
 	VkPhysicalDeviceMemoryProperties VulkanDevice::getPhysMemProps() const noexcept
@@ -267,6 +283,23 @@ namespace Hence
 
 		vkGetPhysicalDeviceMemoryProperties(mPhysDev, &mPhysMemProps);
 
+		{// graphics queue indexåüçı
+
+			std::uint32_t propCount = 0;
+			vkGetPhysicalDeviceQueueFamilyProperties(mPhysDev, &propCount, nullptr);
+			std::vector<VkQueueFamilyProperties> props(propCount);
+			vkGetPhysicalDeviceQueueFamilyProperties(mPhysDev, &propCount, props.data());
+
+			for (uint32_t i = 0; i < propCount; ++i)
+			{
+				if (props[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+				{
+					mGraphicsQueueIndex = i;
+					break;
+				}
+			}
+		}
+
 		return Result();
 	}
 
@@ -276,7 +309,7 @@ namespace Hence
 
 		{
 			uint32_t count = 0;
-			
+
 			if (VK_FAILED(res, vkEnumerateDeviceExtensionProperties(mPhysDev, nullptr, &count, nullptr)))
 			{
 				Logger::error("failed to enumerate device extension properties!");
@@ -291,7 +324,8 @@ namespace Hence
 		}
 
 		{
-			const float defaultQueuePriority(1.0f);
+			const float defaultQueuePriority(1.f);
+
 			VkDeviceQueueCreateInfo devQueueCI{};
 			devQueueCI.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			devQueueCI.queueFamilyIndex = mGraphicsQueueIndex;
@@ -303,7 +337,9 @@ namespace Hence
 
 			for (const auto& v : devExtProps)
 			{
-				extensions.emplace_back(v.extensionName);
+				if (strcmp(v.extensionName, "VK_KHR_buffer_device_address"))
+					extensions.emplace_back(v.extensionName);
+				//extensions.emplace_back(v.extensionName);
 			}
 
 			VkDeviceCreateInfo ci{};
@@ -311,10 +347,11 @@ namespace Hence
 			ci.pQueueCreateInfos = &devQueueCI;
 			ci.queueCreateInfoCount = 1;
 			ci.ppEnabledExtensionNames = extensions.data();
-			ci.enabledExtensionCount = uint32_t(extensions.size());
+			ci.enabledExtensionCount = static_cast<std::uint32_t>(extensions.size());
 
 			if (VK_FAILED(res, vkCreateDevice(mPhysDev, &ci, nullptr, &mDevice)))
 			{
+				Logger::error("failed to create device!");
 				return Result(res);
 			}
 		}
@@ -340,6 +377,33 @@ namespace Hence
 		return Result();
 	}
 
+	inline Result VulkanDevice::createDescriptorPool() noexcept
+	{
+		std::array<VkDescriptorPoolSize, 2> sizes;
+
+		sizes[0].descriptorCount = kPoolUBSize;
+		sizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+
+		sizes.back().descriptorCount = kPoolCISize;
+		sizes.back().type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+
+		VkDescriptorPoolCreateInfo dpci{};
+		dpci.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		dpci.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+
+		dpci.maxSets = (kPoolUBSize + kPoolCISize);
+
+		dpci.poolSizeCount = static_cast<uint32_t>(sizes.size());
+		dpci.pPoolSizes = sizes.data();
+
+		if (VK_FAILED(res, vkCreateDescriptorPool(mDevice, &dpci, nullptr, &mDescriptorPool)))
+		{
+			return Result(res);
+		}
+
+		return Result();
+	}
+
 	VkBool32 VKAPI_CALL VulkanDevice::DebugReportCallback
 	(
 		VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objactTypes,
@@ -355,7 +419,8 @@ namespace Hence
 
 		if (pLayerPrefix)
 		{
-			Logger::error("[{}] {}", pLayerPrefix, pMessage);
+			//Logger::error("[{}] {}", pLayerPrefix, pMessage);
+			std::cerr << "[" << pLayerPrefix << "] : " << pMessage << "\n";
 		}
 
 		return ret;

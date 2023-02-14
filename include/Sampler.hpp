@@ -11,6 +11,8 @@
 #include "API.hpp"
 #include "Utility/Macro.hpp"
 
+#include "Info/SamplerInfo.hpp"
+
 namespace Hence
 {
     // 前方宣言
@@ -24,9 +26,9 @@ namespace Hence
         // 内部実装型(一般にユーザが使用する必要はない)
         using Impl = APITrait<API>::SamplerImpl;
 
-        Sampler(Device<API> device, const SamplerInfo& samplerInfo);
+        Sampler(Device<API> device, const SamplerInfo& samplerInfo) noexcept;
 
-        ~Sampler();
+        ~Sampler() noexcept;
 
         NONCOPYABLE(Sampler)
 
@@ -39,5 +41,7 @@ namespace Hence
         Impl mImpl;
     };
 }
+
+#include "../src/Sampler.inl"
 
 #endif

@@ -13,6 +13,8 @@
 #include "Utility/Result.hpp"
 #include "Utility/ArrayProxy.hpp"
 
+#include <optional>
+
 namespace Hence
 {
     // 前方宣言
@@ -38,15 +40,19 @@ namespace Hence
          * @brief  コンストラクタ
          * @param VRAMAllocator このバッファの割り当てに用いるVRAMAllocator
          */
-        Buffer(VRAMAllocator<API>& VRAMAllocator, const BufferInfo& bufferInfo);
+        Buffer(VRAMAllocator<API>& VRAMAllocator, const BufferInfo& bufferInfo) noexcept;
 
         /** 
          * @brief  デストラクタ
          */
-        ~Buffer();
+        ~Buffer() noexcept;
 
         // コピー不可
         NONCOPYABLE(Buffer)
+
+        Buffer(Buffer&& other) noexcept;
+
+        Buffer& operator=(Buffer&& other) noexcept;
 
         /**
          * @brief バッファにデータを書き込む(ステージング及びコマンド実行コストがかかる)
@@ -62,7 +68,7 @@ namespace Hence
         APIVRAMAllocator& mAPIVRAMAllocator;
 
         //! 内部実装
-        Impl mImpl;
+        std::optional<Impl> mImpl;
     };
 }
 

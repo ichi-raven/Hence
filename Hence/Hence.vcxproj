@@ -40,13 +40,13 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -87,6 +87,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GLFW\glfw3.lib;vulkan\vulkan-1.lib;vulkan\VkLayer_utils.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -104,6 +106,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GLFW\glfw3.lib;vulkan\vulkan-1.lib;vulkan\VkLayer_utils.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,6 +122,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GLFW\glfw3.lib;vulkan\vulkan-1.lib;vulkan\VkLayer_utils.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,6 +142,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>GLFW\glfw3.lib;vulkan\vulkan-1.lib;vulkan\VkLayer_utils.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -156,6 +164,16 @@
     <ClInclude Include="..\include\API\DirectX12\DirectX12VRAMAllocator.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12Window.hpp" />
     <ClInclude Include="..\include\API\VulkanImpl.hpp" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imconfig.h" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imgui.h" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imgui_impl_glfw.h" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imgui_impl_vulkan.h" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imgui_internal.h" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imstb_rectpack.h" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imstb_textedit.h" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imstb_truetype.h" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\spirv_reflect.h" />
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\stb_image.h" />
     <ClInclude Include="..\include\API\Vulkan\Utility\HelperFunctions.hpp" />
     <ClInclude Include="..\include\API\Vulkan\Utility\Macro.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanBindGroup.hpp" />
@@ -190,7 +208,9 @@
     <ClInclude Include="..\include\Info\Format.hpp" />
     <ClInclude Include="..\include\Info\ImageInfo.hpp" />
     <ClInclude Include="..\include\Info\ImageUsage.hpp" />
+    <ClInclude Include="..\include\Info\ResourceType.hpp" />
     <ClInclude Include="..\include\Info\SamplerInfo.hpp" />
+    <ClInclude Include="..\include\Info\ShaderStage.hpp" />
     <ClInclude Include="..\include\Info\WindowInfo.hpp" />
     <ClInclude Include="..\include\RaytracingPipeline.hpp" />
     <ClInclude Include="..\include\RenderPass.hpp" />
@@ -204,13 +224,31 @@
     <ClInclude Include="..\include\Utility\Result.hpp" />
     <ClInclude Include="..\include\VRAMAllocator.hpp" />
     <ClInclude Include="..\include\Window.hpp" />
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imconfig.h" />
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imgui.h" />
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_impl_vulkan.h" />
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_internal.h" />
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_impl_vulkan.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\spirv_reflect.c" />
     <ClCompile Include="..\src\API\Vulkan\Utility\HelperFunctions.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanBindGroup.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanBindLayout.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanBuffer.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanDevice.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanImage.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanSampler.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanShader.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanVRAMAllocator.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanWindow.cpp" />
@@ -224,8 +262,13 @@
     <ClCompile Include="..\testmain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\src\API\Vulkan\ThirdParty\imgui\glsl_shader.frag.u32" />
+    <None Include="..\src\API\Vulkan\ThirdParty\imgui\glsl_shader.vert.u32" />
     <None Include="..\src\BindGroup.inl" />
     <None Include="..\src\Buffer.inl" />
+    <None Include="..\src\Image.inl" />
+    <None Include="..\src\Sampler.inl" />
+    <None Include="..\src\Shader.inl" />
     <None Include="..\src\Utility\ArrayProxy.inl" />
     <None Include="..\src\Utility\Either.inl" />
     <None Include="..\src\VRAMAllocator.inl" />

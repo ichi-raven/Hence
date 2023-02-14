@@ -104,11 +104,11 @@ namespace Hence
         /**
          * @brief  infoを出力する内部メソッド
          */
-        inline void logInfo(std::string_view message);
+        void logInfo(std::string_view message);
         /* Warningログ出力 */
-        inline void logWarn(std::string_view message);
+        void logWarn(std::string_view message);
         /* Errorログ出力 */
-        inline void logError(std::string_view message);
+        void logError(std::string_view message);
 
     private:
         //! スレッドセーフ用

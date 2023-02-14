@@ -49,6 +49,12 @@
     <Filter Include="ソース ファイル\API\Vulkan\Utility">
       <UniqueIdentifier>{0c0fc488-737c-42d9-af0d-1ef9db35e52a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\API\Vulkan\ThirdParty">
+      <UniqueIdentifier>{0dcbd6f4-d86c-4983-91a0-2e3089491320}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\API\Vulkan\ThirdParty">
+      <UniqueIdentifier>{859405ae-4b6a-41e0-9c7b-83b9886126f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\API.hpp">
@@ -246,6 +252,66 @@
     <ClInclude Include="..\include\API\DirectX12\DirectX12BindLayout.hpp">
       <Filter>ヘッダー ファイル\API\DirectX12</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imconfig.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imgui.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imgui_impl_glfw.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imgui_impl_vulkan.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imgui_internal.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imstb_rectpack.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imstb_textedit.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\imstb_truetype.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\spirv_reflect.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\API\Vulkan\ThirdParty\stb_image.h">
+      <Filter>ヘッダー ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imconfig.h">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imgui.h">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_impl_glfw.h">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_impl_vulkan.h">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_internal.h">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imstb_rectpack.h">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imstb_textedit.h">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imstb_truetype.h">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\ResourceType.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\ShaderStage.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Device.inl">
@@ -296,6 +362,36 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanShader.cpp">
       <Filter>ソース ファイル\API\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\spirv_reflect.c">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui.cpp">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_demo.cpp">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_draw.cpp">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_impl_glfw.cpp">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_impl_vulkan.cpp">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_tables.cpp">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui_widgets.cpp">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanBindGroup.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanSampler.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\BindGroup.inl">
@@ -314,6 +410,21 @@
       <Filter>ソース ファイル</Filter>
     </None>
     <None Include="..\src\Buffer.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\API\Vulkan\ThirdParty\imgui\glsl_shader.frag.u32">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </None>
+    <None Include="..\src\API\Vulkan\ThirdParty\imgui\glsl_shader.vert.u32">
+      <Filter>ソース ファイル\API\Vulkan\ThirdParty</Filter>
+    </None>
+    <None Include="..\src\Image.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\Shader.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\Sampler.inl">
       <Filter>ソース ファイル</Filter>
     </None>
   </ItemGroup>

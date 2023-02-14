@@ -14,7 +14,7 @@
 
 namespace Hence
 {
-	VulkanImage::VulkanImage(VulkanDevice& vulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView imageView, VkExtent3D extent, std::uint32_t sizeOfChannel)
+	VulkanImage::VulkanImage(VulkanDevice& vulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView imageView, VkExtent3D extent, std::uint32_t sizeOfChannel) noexcept
 		: mDevice(vulkanDevice)
         , mImage(image)
 		, mMemory(memory)
@@ -23,16 +23,42 @@ namespace Hence
         , mSizeOfChannel(sizeOfChannel)
 	{}
 
-	VulkanImage::~VulkanImage()
+	VulkanImage::~VulkanImage() noexcept
 	{
-
+        mImage      = VK_NULL_HANDLE;
+        mMemory     = VK_NULL_HANDLE;
+        mImageView  = VK_NULL_HANDLE;
 	}
+
+    VulkanImage::VulkanImage(VulkanImage&& other) noexcept
+        : mDevice(other.mDevice)
+    {
+        mImage          = std::move(other.mImage);
+        mMemory         = std::move(other.mMemory);
+        mImageView      = std::move(other.mImageView);
+        mExtent         = other.mExtent;
+        mSizeOfChannel  = other.mSizeOfChannel;
+    }
+
+    VulkanImage& VulkanImage::operator=(VulkanImage&& other) noexcept
+    {
+        mImage = std::move(other.mImage);
+        mMemory = std::move(other.mMemory);
+        mImageView = std::move(other.mImageView);
+        mExtent = other.mExtent;
+        mSizeOfChannel = other.mSizeOfChannel;
+
+        return *this;
+    }
 
 	Result VulkanImage::writeImage(void* ptr, std::uint32_t size)
 	{
         const auto vkDevice = mDevice.getDevice();
 
-        size_t imageSize = mExtent.width * mExtent.height * mExtent.depth * ;
+        // ‚±‚ê‚ð‚Ç‚¤‚â‚Á‚ÄŽó‚¯Žæ‚é‚©‚ª–â‘è
+
+        std::size_t imageSize = 
+            static_cast<size_t>(mExtent.width) * mExtent.height * mExtent.depth * mSizeOfChannel;
         
         VkBuffer        stagingBuffer = VK_NULL_HANDLE;
         VkDeviceMemory  stagingMemory = VK_NULL_HANDLE;
@@ -72,22 +98,28 @@ namespace Hence
                 }
             }
 
-            void* p;
+            void* pDst = nullptr;
             
-            if (VK_FAILED(res, vkMapMemory(vkDevice, stagingMemory, 0, VK_WHOLE_SIZE, 0, &ptr)))
+            if (VK_FAILED(res, vkMapMemory(vkDevice, stagingMemory, 0, VK_WHOLE_SIZE, 0, &pDst)))
             {
                 Logger::error("failed to map staging buffer memory!");
                 return Result(static_cast<std::int32_t>(res));
             }
+            else
+            {
+                std::memcpy(pDst, ptr, imageSize);
+                vkUnmapMemory(vkDevice, stagingMemory);
+            }
 
-            std::memcpy(p, ptr, imageSize);
-            vkUnmapMemory(vkDevice, stagingMemory);
         }
 
         VkBufferImageCopy copyRegion{};
-        copyRegion.imageExtent = { static_cast<uint32_t>(io.extent.width),
-                                  static_cast<uint32_t>(io.extent.height),
-                                  static_cast<uint32_t>(io.extent.depth) };
+        copyRegion.imageExtent = 
+        {
+            static_cast<uint32_t>(mExtent.width),
+            static_cast<uint32_t>(mExtent.height),
+            static_cast<uint32_t>(mExtent.depth) 
+        };
         copyRegion.imageSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
         VkCommandBuffer command;
         {
@@ -130,14 +162,6 @@ namespace Hence
 		return Result();
 	}
 
-	//VulkanImage& VulkanImage::operator=(VulkanImage&& other) noexcept
-	//{
-	//	mImage		= std::move(other.mImage);
-	//	mMemory		= std::move(other.mMemory);
-	//	mImageView	= std::move(other.mImageView);
-
-	//	return *this;
-	//}
 
 	VkImage VulkanImage::getVkImage() noexcept
 	{

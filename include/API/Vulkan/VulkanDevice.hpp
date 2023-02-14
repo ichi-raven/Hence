@@ -41,28 +41,28 @@ namespace Hence
          *  
          * @return VkInstance
          */
-        VkInstance getInstance() const noexcept;
+        VkInstance getInstance() noexcept;
 
         /** 
          * @brief  VkPhysicalDeviceを取得する
          *  
          * @return VkPhysicalDevice
          */
-        VkPhysicalDevice getPhysicalDevice() const noexcept;
+        VkPhysicalDevice getPhysicalDevice() noexcept;
 
         /** 
          * @brief  VkDeviceを取得する
          *  
          * @return VkDevice
          */
-        VkDevice getDevice() const noexcept;
+        VkDevice getDevice() noexcept;
 
         /** 
          * @brief  このデバイスのVkQueueを取得する
          *  
          * @return VkQueue
          */
-        VkQueue getDeviceQueue() const noexcept;
+        VkQueue getDeviceQueue() noexcept;
 
         /** 
          * @brief graphics queueのindexを取得する
@@ -76,7 +76,7 @@ namespace Hence
          *  
          * @return VkCommandPool
          */
-        VkCommandPool getCommandPool() const noexcept;
+        VkCommandPool getCommandPool() noexcept;
 
         /** 
          * @brief  VkPhysicalDeviceMemoryPropertiesを取得する
@@ -85,7 +85,19 @@ namespace Hence
          */
         VkPhysicalDeviceMemoryProperties getPhysMemProps() const noexcept;
 
+        /** 
+         * @brief  リソースに要求されるメモリ情報を表すビットフラグを構成する
+         *  
+         * @param requestBits
+         * @param requestProps 
+         * @return ビットフラグ(memoryTypeIndexに直接渡せる)
+         */
         std::uint32_t getMemoryTypeIndex(std::uint32_t requestBits, VkMemoryPropertyFlags requestProps) const noexcept;
+
+        VkDescriptorPool getDescriptorPool() noexcept;
+
+        constexpr static std::uint32_t kPoolUBSize = 256;
+        constexpr static std::uint32_t kPoolCISize = 256;
 
     private:
 
@@ -129,6 +141,13 @@ namespace Hence
         inline Result createCommandPool() noexcept;
 
         /**
+         * @brief  ディスクリプタプール構築
+         * 
+         * @return 結果(Resultクラス)
+         */
+        inline Result createDescriptorPool() noexcept;
+             
+        /**
          * @brief  デバッグレポート出力を有効化する
          */
         inline Result enableDebugReport() noexcept;
@@ -158,6 +177,9 @@ namespace Hence
 
         //! コマンドプール
         VkCommandPool                       mCommandPool;
+
+        //! descriptorpoolとそれが持っているサイズ
+        VkDescriptorPool                    mDescriptorPool;
 
         // デバッグレポート関連
         PFN_vkCreateDebugReportCallbackEXT  mpfnVkCreateDebugReportCallbackEXT;

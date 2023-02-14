@@ -18,6 +18,7 @@
 
 namespace Hence
 {
+	class VulkanDevice;
 	class VulkanBuffer;
 	class VulkanImage;
 
@@ -40,7 +41,7 @@ namespace Hence
 		~VulkanVRAMAllocator() noexcept;
 
 		// コピー不可
-		NONCOPYABLE(VulkanVRAMAllocator);
+		NONCOPYABLE(VulkanVRAMAllocator)
 
 		/**
 		 * @brief  バッファの割り当てを行う

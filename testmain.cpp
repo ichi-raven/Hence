@@ -24,5 +24,13 @@ int main()
 
 	Hence::Buffer buffer(vramAllocator, bi);
 
+	Hence::ImageInfo ii;
+	ii.setSRTex2D(128, 128, true);
+
+	Hence::Image image(vramAllocator, ii);
+
+	Hence::Shader vs(device, "testShaders/vert.spv");
+	Hence::Shader fs(device, "testShaders/vert.spv");
+
 	return 0;
 }

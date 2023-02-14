@@ -28,9 +28,9 @@ namespace Hence
 
 		~VulkanBuffer() noexcept;
 
-		//VulkanBuffer& operator=(const VulkanBuffer& other) noexcept;
+		VulkanBuffer(VulkanBuffer&& other) noexcept;
 
-		//VulkanBuffer& operator=(VulkanBuffer&& other) noexcept;
+		VulkanBuffer& operator=(VulkanBuffer&& other) noexcept;
 
 		/**
 		 * @brief バッファにデータを書き込む(ステージング及びコマンド実行コストがかかる)
@@ -38,7 +38,7 @@ namespace Hence
 		 * @param data 書き込むデータのArrayProxy(配列/array/vector/initializer_list)
 		 */
 		template <typename DataType>
-		Result writeData(const ArrayProxy<DataType> data)
+		Result writeData(const ArrayProxy<DataType> data) noexcept
 		{
 			return writeBuffer(data.data(), data.size());
 		}
@@ -53,7 +53,7 @@ namespace Hence
 
 	private:
 
-		inline Result writeBuffer(void* ptr, std::size_t size);
+		inline Result writeBuffer(void* ptr, std::size_t size) noexcept;
 
 		VulkanDevice&	mDevice;
 		VkBuffer		mBuffer;

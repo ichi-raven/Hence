@@ -8,6 +8,8 @@
 #ifndef HENCE_UTILITY_EITHER_HPP_
 #define HENCE_UTILITY_EITHER_HPP_
 
+#include "Macro.hpp"
+
 #include <variant>
 
 namespace Hence
@@ -18,10 +20,12 @@ namespace Hence
 	public:
 		using Value = std::variant<SuccessType, FailureType>;
 
-		Either(const SuccessType& success) noexcept;
-		Either(const FailureType& failure) noexcept;
+		Either(SuccessType&& success) noexcept;
+		Either(const FailureType&& failure) noexcept;
 
 		~Either() noexcept;
+
+		NONCOPYABLE(Either)
 
 	    /**
 		 *@brief  bool型変換オーバーロード
@@ -35,11 +39,13 @@ namespace Hence
 
 		const SuccessType& get() const noexcept;
 
+		SuccessType&& move() noexcept;
+
 		const FailureType& failed() const noexcept;
 
 	private:
 
-		const Value mValue;
+		Value mValue;
 
 	};
 }

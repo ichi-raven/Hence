@@ -8,27 +8,36 @@
 #ifndef HENCE_API_VULKAN_VULKANBINDLAYOUT_HPP_
 #define HENCE_API_VULKAN_VULKANBINDLAYOUT_HPP_
 
-#include "../../Utility/ArrayProxy.hpp"
+#include "../../Info/Format.hpp"
+
+#include "../../Info/ResourceType.hpp"
 
 #include <vulkan/vulkan.hpp>
 
+#include <map>
+#include <utility>
+
 namespace Hence
 {
+	class VulkanDevice;
+
 	class VulkanShader;
 
 	class VulkanBindLayout
 	{
 	public:
 
-		VulkanBindLayout(const VulkanShader& shader) noexcept;
+		VulkanBindLayout(VulkanDevice& vulkanDevice, const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& bindingLayoutTable ) noexcept;
+		
+		VulkanBindLayout(VulkanDevice& vulkanDevice, const VulkanShader& shader) noexcept;
 
-		VulkanBindLayout(const ArrayProxy<uint8_t> bufferBinding, const ArrayProxy<uint8_t> imageBinding, const ArrayProxy<uint8_t> samplerBinding) noexcept;
+		const std::vector<VkDescriptorSetLayout>& getDescriptorSetLayouts() noexcept;
 
-		VkDescriptorSetLayout getDescriptorSetLayout() noexcept;
+		const std::vector<std::uint32_t>& getBindingNums() noexcept;
 
 	private:
-
-		VkDescriptorSetLayout mDescriptorSetLayout;
+		std::vector<VkDescriptorSetLayout> mDescriptorSetLayouts;
+		std::vector<std::uint32_t> mBindingNums;
 	};
 }
 

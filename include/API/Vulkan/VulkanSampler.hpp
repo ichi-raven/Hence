@@ -8,11 +8,28 @@
 #ifndef HENCE_API_VULKAN_VULKANSAMPLER_HPP_
 #define HENCE_API_VULKAN_VULKANSAMPLER_HPP_
 
+#include "../../Info/SamplerInfo.hpp"
+
+#include <vulkan/vulkan.hpp>
+
 namespace Hence
 {
+	class VulkanDevice;
+
 	class VulkanSampler
 	{
+	public:
+		
+		VulkanSampler(VulkanDevice& vulkanDevice, SamplerInfo samplerInfo) noexcept;
+		
+		~VulkanSampler() noexcept;
 
+		VkSampler getVkSampler() noexcept;
+
+	private:
+		VulkanDevice& mVulkanDevice;
+		
+		VkSampler mSampler;
 	};
 }
 

@@ -10,6 +10,7 @@
 
 #include "API.hpp"
 #include "BindGroup.hpp"
+#include "BindLayout.hpp"
 #include "Buffer.hpp"
 #include "Command.hpp"
 #include "ComputePipeline.hpp"

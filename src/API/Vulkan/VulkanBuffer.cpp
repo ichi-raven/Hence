@@ -27,20 +27,30 @@ namespace Hence
 
 	VulkanBuffer::~VulkanBuffer() noexcept
 	{
-
+		mBuffer = VK_NULL_HANDLE;
+		mMemory = VK_NULL_HANDLE;
 	}
 
-	//VulkanBuffer& VulkanBuffer::operator=(VulkanBuffer&& other) noexcept
-	//{
-	//	mBuffer		= std::move(other.mBuffer);
-	//	mMemory		= std::move(other.mMemory);
-	//	mSize		= std::move(other.mSize);
-	//	mOffset		= std::move(other.mOffset);
+	VulkanBuffer::VulkanBuffer(VulkanBuffer&& other) noexcept
+		: mDevice(other.mDevice)
+	{
+		mBuffer = std::move(other.mBuffer);
+		mMemory = std::move(other.mMemory);
+		mSize	= std::move(other.mSize);
+		mOffset = std::move(other.mOffset);
+	}
 
-	//	return *this;
-	//}
+	VulkanBuffer& VulkanBuffer::operator=(VulkanBuffer&& other) noexcept
+	{
+		mBuffer		= std::move(other.mBuffer);
+		mMemory		= std::move(other.mMemory);
+		mSize		= std::move(other.mSize);
+		mOffset		= std::move(other.mOffset);
 
-	inline Result VulkanBuffer::writeBuffer(void* ptr, std::size_t size)
+		return *this;
+	}
+
+	inline Result VulkanBuffer::writeBuffer(void* ptr, std::size_t size) noexcept
 	{
 		void* mappedMemory = nullptr;
 		const auto vkDevice = mDevice.getDevice();

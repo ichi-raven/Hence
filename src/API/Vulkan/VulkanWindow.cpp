@@ -305,7 +305,7 @@ namespace Hence
 			//ci.subresourceRange = {VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, 0, 1, 0, 1};
 			ci.subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 };
 
-			VkImageView imageView;
+			VkImageView imageView{};
 			if (VK_FAILED(res, vkCreateImageView(vkDevice, &ci, nullptr, &imageView)))
 			{
 				Logger::error("failed to create depth buffer's vkImageView!");
@@ -348,7 +348,9 @@ namespace Hence
 			vkFreeCommandBuffers(vkDevice, vkCommandPool, 1, &command);
 		}
 
-		mDepthBuffer.emplace(image, memory, imageView);
+		VkExtent3D extent{ mSwapchainExtent.width, mSwapchainExtent.height, 1 };
+
+		mDepthBuffer.emplace(mDevice, image, memory, imageView, extent, 1u);
 
 		return Result();
 	}

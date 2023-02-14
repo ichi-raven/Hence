@@ -25,7 +25,7 @@
 
 namespace Hence
 {
-	VulkanShader::VulkanShader(VulkanDevice& vulkanDevice, std::string_view path)
+	VulkanShader::VulkanShader(VulkanDevice& vulkanDevice, std::string_view path) noexcept
 	{
         {// load
 
@@ -61,11 +61,6 @@ namespace Hence
         mShaderStageCreateInfo.pName    = mEntryPoint.data();// ÉäÉtÉåÉNÉVÉáÉìÇ≈èEÇ¶
 	}
 
-    const VkPipelineShaderStageCreateInfo& VulkanShader::getShaderStageCreateInfo() const noexcept
-    {
-        return mShaderStageCreateInfo;
-    }
-
     Result VulkanShader::loadShaderReflection() noexcept
     {
         //load shader module
@@ -79,11 +74,19 @@ namespace Hence
 
         //Logger::info("stage : {}", stageSV);
 
-        mEntryPoint = std::string(module.entry_point_name);
+        if (!module.entry_point_name)
+        {
+            Logger::error("missing entry point from shader {}!", module.source_file);
+            return Result(0);
+        }
+        else
+        {
+            mEntryPoint = std::string(module.entry_point_name);
+        }
 
         // éÊìæÇµÇƒÇ®Ç≠
         mShaderStageCreateInfo.stage = static_cast<VkShaderStageFlagBits>(module.shader_stage);
-        mShaderStage                 = static_cast<ShaderStage>(module.shader_stage);
+        mShaderStage = static_cast<ShaderStage>(module.shader_stage);
 
         /*switch (module.shader_stage)
         {
@@ -128,36 +131,37 @@ namespace Hence
             {
                 for (size_t j = 0; j < sets[i]->binding_count; ++j)
                 {
-                    ResourceType srt;
-                    switch (sets[i]->bindings[j]->descriptor_type)
-                    {
-                    case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER:
-                        srt = ResourceType::Sampler;
-                        break;
-                    case SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
-                        srt = ResourceType::CombinedImageSampler;
-                        break;
-                    case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
-                        srt = ResourceType::Image;
-                        break;
-                        //case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_IMAGE              : ; break;
-                        //case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER       : ; break;
-                        //case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER       : ; break;
-                    case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
-                        srt = ResourceType::UniformBuffer;
-                        break;
-                        //case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER             : ; break;
-                        //case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC     : ; break;
-                        //case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC     : ; break;
-                        //case SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT           : ; break;
-                        //case SPV_REFLECT_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR : ; break;
-                    default:
-                        Logger::error("failed to reflect shader resource!  param : {}", static_cast<int>(sets[i]->bindings[j]->descriptor_type));
-                        return Result(0);
-                        break;
-                    }
-
+                    ResourceType srt = static_cast<ResourceType>(sets[i]->bindings[j]->descriptor_type);
                     mResourceLayoutTable.emplace(std::pair<uint8_t, uint8_t>(sets[i]->set, sets[i]->bindings[j]->binding), srt);
+
+                    //switch (sets[i]->bindings[j]->descriptor_type)
+                    //{
+                    //case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLER:
+                    //    srt = ResourceType::Sampler;
+                    //    break;
+                    //case SPV_REFLECT_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:
+                    //    srt = ResourceType::CombinedImageSampler;
+                    //    break;
+                    //case SPV_REFLECT_DESCRIPTOR_TYPE_SAMPLED_IMAGE:
+                    //    srt = ResourceType::Image;
+                    //    break;
+                    //    //case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_IMAGE              : ; break;
+                    //    //case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER       : ; break;
+                    //    //case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER       : ; break;
+                    //case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER:
+                    //    srt = ResourceType::UniformBuffer;
+                    //    break;
+                    //    //case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER             : ; break;
+                    //    //case SPV_REFLECT_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC     : ; break;
+                    //    //case SPV_REFLECT_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC     : ; break;
+                    //    //case SPV_REFLECT_DESCRIPTOR_TYPE_INPUT_ATTACHMENT           : ; break;
+                    //    //case SPV_REFLECT_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR : ; break;
+                    //default:
+                    //    Logger::error("failed to reflect shader resource!  param : {}", static_cast<int>(sets[i]->bindings[j]->descriptor_type));
+                    //    return Result(0);
+                    //    break;
+                    //}
+
                 }
             }
         }
@@ -207,57 +211,8 @@ namespace Hence
                     assert(inputVars[i] == inputVar);
                 }
                 (void)inputVar;
-                
+
                 mInputVariables[i] = static_cast<Format>(inputVar->format);
-
-                //if (inputVar->semantic != nullptr)  //nullptrÇ»ÇÁsemanticÇÕnulloptÇÃÇ‹Ç‹
-                //    mInputVariables[i].second = std::string(inputVar->semantic);
-
-                //switch (inputVar->type_description->op)
-                //{
-                //case SpvOpTypeVector:
-                //{
-                //    
-                //    switch (inputVar->type_description->traits.numeric.scalar.width)
-                //    {
-                //    case 32:
-                //    {
-                //        switch (inputVar->type_description->traits.numeric.vector.component_count)
-                //        {
-                //        case 2:
-                //            mInputVariables[i].first = Format::R32G32SFloat;
-                //            break;
-                //        case 3:
-                //            mInputVariables[i].first = Format::R32G32B32SFloat;
-                //            break;
-                //        case 4:
-                //            mInputVariables[i].first = Format::R32G32B32A32SFloat;
-                //            break;
-                //        }
-                //    }
-                //    break;
-
-                //    case 64:
-                //    {
-                //        switch (inputVar->type_description->traits.numeric.vector.component_count)
-                //        {
-                //            //îÒëŒâûÇ≈Ç∑
-                //        case 2:
-                //            assert(!"double2");
-                //        case 3:
-                //            assert(!"double3");
-                //        case 4:
-                //            assert(!"double4");
-                //        }
-                //    }
-                //    break;
-                //    }
-                //}
-                //break;
-
-                //default:
-                //    break;
-                //}
             }
 
             //output
@@ -280,59 +235,36 @@ namespace Hence
 
                 mOutputVariables[i] = static_cast<Format>(outputVar->format);
 
-            //    if (outputVars[i]->semantic != nullptr)  //nullptrÇ»ÇÁsemanticÇÕnulloptÇÃÇ‹Ç‹
-            //        mOutputVariables[i].second = std::string(outputVars[i]->semantic);
+            }
 
-            //    switch (outputVar->type_description->op)
-            //    {
-            //    case SpvOpTypeVector:
-            //    {
-            //        switch (outputVar->type_description->traits.numeric.scalar.width)
-            //        {
-            //        case 32:
-            //        {
-            //            outputVar->format
-            //            switch (outputVar->type_description->traits.numeric.vector.component_count)
-            //            {
-            //            case 2:
-            //                mOutputVariables[i].first = Format::R32G32SFloat;;
-            //                break;
-            //            case 3:
-            //                mOutputVariables[i].first = Format::R32G32B32SFloat;;
-            //                break;
-            //            case 4:
-            //                mOutputVariables[i].first = Format::R32G32B32A32SFloat;
-            //                break;
-            //            }
-            //        }
-            //        break;
-
-            //        case 64:
-            //        {
-            //            switch (outputVar->type_description->traits.numeric.vector.component_count)
-            //            {
-            //                //îÒëŒâûÇ≈Ç∑
-            //            case 2:
-            //                assert(!"double2");
-            //            case 3:
-            //                assert(!"double3");
-            //            case 4:
-            //                assert(!"double4");
-            //            }
-            //        }
-            //        break;
-            //        }
-            //    }
-            //    break;
-
-            //    default:
-            //        break;
-            //    }
-            //}
+            spvReflectDestroyShaderModule(&module);
         }
 
-        spvReflectDestroyShaderModule(&module);
+        return Result();
     }
 
+    const VkPipelineShaderStageCreateInfo& VulkanShader::getShaderStageCreateInfo() const noexcept
+    {
+        return mShaderStageCreateInfo;
+    }
 
+    const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& VulkanShader::getResourceLayoutTable() const noexcept
+    {
+        return mResourceLayoutTable;
+    }
+
+    const std::vector<Format>& VulkanShader::getInputVariables() const noexcept
+    {
+        return mInputVariables;
+    }
+
+    const std::vector<Format>& VulkanShader::getOutputVariables() const noexcept
+    {
+        return mOutputVariables;
+    }
+
+    std::string_view VulkanShader::getEntryPoint() const noexcept
+    {
+        return mEntryPoint;
+    }
 }

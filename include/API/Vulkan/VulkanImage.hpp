@@ -21,14 +21,16 @@ namespace Hence
 	{
 	public:
 
-		VulkanImage(VulkanDevice& vulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView view, VkExtent3D extent, std::uint32_t sizeOfChannel);
+		VulkanImage(VulkanDevice& vulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView view, VkExtent3D extent, std::uint32_t sizeOfChannel) noexcept;
 
-		~VulkanImage();
+		~VulkanImage() noexcept;
 
-		//VulkanImage& operator=(VulkanImage&& other) noexcept;
+		VulkanImage(VulkanImage&& other) noexcept;
+
+		VulkanImage& operator=(VulkanImage&& other) noexcept;
 
 		template <typename DataType>
-		Result writeData(const ArrayProxy<DataType> data)
+		Result writeData(const ArrayProxy<DataType> data) noexcept
 		{
 			return writeImage(data.data(), data.size());
 		}

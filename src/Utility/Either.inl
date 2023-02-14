@@ -12,13 +12,13 @@
 namespace Hence
 {
 	template<typename SuccessType, typename FailureType>
-	inline Either<SuccessType, FailureType>::Either(const SuccessType& success) noexcept
-		: mValue(success)
+	inline Either<SuccessType, FailureType>::Either(SuccessType&& success) noexcept
+		: mValue(std::move(success))
 	{}
 
 	template<typename SuccessType, typename FailureType>
-	inline Either<SuccessType, FailureType>::Either(const FailureType& failure) noexcept
-		: mValue(failure)
+	inline Either<SuccessType, FailureType>::Either(const FailureType&& failure) noexcept
+		: mValue(std::move(failure))
 	{}
 
 	template<typename SuccessType, typename FailureType>
@@ -40,13 +40,21 @@ namespace Hence
 	template<typename SuccessType, typename FailureType>
 	const SuccessType& Either<SuccessType, FailureType>::get() const noexcept
 	{
-		assert()
+		assert(*this || !"invalid value!");
 		return std::get<0>(mValue);
+	}
+
+	template<typename SuccessType, typename FailureType>
+	SuccessType&& Either<SuccessType, FailureType>::move() noexcept
+	{
+		assert(*this || !"invalid value!");
+		return std::get<0>(std::move(mValue));
 	}
 
 	template<typename SuccessType, typename FailureType>
 	const FailureType& Either<SuccessType, FailureType>::failed() const noexcept
 	{
+		assert(!*this || !"invalid value!");
 		return std::get<1>(mValue);
 	}
 

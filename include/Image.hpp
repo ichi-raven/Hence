@@ -4,6 +4,8 @@
 #include "API.hpp"
 #include "Utility/Macro.hpp"
 
+#include <optional>
+
 namespace Hence
 {
     template<typename API>
@@ -15,19 +17,22 @@ namespace Hence
     {
     public:
 
-        using Impl = APITrait<API>::BufferImpl;
+        using Impl = APITrait<API>::ImageImpl;
 
-        Image(Device<API>& device, Impl& impl);
-        ~Image();
+        Image(VRAMAllocator<API>& VRAMAllocator, const ImageInfo& imageInfo) noexcept;
+        
+        ~Image() noexcept;
 
         NONCOPYABLE(Image)
 
     private:
-        using APIDevice = APITrait<API>::Device;
+        using APIVRAMAllocator = APITrait<API>::VRAMAllocatorImpl;
 
-        APIDevice& mDevice;
-        Impl mImpl;
+        APIVRAMAllocator& mAPIVRAMAllocator;
+        std::optional<Impl> mImpl;
     };
 }
+
+#include "../src/Image.inl"
 
 #endif

@@ -16,10 +16,10 @@ namespace Hence
 {
 	struct SamplerInfo
 	{
-		SamplerInfo();
-
-		~SamplerInfo();
-
+		// TODO:
+		SamplerInfo()
+			
+		{}
 
 		Filter minFilter;
 		Filter magFilter;

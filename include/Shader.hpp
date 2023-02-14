@@ -31,4 +31,6 @@ namespace Hence
 	};
 }
 
+#include "../src/Shader.inl"
+
 #endif

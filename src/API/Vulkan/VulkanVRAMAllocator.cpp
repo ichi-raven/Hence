@@ -104,7 +104,8 @@ namespace Hence
         VkDeviceSize offset = 0;
 
         return Either<VulkanBuffer, Result>(VulkanBuffer(mDevice, buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset));
-	}
+        //return VulkanBuffer(mDevice, buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset);
+    }
 
     Either<VulkanImage, Result> VulkanVRAMAllocator::allocate(ImageInfo imageInfo) noexcept
 	{
@@ -278,7 +279,7 @@ namespace Hence
                 
                 if (FAILED(res, setImageMemoryBarrier(command, image, VK_IMAGE_LAYOUT_UNDEFINED, layout, aspectFlag)))
                 {
-                    return Either<VulkanImage, Result>(res);
+                    return Either<VulkanImage, Result>(std::move(res));
                 }
                 
                 vkEndCommandBuffer(command);
@@ -299,9 +300,9 @@ namespace Hence
             }
         }
 
-        VulkanImage rtn(mDevice, image, memory, imageView, extent, );
+        //VulkanImage rtn(mDevice, image, memory, imageView, extent, imageInfo.sizeOfChannel);
 
-        return rtn;
+        return Either<VulkanImage, Result>(std::move(VulkanImage(mDevice, image, memory, imageView, extent, imageInfo.sizeOfChannel)));
 	}
 
 	void VulkanVRAMAllocator::deallocate(VulkanBuffer& vulkanBuffer) noexcept

@@ -16,30 +16,49 @@
 namespace Hence
 {
 	template<typename API>
-	Buffer<API>::Buffer(VRAMAllocator<API>& VRAMAllocator, const BufferInfo& bufferInfo)
+	Buffer<API>::Buffer(VRAMAllocator<API>& VRAMAllocator, const BufferInfo& bufferInfo) noexcept
 		: mAPIVRAMAllocator(VRAMAllocator.getInternalImpl())
+		//, mImpl(mAPIVRAMAllocator.allocate(bufferInfo).get())
 	{
-		auto&& either = mAPIVRAMAllocator.allocate();
+		auto&& either = mAPIVRAMAllocator.allocate(bufferInfo);
 		if (!either)
 		{
-			Logger::error("failed to allocate buffer!");
+			Logger::error("failed to allocate buffer!(result : {})", either.failed().nativeResult);
 			return;
 		}
 
-		mImpl = either.get();
+		mImpl = std::make_optional(either.move());
 	}
 
 	template<typename API>
-	Buffer<API>::~Buffer()
+	Buffer<API>::~Buffer() noexcept
 	{
-		mAPIVRAMAllocator.deallocate(mImpl);
+		mAPIVRAMAllocator.deallocate(*mImpl);
+	}
+
+	template<typename API>
+	Buffer<API>::Buffer(Buffer&& other) noexcept
+		: mAPIVRAMAllocator(other.mAPIVRAMAllocator)
+		, mImpl(std::move(other.mImpl))
+	{
+		other.mImpl.reset();
+	}
+
+	template<typename API>
+	Buffer<API>& Buffer<API>::operator=(Buffer&& other) noexcept
+	{
+		mAPIVRAMAllocator = other.mAPIVRAMAllocator;
+
+		mAPIVRAMAllocator.deallocate(*mImpl);
+		mImpl = std::move(other.mImpl);
+		other.mImpl.reset();
 	}
 
 	template<typename API>
 	template <typename DataType>
 	Result Buffer<API>::writeData(const ArrayProxy<DataType> data)
 	{
-		mImpl.writeData(data);
+		mImpl->writeData(data);
 	}
 
 }

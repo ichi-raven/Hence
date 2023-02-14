@@ -51,21 +51,21 @@ namespace Hence
 		return !!fs;
 	}
 
-	inline void Logger::logInfo(std::string_view message)
+	void Logger::logInfo(std::string_view message)
 	{
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
 		mFStream << kConsoleColorCyan << "[info] : " << message << "\n" << kConsoleColorReset;
 	}
 
-	inline void Logger::logWarn(std::string_view message)
+	void Logger::logWarn(std::string_view message)
 	{
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
 		mFStream << kConsoleColorYellow << "[warning] : " << message << "\n" << kConsoleColorReset;
 	}
 
-	inline void Logger::logError(std::string_view message)
+	void Logger::logError(std::string_view message)
 	{
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
