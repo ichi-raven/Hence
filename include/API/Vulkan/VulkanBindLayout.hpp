@@ -29,13 +29,36 @@ namespace Hence
 
 		VulkanBindLayout(VulkanDevice& vulkanDevice, const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& bindingLayoutTable ) noexcept;
 		
-		VulkanBindLayout(VulkanDevice& vulkanDevice, const VulkanShader& shader) noexcept;
+		template<typename... ShaderType>
+		VulkanBindLayout(VulkanDevice& vulkanDevice, const ShaderType&... shaders) noexcept
+			: VulkanBindLayout(vulkanDevice, mergeAll(shaders...))
+		{}
+
+		~VulkanBindLayout();
 
 		const std::vector<VkDescriptorSetLayout>& getDescriptorSetLayouts() noexcept;
 
 		const std::vector<std::uint32_t>& getBindingNums() noexcept;
 
 	private:
+
+		template<typename Head, typename... Tails, typename = std::is_same<Head, VulkanShader>>
+		std::map<std::pair<uint8_t, uint8_t>, ResourceType> mergeAll(const Head& head, const Tails&... tails) noexcept
+		{
+			if constexpr (sizeof...(Tails) == 0)
+			{
+				return head.getResourceLayoutTable();
+			}
+			else
+			{
+				static auto table = head.getResourceLayoutTable();
+				table.merge(mergeAll<Tails...>(tails...));
+				return table;
+			}
+		}
+
+		VulkanDevice& mDevice;
+
 		std::vector<VkDescriptorSetLayout> mDescriptorSetLayouts;
 		std::vector<std::uint32_t> mBindingNums;
 	};

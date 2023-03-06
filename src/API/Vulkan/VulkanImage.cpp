@@ -58,7 +58,7 @@ namespace Hence
         // ‚±‚ê‚ð‚Ç‚¤‚â‚Á‚ÄŽó‚¯Žæ‚é‚©‚ª–â‘è
 
         std::size_t imageSize = 
-            static_cast<size_t>(mExtent.width) * mExtent.height * mExtent.depth * mSizeOfChannel;
+            mExtent.width * mExtent.height * mExtent.depth * mSizeOfChannel;
         
         VkBuffer        stagingBuffer = VK_NULL_HANDLE;
         VkDeviceMemory  stagingMemory = VK_NULL_HANDLE;

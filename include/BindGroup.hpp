@@ -17,7 +17,7 @@
 #include "Device.hpp"
 #include "Buffer.hpp"
 #include "Image.hpp"
-#include "Shader.hpp"
+#include "BindLayout.hpp"
 
 namespace Hence
 {
@@ -38,7 +38,7 @@ namespace Hence
 		 * @param device 基とするデバイス
 		 * @param shader このシェーダのレイアウトから紐づけるリソース型を決定する
 		 */
-		BindGroup(Device<API>& device, const Shader<API>& shader) noexcept;
+		BindGroup(Device<API>& device, BindLayout<API>& layout) noexcept;
 
 		/**
 		 * @brief  デストラクタ
@@ -56,7 +56,7 @@ namespace Hence
 		 * @param buffer 紐づけるバッファ
 		 * @return 結果
 		 */
-		Result bind(uint8_t slot, const Buffer<API>& buffer) noexcept;
+		Result bind(std::uint8_t set, std::uint8_t binding, Buffer<API>& buffer) noexcept;
 
 		/**
 		 * @brief  画像データを指定したスロットに紐づける
@@ -65,7 +65,7 @@ namespace Hence
 		 * @param image 紐づける画像データ
 		 * @return 結果
 		 */
-		Result bind(uint8_t slot, const Image<API>& image) noexcept;
+		Result bind(std::uint8_t set, std::uint8_t binding, Image<API>& image) noexcept;
 
 		/** 
 		 * @brief  内部実装取得
@@ -73,7 +73,7 @@ namespace Hence
 		 *  
 		 * @return APIごとの内部実装
 		 */
-		const Impl& getInternalImpl() const;
+		const Impl& getInternalImpl() const noexcept;
 
 	private:
 		using APIDevice = APITrait<API>::Device;

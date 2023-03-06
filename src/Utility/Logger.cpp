@@ -9,6 +9,7 @@
 #include "../../include/Utility/Logger.hpp"
 
 #include <cassert>
+#include <iostream>
 
 namespace Hence
 {
@@ -56,6 +57,7 @@ namespace Hence
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
 		mFStream << kConsoleColorCyan << "[info] : " << message << "\n" << kConsoleColorReset;
+		std::cerr << kConsoleColorCyan << "[info] : " << message << "\n" << kConsoleColorReset;
 	}
 
 	void Logger::logWarn(std::string_view message)
@@ -63,6 +65,7 @@ namespace Hence
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
 		mFStream << kConsoleColorYellow << "[warning] : " << message << "\n" << kConsoleColorReset;
+		std::cerr << kConsoleColorYellow << "[warning] : " << message << "\n" << kConsoleColorReset;
 	}
 
 	void Logger::logError(std::string_view message)
@@ -70,5 +73,6 @@ namespace Hence
 		std::lock_guard<std::mutex> lock(this->mMutex);
 
 		mFStream << kConsoleColorRed << "[error] : " << message << "\n" << kConsoleColorReset;
+		std::cerr << kConsoleColorRed << "[error] : " << message << "\n" << kConsoleColorReset;
 	}
 }

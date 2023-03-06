@@ -26,7 +26,14 @@ namespace Hence
 	template<typename API>
 	Image<API>::~Image() noexcept
 	{
+		mAPIVRAMAllocator.deallocate(*mImpl);
+	}
 
+	template<typename API>
+	Image<API>::Impl& Image<API>::getInternalImpl() noexcept
+	{
+		assert(mImpl || "invalid image!");
+		return *mImpl;
 	}
 }
 

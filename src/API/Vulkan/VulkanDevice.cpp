@@ -68,7 +68,7 @@ namespace Hence
 	VulkanDevice::~VulkanDevice() noexcept
 	{
 
-		if (FAILED(res, vkDeviceWaitIdle(mDevice)))
+		if (VK_FAILED(res, vkDeviceWaitIdle(mDevice)))
 		{
 			Logger::error("failed to wait device idol! (native result : {})", static_cast<std::int32_t>(res));
 		}
@@ -262,16 +262,14 @@ namespace Hence
 			std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 			vkGetPhysicalDeviceQueueFamilyProperties(pd, &queueFamilyCount, queueFamilies.data());
 
-			for (std::uint32_t i = 0; const auto & queueFamily : queueFamilies)
+			for (std::uint32_t i = 0; i < queueFamilies.size(); ++i)
 			{
-				if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+				if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
 				{
 					index = i;
 					mPhysDev = pd;
 					break;
 				}
-
-				++i;
 			}
 		}
 
@@ -379,7 +377,7 @@ namespace Hence
 
 	inline Result VulkanDevice::createDescriptorPool() noexcept
 	{
-		std::array<VkDescriptorPoolSize, 2> sizes;
+		std::array<VkDescriptorPoolSize, 2> sizes{};
 
 		sizes[0].descriptorCount = kPoolUBSize;
 		sizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;

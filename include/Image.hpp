@@ -25,6 +25,8 @@ namespace Hence
 
         NONCOPYABLE(Image)
 
+        Impl& getInternalImpl() noexcept;
+
     private:
         using APIVRAMAllocator = APITrait<API>::VRAMAllocatorImpl;
 

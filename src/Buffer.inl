@@ -55,6 +55,13 @@ namespace Hence
 	}
 
 	template<typename API>
+	Buffer<API>::Impl& Buffer<API>::getInternalImpl() noexcept
+	{
+		assert(mImpl || "invalid buffer!");
+		return *mImpl;
+	}
+
+	template<typename API>
 	template <typename DataType>
 	Result Buffer<API>::writeData(const ArrayProxy<DataType> data)
 	{

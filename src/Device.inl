@@ -19,7 +19,7 @@ namespace Hence
 	{
 		Logger::info("API Name : {}\ninitialize start...", APITrait<API>::APIName);
 
-		mAPIDevice = std::make_optional<APIDevice>();
+		mAPIDevice.emplace();
 	}
 
 	template<typename API>

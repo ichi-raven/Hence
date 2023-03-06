@@ -1,30 +1,32 @@
 /*****************************************************************//**
- * @file   Shader.inl
- * @brief  Shaderクラスの実装展開ファイル
+ * @file   BindLayout.inl
+ * @brief  BindLayoutクラスの実装展開ファイル
  * 
  * @author ichi-raven
  * @date   February 2023
  *********************************************************************/
-#ifdef HENCE_SHADER_HPP_
+#ifdef HENCE_BINDLAYOUT_HPP_
 
 namespace Hence
 {
 	template<typename API>
-	Shader<API>::Shader(Device<API>& device, std::string_view path)
+	template<typename... ShaderType>
+	BindLayout<API>::BindLayout(Device<API>& device, ShaderType&... shaders)
 		: mAPIDevice(device.getInternalAPIDevice())
-		, mImpl(mAPIDevice, path)
+		, mImpl(mAPIDevice, shaders.getInternalImpl()...)
 	{
 		
 	}
 
+
 	template<typename API>
-	Shader<API>::~Shader()
+	BindLayout<API>::~BindLayout()
 	{
 
 	}
 
 	template<typename API>
-	Shader<API>::Impl& Shader<API>::getInternalImpl()
+	BindLayout<API>::Impl& BindLayout<API>::getInternalImpl() noexcept
 	{
 		return mImpl;
 	}

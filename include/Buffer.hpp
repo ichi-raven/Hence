@@ -54,6 +54,8 @@ namespace Hence
 
         Buffer& operator=(Buffer&& other) noexcept;
 
+        Impl& getInternalImpl() noexcept;
+
         /**
          * @brief バッファにデータを書き込む(ステージング及びコマンド実行コストがかかる)
          * @tparam DataType 書き込むデータの型

@@ -21,6 +21,8 @@ namespace Hence
 
 		VulkanShader(VulkanDevice& vulkanDevice, std::string_view path) noexcept;
 
+		~VulkanShader() noexcept;
+
 		const VkPipelineShaderStageCreateInfo& getShaderStageCreateInfo() const noexcept;
 
 		const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& getResourceLayoutTable() const noexcept;
@@ -33,6 +35,8 @@ namespace Hence
 
 	private:
 		inline Result loadShaderReflection() noexcept;
+
+		VulkanDevice& mDevice;
 
 		std::vector<char> mFileData;
 

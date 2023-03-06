@@ -427,5 +427,8 @@
     <None Include="..\src\Sampler.inl">
       <Filter>ソース ファイル</Filter>
     </None>
+    <None Include="..\src\BindLayout.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>

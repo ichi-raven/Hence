@@ -1,0 +1,28 @@
+[36m[info] : API Name : Vulkan
+initialize start...
+[0m[36m[info] : enabled extensions : 
+[0m[36m[info] : VK_KHR_device_group_creation
+[0m[36m[info] : VK_KHR_external_fence_capabilities
+[0m[36m[info] : VK_KHR_external_memory_capabilities
+[0m[36m[info] : VK_KHR_external_semaphore_capabilities
+[0m[36m[info] : VK_KHR_get_physical_device_properties2
+[0m[36m[info] : VK_KHR_get_surface_capabilities2
+[0m[36m[info] : VK_KHR_surface
+[0m[36m[info] : VK_KHR_surface_protected_capabilities
+[0m[36m[info] : VK_KHR_win32_surface
+[0m[36m[info] : VK_EXT_debug_report
+[0m[36m[info] : VK_EXT_debug_utils
+[0m[36m[info] : VK_EXT_swapchain_colorspace
+[0m[36m[info] : VK_NV_external_memory_capabilities
+[0m[36m[info] : enabled debug mode
+[0m[36m[info] : physical device number : 1
+[0m[36m[info] : loaded shader : testShaders/vert.spv
+[0m[36m[info] : loaded shader : testShaders/frag.spv
+[0m[36m[info] : destroyed descriptor pool
+[0m[36m[info] : destroyed command pool
+[0m[36m[info] : disabled debug mode
+[0m[36m[info] : disabled debug report
+[0m[36m[info] : destroyed device
+[0m[36m[info] : destroyed instance
+[0m[36m[info] : destroyed all device memory
+[0m

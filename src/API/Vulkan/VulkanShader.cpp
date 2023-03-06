@@ -26,7 +26,8 @@
 namespace Hence
 {
 	VulkanShader::VulkanShader(VulkanDevice& vulkanDevice, std::string_view path) noexcept
-	{
+        : mDevice(vulkanDevice)
+    {
         {// load
 
             std::ifstream infile(path.data(), std::ios::binary);
@@ -60,6 +61,11 @@ namespace Hence
         mShaderStageCreateInfo.module   = mShaderModule;
         mShaderStageCreateInfo.pName    = mEntryPoint.data();// ƒŠƒtƒŒƒNƒVƒ‡ƒ“‚ÅE‚¦
 	}
+
+    VulkanShader::~VulkanShader()
+    {
+        vkDestroyShaderModule(mDevice.getDevice(), mShaderModule, nullptr);
+    }
 
     Result VulkanShader::loadShaderReflection() noexcept
     {

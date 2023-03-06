@@ -9,6 +9,7 @@
 #define HENCE_API_VULKAN_VULKANDEVICE_HPP_
 
 #include "../../Utility/Result.hpp"
+#include "../../Utility/Macro.hpp"
 
 #include <vulkan/vulkan.hpp>
 
@@ -35,6 +36,9 @@ namespace Hence
          *  
          */
         ~VulkanDevice() noexcept;
+
+
+        NONCOPYABLE(VulkanDevice)
 
         /** 
          * @brief  VkInstance‚ðŽæ“¾‚·‚é

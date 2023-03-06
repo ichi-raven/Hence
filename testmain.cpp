@@ -8,29 +8,40 @@
 
 #include "include/Hence.hpp"
 
+#include <iostream>
+
 struct Vertex
 {
 	float pos[3];
 };
 
+using namespace Hence;
+
 int main()
 {
-	Hence::Device<Hence::Vulkan> device;
+	Device<Vulkan> device;
 
-	Hence::VRAMAllocator vramAllocator(device);
+	VRAMAllocator vramAllocator(device);
 
-	Hence::BufferInfo bi;
-	bi.setVertexBuffer<Vertex>(10);
+	{
+		BufferInfo bi;
+		bi.setVertexBuffer<Vertex>(10);
 
-	Hence::Buffer buffer(vramAllocator, bi);
+		Buffer buffer(vramAllocator, bi);
+	}
 
-	Hence::ImageInfo ii;
-	ii.setSRTex2D(128, 128, true);
+	{
+		ImageInfo ii;
+		ii.setSRTex2D(128, 128, true);
 
-	Hence::Image image(vramAllocator, ii);
+		Image image(vramAllocator, ii);
+	}
 
-	Hence::Shader vs(device, "testShaders/vert.spv");
-	Hence::Shader fs(device, "testShaders/vert.spv");
+	Shader vs(device, "testShaders/vert.spv");
+	Shader fs(device, "testShaders/frag.spv");
+
+	BindLayout bl(device, vs, fs);
+	BindGroup bg(device, bl);
 
 	return 0;
 }

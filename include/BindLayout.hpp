@@ -9,7 +9,6 @@
 #define HENCE_BINDLAYOUT_HPP_
 
 #include "API.hpp"
-#include "Utility/ArrayProxy.hpp"
 
 namespace Hence
 {
@@ -22,13 +21,17 @@ namespace Hence
 	public:
 		using Impl = APITrait<API>::BindLayoutImpl;
 
-		BindLayout(const Shader<API>& shader);
+		template<typename... ShaderType>
+		BindLayout(Device<API>& device, ShaderType&... shaders);
 
-		BindLayout(const ArrayProxy<std::uint8_t> bufferBinding, const ArrayProxy<std::uint8_t> imageBinding, const ArrayProxy<std::uint8_t> samplerBinding);
+		~BindLayout();
 
-		NONCOPYABLE(BindLayout);
+		// ‚¢‚Á‚½‚ñ‚¨‚¢‚Æ‚­
+		//BindLayout(const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& bindingLayoutTable);
 
-		Impl& getInternalImpl();
+		NONCOPYABLE(BindLayout)
+
+		Impl& getInternalImpl() noexcept;
 
 	private:
 		using APIDevice = APITrait<API>::Device;
@@ -41,5 +44,7 @@ namespace Hence
 
 	};
 }
+
+#include "../src/BindLayout.inl"
 
 #endif
