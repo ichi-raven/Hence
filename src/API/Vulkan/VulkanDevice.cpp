@@ -14,6 +14,8 @@
 
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
 
+#include <GLFW/glfw3.h>
+
 #include <vector>
 #include <optional>
 // DEBUG
@@ -26,6 +28,12 @@ namespace Hence
 		if (FAILED(res, createInstance()))
 		{
 			Logger::error("failed to create VkInstance!(native error : {})", res.nativeResult);
+			return;
+		}
+
+		if (FAILED(res, initializeGLFW()))
+		{
+			Logger::error("failed to initialize GLFW!(native error : {})", res.nativeResult);
 			return;
 		}
 
@@ -228,6 +236,21 @@ namespace Hence
 		}
 
 		mInstance = instance;
+
+		return Result();
+	}
+
+	inline Result VulkanDevice::initializeGLFW() noexcept
+	{
+
+		if (glfwInit() != GLFW_TRUE)
+		{
+			Logger::error("failed to initialize GLFW!\n");
+			return Result(0);
+		}
+
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 		return Result();
 	}

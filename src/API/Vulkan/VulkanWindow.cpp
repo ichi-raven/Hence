@@ -52,6 +52,30 @@ namespace Hence
 		}
 	}
 
+	VulkanWindow::~VulkanWindow() noexcept
+	{
+		const auto& vkDevice = mDevice.getDevice();
+		
+		vkDestroyImageView(vkDevice, mDepthBuffer->getVkImageView(), nullptr);
+		vkFreeMemory(vkDevice, mDepthBuffer->getVkDeviceMemory(), nullptr);
+		vkDestroyImage(vkDevice, mDepthBuffer->getVkImage(), nullptr);
+
+		for (auto& view : mSwapchainImageViews)
+		{
+			vkDestroyImageView(vkDevice, view, nullptr);
+		}
+
+		vkDestroySwapchainKHR(vkDevice, mSwapchain, nullptr);
+		Logger::info("destroyed swapchain");
+		
+		vkDestroySurfaceKHR(mDevice.getInstance(), mSurface, nullptr);
+		Logger::info("destroyed surface");
+
+		glfwDestroyWindow(mpWindow);
+		Logger::info("destroyed GLFW window");
+		
+	}
+
 	inline void VulkanWindow::updateInput() noexcept
 	{
 		glfwPollEvents();
@@ -84,14 +108,9 @@ namespace Hence
 
 	inline Result VulkanWindow::createSurface() noexcept
 	{
-		const auto vkInstance				= mDevice.getInstance();
+		const auto vkInstance			= mDevice.getInstance();
 		const auto vkPhysicalDevice		= mDevice.getPhysicalDevice();
 		const auto graphicsQueueIndex	= mDevice.getGraphicsQueueIndex();
-
-		if (VK_FAILED(res, glfwCreateWindowSurface(vkInstance, mpWindow, nullptr, &mSurface)))
-		{
-			return Result(static_cast<std::int32_t>(res));
-		}
 
 		if (VK_FAILED(res, glfwCreateWindowSurface(vkInstance, mpWindow, nullptr, &mSurface)))
 		{
@@ -117,7 +136,7 @@ namespace Hence
 			return Result(static_cast<std::int32_t>(res));
 		}
 
-		if (isSupport)
+		if (!isSupport)
 		{
 			Logger::error("the surface is not supported by this physical device!");
 			return Result(0);
@@ -162,7 +181,7 @@ namespace Hence
 		VkSwapchainCreateInfoKHR ci{};
 		ci.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 		ci.surface = mSurface;
-		ci.minImageCount = mSurfaceCaps.minImageCount;
+		ci.minImageCount = mMaxFrameNum;// mSurfaceCaps.minImageCount;
 		ci.imageFormat = mSurfaceFormat.format;
 		ci.imageColorSpace = mSurfaceFormat.colorSpace;
 		ci.imageExtent = extent;
@@ -305,7 +324,6 @@ namespace Hence
 			//ci.subresourceRange = {VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT, 0, 1, 0, 1};
 			ci.subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 };
 
-			VkImageView imageView{};
 			if (VK_FAILED(res, vkCreateImageView(vkDevice, &ci, nullptr, &imageView)))
 			{
 				Logger::error("failed to create depth buffer's vkImageView!");
@@ -350,7 +368,7 @@ namespace Hence
 
 		VkExtent3D extent{ mSwapchainExtent.width, mSwapchainExtent.height, 1 };
 
-		mDepthBuffer.emplace(mDevice, image, memory, imageView, extent, 1u);
+		mDepthBuffer.emplace(mDevice, image, memory, imageView, VK_FORMAT_D32_SFLOAT, extent, 1u);
 
 		return Result();
 	}
@@ -388,6 +406,31 @@ namespace Hence
 
 		Logger::error("all physical device surface format did not match with requested format!");
 		return Result(0);
+	}
+
+	const std::vector<VkImage>& VulkanWindow::getVkSwapchainImages() noexcept
+	{
+		return mSwapchainImages;
+	}
+
+	const std::vector<VkImageView>& VulkanWindow::getVkSwapchainImageViews() noexcept
+	{
+		return mSwapchainImageViews;
+	}
+
+	const VkExtent2D& VulkanWindow::getVkSwapchainExtent() noexcept
+	{
+		return mSwapchainExtent;
+	}
+
+	VkFormat VulkanWindow::getVkFormat() noexcept
+	{
+		return mSurfaceFormat.format;
+	}
+
+	VulkanImage& VulkanWindow::getDepthBuffer() noexcept
+	{
+		return *mDepthBuffer;
 	}
 
 	inline Result VulkanWindow::setImageMemoryBarrier(VkCommandBuffer command, VkImage image,
@@ -450,4 +493,6 @@ namespace Hence
 
 		return Result();
 	}
+
+
 }

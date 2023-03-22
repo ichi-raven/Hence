@@ -22,9 +22,21 @@ namespace Hence
 
         VulkanWindow(VulkanDevice& vulkanDevice, const WindowInfo& windowInfo) noexcept;
 
+        ~VulkanWindow() noexcept;
+
 		inline void updateInput() noexcept;
 
 		inline bool focused() const noexcept;
+
+        const std::vector<VkImage>& getVkSwapchainImages() noexcept;
+
+        const std::vector<VkImageView>& getVkSwapchainImageViews() noexcept;
+
+        const VkExtent2D& getVkSwapchainExtent() noexcept;
+
+        VkFormat getVkFormat() noexcept;
+
+        VulkanImage& getDepthBuffer() noexcept;
 
 	private:
 

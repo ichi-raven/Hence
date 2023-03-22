@@ -83,14 +83,12 @@ namespace Hence
 		}
 	}
 
-	//VulkanBindLayout::VulkanBindLayout(VulkanDevice& vulkanDevice, const ArrayProxy<VulkanShader&> shaders) noexcept
-	//	: VulkanBindLayout(vulkanDevice, mergeAll(shaders))
-	//{}
-
 	VulkanBindLayout::~VulkanBindLayout()
 	{
 		for (auto& dsl : mDescriptorSetLayouts)
-		vkDestroyDescriptorSetLayout(mDevice.getDevice(), dsl, nullptr);
+		{
+			vkDestroyDescriptorSetLayout(mDevice.getDevice(), dsl, nullptr);
+		}
 	}
 
 	const std::vector<VkDescriptorSetLayout>& VulkanBindLayout::getDescriptorSetLayouts() noexcept

@@ -14,11 +14,12 @@
 
 namespace Hence
 {
-	VulkanImage::VulkanImage(VulkanDevice& vulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView imageView, VkExtent3D extent, std::uint32_t sizeOfChannel) noexcept
+	VulkanImage::VulkanImage(VulkanDevice& vulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView imageView, VkFormat format, const VkExtent3D& extent, std::uint32_t sizeOfChannel) noexcept
 		: mDevice(vulkanDevice)
         , mImage(image)
 		, mMemory(memory)
 		, mImageView(imageView)
+        , mFormat(format)
         , mExtent(extent)
         , mSizeOfChannel(sizeOfChannel)
 	{}
@@ -36,17 +37,19 @@ namespace Hence
         mImage          = std::move(other.mImage);
         mMemory         = std::move(other.mMemory);
         mImageView      = std::move(other.mImageView);
+        mFormat         = other.mFormat;
         mExtent         = other.mExtent;
         mSizeOfChannel  = other.mSizeOfChannel;
     }
 
     VulkanImage& VulkanImage::operator=(VulkanImage&& other) noexcept
     {
-        mImage = std::move(other.mImage);
-        mMemory = std::move(other.mMemory);
-        mImageView = std::move(other.mImageView);
-        mExtent = other.mExtent;
-        mSizeOfChannel = other.mSizeOfChannel;
+        mImage          = std::move(other.mImage);
+        mMemory         = std::move(other.mMemory);
+        mImageView      = std::move(other.mImageView);
+        mFormat         = other.mFormat;
+        mExtent         = other.mExtent;
+        mSizeOfChannel  = other.mSizeOfChannel;
 
         return *this;
     }
@@ -177,4 +180,15 @@ namespace Hence
 	{
 		return mImageView;
 	}
+
+    const VkExtent3D& VulkanImage::getVkExtent() noexcept
+    {
+        return mExtent;
+    }
+
+    VkFormat VulkanImage::getVkFormat() const noexcept
+    {
+        return mFormat;
+    }
+
 }

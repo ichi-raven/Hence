@@ -302,7 +302,7 @@ namespace Hence
 
         //VulkanImage rtn(mDevice, image, memory, imageView, extent, imageInfo.sizeOfChannel);
 
-        return Either<VulkanImage, Result>(std::move(VulkanImage(mDevice, image, memory, imageView, extent, imageInfo.sizeOfChannel)));
+        return Either<VulkanImage, Result>(std::move(VulkanImage(mDevice, image, memory, imageView, ci.format, extent, imageInfo.sizeOfChannel)));
 	}
 
 	void VulkanVRAMAllocator::deallocate(VulkanBuffer& vulkanBuffer) noexcept

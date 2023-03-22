@@ -21,6 +21,8 @@ int main()
 {
 	Device<Vulkan> device;
 
+	Window window(device, WindowInfo(640, 480, 4, "testWindow"));
+
 	VRAMAllocator vramAllocator(device);
 
 	{

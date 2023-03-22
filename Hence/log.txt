@@ -18,6 +18,9 @@ initialize start...
 [0m[36m[info] : physical device number : 1
 [0m[36m[info] : loaded shader : testShaders/vert.spv
 [0m[36m[info] : loaded shader : testShaders/frag.spv
+[0m[36m[info] : destroyed swapchain
+[0m[36m[info] : destroyed surface
+[0m[36m[info] : destroyed GLFW window
 [0m[36m[info] : destroyed descriptor pool
 [0m[36m[info] : destroyed command pool
 [0m[36m[info] : disabled debug mode

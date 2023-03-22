@@ -124,6 +124,12 @@ namespace Hence
         inline Result createInstance() noexcept;
 
         /**
+         * @brief  GLFWを初期化する
+         */
+
+        inline Result initializeGLFW() noexcept;
+
+        /**
          * @brief  VkPhysicaDevice列挙・選択
          *
          * @return 結果(Resultクラス)

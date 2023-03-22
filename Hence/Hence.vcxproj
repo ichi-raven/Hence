@@ -248,6 +248,7 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanBuffer.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanDevice.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanImage.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanRenderPass.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanSampler.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanShader.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanVRAMAllocator.cpp" />
