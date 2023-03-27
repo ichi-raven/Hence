@@ -23,7 +23,7 @@ namespace Hence
 
 		~VulkanShader() noexcept;
 
-		const VkPipelineShaderStageCreateInfo& getShaderStageCreateInfo() const noexcept;
+		//const VkPipelineShaderStageCreateInfo& getShaderStageCreateInfo() const noexcept;
 
 		const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& getResourceLayoutTable() const noexcept;
 
@@ -32,6 +32,10 @@ namespace Hence
 		const std::vector<Format>& getOutputVariables() const noexcept;
 
 		std::string_view getEntryPoint() const noexcept;
+
+		VkShaderModule getVkShaderModule() noexcept;
+
+		ShaderStage getVkShaderStage() noexcept;
 
 	private:
 		inline Result loadShaderReflection() noexcept;
@@ -47,7 +51,7 @@ namespace Hence
 
 		ShaderStage mShaderStage;
 		VkShaderModule mShaderModule;
-		VkPipelineShaderStageCreateInfo mShaderStageCreateInfo;
+		//VkPipelineShaderStageCreateInfo mShaderStageCreateInfo;
 	};
 }
 

@@ -53,13 +53,7 @@ namespace Hence
 
         loadShaderReflection();
 
-        mShaderStageCreateInfo.sType    = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        mShaderStageCreateInfo.flags    = 0;
-        mShaderStageCreateInfo.pNext    = nullptr;
-        // loadShaderReflectionで取得しておく
-        //mShaderStageCreateInfo.stage    = stage; // リフレクションで拾え
-        mShaderStageCreateInfo.module   = mShaderModule;
-        mShaderStageCreateInfo.pName    = mEntryPoint.data();// リフレクションで拾え
+        
 	}
 
     VulkanShader::~VulkanShader()
@@ -91,7 +85,7 @@ namespace Hence
         }
 
         // 取得しておく
-        mShaderStageCreateInfo.stage = static_cast<VkShaderStageFlagBits>(module.shader_stage);
+        //mShaderStageCreateInfo.stage = static_cast<VkShaderStageFlagBits>(module.shader_stage);
         mShaderStage = static_cast<ShaderStage>(module.shader_stage);
 
         /*switch (module.shader_stage)
@@ -249,9 +243,14 @@ namespace Hence
         return Result();
     }
 
-    const VkPipelineShaderStageCreateInfo& VulkanShader::getShaderStageCreateInfo() const noexcept
+    //const VkPipelineShaderStageCreateInfo& VulkanShader::getShaderStageCreateInfo() const noexcept
+    //{
+    //    return mShaderStageCreateInfo;
+    //}
+
+    VkShaderModule VulkanShader::getVkShaderModule() noexcept
     {
-        return mShaderStageCreateInfo;
+        return mShaderModule;
     }
 
     const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& VulkanShader::getResourceLayoutTable() const noexcept

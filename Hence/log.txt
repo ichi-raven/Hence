@@ -1,5 +1,5 @@
 [36m[info] : API Name : Vulkan
-initialize start...
+ start initializing...
 [0m[36m[info] : enabled extensions : 
 [0m[36m[info] : VK_KHR_device_group_creation
 [0m[36m[info] : VK_KHR_external_fence_capabilities
@@ -27,5 +27,5 @@ initialize start...
 [0m[36m[info] : disabled debug report
 [0m[36m[info] : destroyed device
 [0m[36m[info] : destroyed instance
-[0m[36m[info] : destroyed all device memory
+[0m[36m[info] : destroying finished successfully
 [0m

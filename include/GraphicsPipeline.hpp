@@ -4,10 +4,24 @@
 #include "API.hpp"
 #include "Utility/Macro.hpp"
 
+#include "Info/GraphicsPipelineInfo.hpp"
+
 namespace Hence
 {
     template<typename API>
     class Device;
+
+    template<typename API>
+    class RenderPass;
+
+    template<typename API>
+    class BindLayout;
+
+    template<typename API>
+    class Shader;
+
+    template<typename T, typename API>
+    concept ShaderType = std::same_as<Shader<API>, T>;
 
     template<typename API>
     class GraphicsPipeline
@@ -16,12 +30,14 @@ namespace Hence
 
         using Impl = APITrait<API>::GraphicsPipelineImpl;
 
-        GraphicsPipeline(Device<API>& device);
-        ~GraphicsPipeline();
+        template<ShaderType<API>... ShaderTypes>
+        GraphicsPipeline(Device<API>& device, const GraphicsPipelineInfo& gpi, RenderPass<API>& renderpass, BindLayout<API>& bindLayout, ShaderTypes... shaders) noexcept;
+        
+        ~GraphicsPipeline() noexcept;
 
         NONCOPYABLE(GraphicsPipeline)
 
-        const Impl& getInternalImpl() const;
+        Impl& getInternalImpl() noexcept;
 
     private:
         using APIDevice = APITrait<API>::Device;
@@ -30,5 +46,7 @@ namespace Hence
         Impl mImpl;
     };
 }
+
+#include "../src/GraphicsPipeline.inl"
 
 #endif

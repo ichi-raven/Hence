@@ -21,7 +21,7 @@ namespace Hence
     {
         auto& depthStencilTarget = window.getDepthBuffer();
 
-        createRenderPass(window.getVkSwapchainImages(), depthStencilTarget.getVkImage(), window.getVkFormat(), depthStencilTarget.getVkFormat());
+        createRenderPass(window.getVkSwapchainImages().size(), window.getVkFormat(), depthStencilTarget.getVkFormat());
         VkExtent3D extent3D
         {
             window.getVkSwapchainExtent().width,
@@ -29,7 +29,9 @@ namespace Hence
             1,
         };
 
-        createFrameBuffer(window.getVkSwapchainImageViews(), extent3D);
+        std::vector<VkImageView> views(window.getVkSwapchainImageViews());
+        views.emplace_back(window.getDepthBuffer().getVkImageView());
+        createFrameBuffer(views, extent3D);
     }
 
 
@@ -45,18 +47,19 @@ namespace Hence
         vkDestroyRenderPass(vkDevice, mRenderPass, nullptr);
     }
 
-    inline Result VulkanRenderPass::createRenderPass(const std::vector<VkImage>& colorTargets, VkImage depthTarget, VkFormat colorFormat, VkFormat depthFormat) noexcept
+    inline Result VulkanRenderPass::createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat) noexcept
     {
         std::vector<VkAttachmentDescription> adVec;
         std::vector<VkAttachmentReference> arVec;
-
-        const auto size = colorTargets.size();
         
+        adVec.reserve(colorTargetNum);
+        arVec.reserve(colorTargetNum);
+
         {
-            for (size_t i = 0; i < size; ++i)
+            for (std::size_t i = 0; i < colorTargetNum; ++i)
             {
-                auto& ad = adVec.emplace_back(VkAttachmentDescription{});
-                auto& ar = arVec.emplace_back(VkAttachmentReference{});
+                auto& ad = adVec.emplace_back();
+                auto& ar = arVec.emplace_back();
 
                 //if (!rpo.mExtent)
                 //    rpo.mExtent = io.extent;
@@ -95,39 +98,45 @@ namespace Hence
                 ar.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             }
         }
-
+         
         VkSubpassDescription subpassDesc{};
         subpassDesc.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
         subpassDesc.colorAttachmentCount = static_cast<uint32_t>(arVec.size());
         subpassDesc.pColorAttachments = arVec.data();
 
-        VkAttachmentReference depthAr;
-        auto&& depthAd = adVec.emplace_back();
-        //auto& depthBuffer = mImageMap[depthTarget];
+        if (depthFormat)
+        {
+            VkAttachmentReference depthAr{};
+            auto&& depthAd = adVec.emplace_back();
+            //auto& depthBuffer = mImageMap[depthTarget];
 
-        //if (loadPrevFrame)
-        //{
-        //    depthAd.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-        //    depthAd.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        //}
-        //else
-        //{
+            //if (loadPrevFrame)
+            //{
+            //    depthAd.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+            //    depthAd.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            //}
+            //else
+            //{
             depthAd.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             depthAd.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        //}
+            //}
 
-        depthAd.format = depthFormat;
-        depthAd.samples = VK_SAMPLE_COUNT_1_BIT;
-        depthAd.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        depthAd.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        depthAr.attachment = static_cast<std::uint32_t>(size);  // attach to last index
-        depthAr.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            depthAd.format = *depthFormat;
+            depthAd.samples = VK_SAMPLE_COUNT_1_BIT;
+            depthAd.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            depthAd.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            depthAr.attachment = static_cast<std::uint32_t>(colorTargetNum);  // attach to last index
+            depthAr.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-        subpassDesc.pDepthStencilAttachment = &depthAr;
+            subpassDesc.pDepthStencilAttachment = &depthAr;
+        }
 
         VkRenderPassCreateInfo ci{};
 
-        ci.attachmentCount = static_cast<uint32_t>(adVec.size());
+
+
+        ci.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        ci.attachmentCount = static_cast<std::uint32_t>(adVec.size());
         ci.pAttachments = adVec.data();
         ci.subpassCount = 1;
         ci.pSubpasses = &subpassDesc;
@@ -142,7 +151,7 @@ namespace Hence
         return Result();
     }
 
-    inline Result VulkanRenderPass::createFrameBuffer(const std::vector<VkImageView>& ctViews, const VkExtent3D& extent) noexcept
+    inline Result VulkanRenderPass::createFrameBuffer(const std::vector<VkImageView>& views, const VkExtent3D& extent) noexcept
     {
         VkFramebufferCreateInfo fbci{};
         fbci.sType              = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -150,8 +159,8 @@ namespace Hence
         fbci.width              = extent.width;
         fbci.height             = extent.height;
         fbci.layers             = 1;
-        fbci.attachmentCount    = static_cast<uint32_t>(ctViews.size());
-        fbci.pAttachments       = ctViews.data();
+        fbci.attachmentCount    = static_cast<uint32_t>(views.size());
+        fbci.pAttachments       = views.data();
 
         mFrameBuffers.emplace_back();
 

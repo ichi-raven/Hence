@@ -1,7 +1,7 @@
 /*****************************************************************//**
  * @file   testmain.cpp
  * @brief  テスト用main関数ファイル(ライブラリとしてビルドする場合は除外する)
- * 
+ *
  * @author ichi-raven
  * @date   November 2022
  *********************************************************************/
@@ -21,29 +21,44 @@ int main()
 {
 	Device<Vulkan> device;
 
-	Window window(device, WindowInfo(640, 480, 4, "testWindow"));
+	Window window(device, WindowInfo
+		{ .width = 640,
+			.height = 480,
+			.frameCount = 3,
+			.windowName = "testWindow",
+			.vsync = true,
+			.fullScreen = false
+		});
 
 	VRAMAllocator vramAllocator(device);
 
-	{
-		BufferInfo bi;
-		bi.setVertexBuffer<Vertex>(10);
+	Buffer buffer(vramAllocator, BufferInfo
+		{
+			.memorySize = 10,
+			.usage{BufferUsageBit::Vertex},
+			.hostVisible = true,
+		});
 
-		Buffer buffer(vramAllocator, bi);
-	}
+	Image image(vramAllocator, ImageInfo
+		{
+			.width = 128,
+			.height = 128,
+			.depth = 1,
+			.sizeOfChannel = 4,
+			.format = Format::R8G8B8A8Unorm,
+			.dimension = Dimension::two,
+			.usage{ImageUsageBit::Sampled},
+			.hostVisible = true,
+		});
 
-	{
-		ImageInfo ii;
-		ii.setSRTex2D(128, 128, true);
-
-		Image image(vramAllocator, ii);
-	}
 
 	Shader vs(device, "testShaders/vert.spv");
 	Shader fs(device, "testShaders/frag.spv");
 
 	BindLayout bl(device, vs, fs);
 	BindGroup bg(device, bl);
+
+	RenderPass rp(device, window);
 
 	return 0;
 }

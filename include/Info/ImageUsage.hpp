@@ -104,7 +104,7 @@ namespace Hence
 		bool contains(ImageUsageBit checkUsageBit) const noexcept;
 
 		//! ÅI“I‚ÈUsageî•ñ
-		std::int32_t usage{};
+		std::int32_t usage;
 	};
 }
 

@@ -17,7 +17,7 @@ namespace Hence
 	template<typename API>
 	Device<API>::Device()
 	{
-		Logger::info("API Name : {}\ninitialize start...", APITrait<API>::APIName);
+		Logger::info("API Name : {}\n start initializing...", APITrait<API>::APIName);
 
 		mAPIDevice.emplace();
 	}
@@ -27,7 +27,7 @@ namespace Hence
 	{
 		mAPIDevice.reset();
 
-		Logger::info("destroyed all device memory");
+		Logger::info("destroying finished successfully");
 	}
 
 	//template<typename API>

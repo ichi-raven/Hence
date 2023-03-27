@@ -18,9 +18,11 @@ namespace Hence
 	struct BufferInfo
 	{
 
-		BufferInfo();
+		// 集成体初期化を想定
 
-		BufferInfo(size_t bufferMemorySize, BufferUsage usage, bool isHostVisible);
+		//BufferInfo();
+
+		//BufferInfo(size_t bufferMemorySize, BufferUsage usage, bool isHostVisible);
 
 		template <typename VertexType>
 		inline void setVertexBuffer(size_t vertexCount)
@@ -46,12 +48,12 @@ namespace Hence
 			hostVisible = isHostVisible;
 		}
 
+		//! バッファ全体のサイズ
+		size_t memorySize;
 		//! バッファの使用方法
 		BufferUsage usage;
 		//! CPUからのデータの読み書きが必要ならtrue
 		bool hostVisible;
-		//! バッファ全体のサイズ
-		size_t memorySize;
 
 	};
 

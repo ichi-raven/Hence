@@ -312,6 +312,27 @@
     <ClInclude Include="..\include\Info\ShaderStage.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Info\GraphicsPipelineInfo.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\Topology.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\ColorBlendState.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\RasterizerState.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\MultiSamplingState.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\DepthStencilState.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Info\ColorComponent.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Device.inl">
@@ -392,6 +413,15 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanSampler.cpp">
       <Filter>ソース ファイル\API\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanRenderPass.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Info\ColorComponent.cpp">
+      <Filter>ソース ファイル\Info</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanGraphicsPipeline.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\BindGroup.inl">
@@ -428,6 +458,12 @@
       <Filter>ソース ファイル</Filter>
     </None>
     <None Include="..\src\BindLayout.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\RenderPass.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\GraphicsPipeline.inl">
       <Filter>ソース ファイル</Filter>
     </None>
   </ItemGroup>

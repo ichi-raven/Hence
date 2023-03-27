@@ -203,14 +203,21 @@
     <ClInclude Include="..\include\Info\BorderColor.hpp" />
     <ClInclude Include="..\include\Info\BufferInfo.hpp" />
     <ClInclude Include="..\include\Info\BufferUsage.hpp" />
+    <ClInclude Include="..\include\Info\ColorBlendState.hpp" />
+    <ClInclude Include="..\include\Info\ColorComponent.hpp" />
+    <ClInclude Include="..\include\Info\DepthStencilState.hpp" />
     <ClInclude Include="..\include\Info\Dimension.hpp" />
     <ClInclude Include="..\include\Info\Filter.hpp" />
     <ClInclude Include="..\include\Info\Format.hpp" />
+    <ClInclude Include="..\include\Info\GraphicsPipelineInfo.hpp" />
     <ClInclude Include="..\include\Info\ImageInfo.hpp" />
     <ClInclude Include="..\include\Info\ImageUsage.hpp" />
+    <ClInclude Include="..\include\Info\MultiSamplingState.hpp" />
+    <ClInclude Include="..\include\Info\RasterizerState.hpp" />
     <ClInclude Include="..\include\Info\ResourceType.hpp" />
     <ClInclude Include="..\include\Info\SamplerInfo.hpp" />
     <ClInclude Include="..\include\Info\ShaderStage.hpp" />
+    <ClInclude Include="..\include\Info\Topology.hpp" />
     <ClInclude Include="..\include\Info\WindowInfo.hpp" />
     <ClInclude Include="..\include\RaytracingPipeline.hpp" />
     <ClInclude Include="..\include\RenderPass.hpp" />
@@ -247,6 +254,7 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanBindLayout.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanBuffer.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanDevice.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanGraphicsPipeline.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanImage.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanRenderPass.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanSampler.cpp" />
@@ -256,6 +264,7 @@
     <ClCompile Include="..\src\Device.inl" />
     <ClCompile Include="..\src\Info\BufferInfo.cpp" />
     <ClCompile Include="..\src\Info\BufferUsage.cpp" />
+    <ClCompile Include="..\src\Info\ColorComponent.cpp" />
     <ClCompile Include="..\src\Info\ImageUsage.cpp" />
     <ClCompile Include="..\src\Info\WindowInfo.cpp" />
     <ClCompile Include="..\src\Utility\Logger.cpp" />
@@ -268,7 +277,9 @@
     <None Include="..\src\BindGroup.inl" />
     <None Include="..\src\BindLayout.inl" />
     <None Include="..\src\Buffer.inl" />
+    <None Include="..\src\GraphicsPipeline.inl" />
     <None Include="..\src\Image.inl" />
+    <None Include="..\src\RenderPass.inl" />
     <None Include="..\src\Sampler.inl" />
     <None Include="..\src\Shader.inl" />
     <None Include="..\src\Utility\ArrayProxy.inl" />

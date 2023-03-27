@@ -10,14 +10,14 @@
 
 namespace Hence
 {
-	BufferInfo::BufferInfo()
-		: memorySize(0)
-		, usage(BufferUsageBit::Uniform)
-		, hostVisible(false)
-	{}
+	//BufferInfo::BufferInfo()
+	//	: memorySize(0)
+	//	, usage(BufferUsageBit::Uniform)
+	//	, hostVisible(false)
+	//{}
 
-	BufferInfo::BufferInfo(size_t memorySize, BufferUsage usage, bool isHostVisible)
-		: memorySize(memorySize), usage(usage), hostVisible(isHostVisible)
-	{}
+	//BufferInfo::BufferInfo(size_t memorySize, BufferUsage usage, bool isHostVisible)
+	//	: memorySize(memorySize), usage(usage), hostVisible(isHostVisible)
+	//{}
 
 }

@@ -31,12 +31,12 @@ namespace Hence
 		 * @param device 基とするデバイス
 		 * @param WindowInfo ウィンドウの設定
 		 */
-		Window(Device<API>& device, const WindowInfo& info);
+		Window(Device<API>& device, const WindowInfo& info) noexcept;
 
 		/**
 		 * @brief  デストラクタ
 		 */
-		~Window();
+		~Window() noexcept;
 
 		// コピー不可
 		NONCOPYABLE(Window)
@@ -44,13 +44,13 @@ namespace Hence
 		/**
 		 * @brief  入力を更新する
 		 */
-		void updateInput();
+		void updateInput() noexcept;
 
 		/**
 		 * @brief  このウィンドウがフォーカスされているか
 		 * @return フォーカスされていればtrue
 		 */
-		bool focused() const;
+		bool focused() const noexcept;
 
 		/**
 		 * @brief  内部実装取得
@@ -58,7 +58,7 @@ namespace Hence
 		 *
 		 * @return APIごとの内部実装
 		 */
-		const Impl& getInternalImpl() const;
+		Impl& getInternalImpl() noexcept;
 
 	private:
 		using APIDevice = APITrait<API>::Device;

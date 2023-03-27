@@ -15,7 +15,7 @@
 namespace Hence
 {
 	/**
-	 * @brief  画像リソースの使用方法を示すビットフラグ
+	 * @brief  バッファリソースの使用方法を示すビットフラグ
 	 */
 	enum class BufferUsageBit : std::int32_t
 	{

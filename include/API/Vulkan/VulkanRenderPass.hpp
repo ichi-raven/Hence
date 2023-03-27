@@ -23,21 +23,37 @@ namespace Hence
 
 	class VulkanWindow;
 
+	template<typename T>
+	concept VulkanImageType = std::same_as<T, VulkanImage>;
+
 	class VulkanRenderPass
 	{
 	public:
 
-		template<typename... VulkanImageType>
-		VulkanRenderPass(VulkanDevice& device, VulkanImageType&... colorTargets, VulkanImage& depthStencilTarget) noexcept
+		template<VulkanImageType... VulkanImageTypes>
+		VulkanRenderPass(VulkanDevice& device, VulkanImage& depthStencilTarget, VulkanImageTypes&... colorTargets) noexcept
 			: mDevice(device)
 		{
-			static_assert(sizeof...(VulkanImageType) > 0, "cannot create renderpass from empty colorTarget!");
+			static_assert(sizeof...(VulkanImageTypes) > 0, "cannot create renderpass from empty colorTarget!");
 
-			std::vector<VkImage> colorTargetImages = { colorTargets.getVkImage()...};
-			std::vector<VkImageView> colorTargetImageViews = { colorTargets.getVkImageView()... };
+			//std::vector<VkImage> colorTargetImages = { colorTargets.getVkImage()...};
+			std::vector<VkImageView> imageViews = { colorTargets.getVkImageView()... , depthStencilTarget.getVkImageView()};
 
-			createRenderPass(colorTargetImages, depthStencilTarget.getVkImage(), getVkFormat(colorTargetImages...), depthStencilTarget.getVkFormat());
-			createFrameBuffer(colorTargetImageViews, getVkExtent(colorTargets...));
+			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), depthStencilTarget.getVkFormat());
+			createFrameBuffer(imageViews, getVkExtent(colorTargets...));
+		}
+
+		template<VulkanImageType... VulkanImageTypes>
+		VulkanRenderPass(VulkanDevice& device, VulkanImageTypes&... colorTargets) noexcept
+			: mDevice(device)
+		{
+			static_assert(sizeof...(VulkanImageTypes) > 0, "cannot create renderpass from empty colorTarget!");
+
+			//std::vector<VkImage> colorTargetImages = { colorTargets.getVkImage()... };
+			std::vector<VkImageView> imageViews = { colorTargets.getVkImageView()... };
+
+			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), std::nullopt);
+			createFrameBuffer(imageViews, getVkExtent(colorTargets...));
 		}
 
 		VulkanRenderPass(VulkanDevice& device, VulkanWindow& window) noexcept;
@@ -47,17 +63,17 @@ namespace Hence
 
 	private:
 
-		inline Result createRenderPass(const std::vector<VkImage>& colorTargets, VkImage depthTarget, VkFormat colorFormat, VkFormat depthFormat) noexcept;
+		inline Result createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat) noexcept;
 
-		inline Result createFrameBuffer(const std::vector<VkImageView>& ctViews, const VkExtent3D& extent) noexcept;
+		inline Result createFrameBuffer(const std::vector<VkImageView>& views, const VkExtent3D& extent) noexcept;
 
-		template<typename HeadImage, typename... TailImages>
+		template<VulkanImageType HeadImage, VulkanImageType... TailImages>
 		inline const VkExtent3D& getVkExtent(HeadImage& head, TailImages... tails)
 		{
 			return head.getVkExtent();
 		}
 
-		template<typename HeadImage, typename... TailImages>
+		template<VulkanImageType HeadImage, VulkanImageType... TailImages>
 		inline VkFormat getVkFormat(HeadImage& head, TailImages... tails)
 		{
 			return head.getVkFormat();

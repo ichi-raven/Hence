@@ -1,3 +1,11 @@
+/*****************************************************************//**
+ * @file   RenderPass.hpp
+ * @brief  RenderPassクラスのヘッダファイル
+ * 
+ * @author ichi-raven
+ * @date   March 2023
+ *********************************************************************/
+
 #ifndef HENCE_RENDERPASS_HPP_
 #define HENCE_RENDERPASS_HPP_
 
@@ -14,22 +22,27 @@ namespace Hence
     class Image;
 
     template<typename API>
+    class Window;
+
+    template<typename T, typename API>
+    concept ImageType = std::same_as<T, Image<API>>;
+
+    template<typename API>
     class RenderPass
     {
     public:
         using Impl = APITrait<API>::RenderPassImpl;
 
-        RenderPass(Device<API>& device);
+        RenderPass(Device<API>& device, Window<API>& window) noexcept;
 
-        ~RenderPass();
+        template<ImageType<API>... ImageTypes>
+        RenderPass(Device<API>& device, Image<API> depthTarget, ImageTypes... colorTargets) noexcept;
+
+        ~RenderPass() noexcept;
 
         NONCOPYABLE(RenderPass)
 
-        void create(Image<API>& colorTarget, Image<API>& depthTarget);
-
-        void create(std::vector<Image<API>>& colorTargets, Image<API>& depthTarget);
-
-        const Impl& getInternalImpl() const;
+        Impl& getInternalImpl() noexcept;
 
     private:
         using APIDevice = APITrait<API>::Device;
@@ -38,5 +51,7 @@ namespace Hence
         Impl mImpl;
     };
 }
+
+#include "../src/RenderPass.inl"
 
 #endif
