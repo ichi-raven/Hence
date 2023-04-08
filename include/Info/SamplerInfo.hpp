@@ -16,11 +16,6 @@ namespace Hence
 {
 	struct SamplerInfo
 	{
-		// TODO:
-		SamplerInfo()
-			
-		{}
-
 		Filter minFilter;
 		Filter magFilter;
 		AddressMode addressModeU;

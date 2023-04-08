@@ -218,6 +218,7 @@
     <ClInclude Include="..\include\Info\SamplerInfo.hpp" />
     <ClInclude Include="..\include\Info\ShaderStage.hpp" />
     <ClInclude Include="..\include\Info\Topology.hpp" />
+    <ClInclude Include="..\include\Info\VertexInputState.hpp" />
     <ClInclude Include="..\include\Info\WindowInfo.hpp" />
     <ClInclude Include="..\include\RaytracingPipeline.hpp" />
     <ClInclude Include="..\include\RenderPass.hpp" />

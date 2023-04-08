@@ -18,20 +18,20 @@ namespace Hence
 {
     VulkanRenderPass::VulkanRenderPass(VulkanDevice& device, VulkanWindow& window) noexcept
         : mDevice(device)
+        , mExtent(
+            {
+                window.getVkSwapchainExtent().width,
+                window.getVkSwapchainExtent().height,
+                1,
+            })
     {
         auto& depthStencilTarget = window.getDepthBuffer();
 
         createRenderPass(window.getVkSwapchainImages().size(), window.getVkFormat(), depthStencilTarget.getVkFormat());
-        VkExtent3D extent3D
-        {
-            window.getVkSwapchainExtent().width,
-            window.getVkSwapchainExtent().height,
-            1,
-        };
 
         std::vector<VkImageView> views(window.getVkSwapchainImageViews());
         views.emplace_back(window.getDepthBuffer().getVkImageView());
-        createFrameBuffer(views, extent3D);
+        createFrameBuffer(views);
     }
 
 
@@ -151,13 +151,13 @@ namespace Hence
         return Result();
     }
 
-    inline Result VulkanRenderPass::createFrameBuffer(const std::vector<VkImageView>& views, const VkExtent3D& extent) noexcept
+    inline Result VulkanRenderPass::createFrameBuffer(const std::vector<VkImageView>& views) noexcept
     {
         VkFramebufferCreateInfo fbci{};
         fbci.sType              = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         fbci.renderPass         = mRenderPass;
-        fbci.width              = extent.width;
-        fbci.height             = extent.height;
+        fbci.width              = mExtent.width;
+        fbci.height             = mExtent.height;
         fbci.layers             = 1;
         fbci.attachmentCount    = static_cast<uint32_t>(views.size());
         fbci.pAttachments       = views.data();
@@ -173,4 +173,13 @@ namespace Hence
         return Result();
     }
 
+    VkRenderPass VulkanRenderPass::getVkRenderPass() noexcept
+    {
+        return mRenderPass;
+    }
+
+    const VkExtent3D& VulkanRenderPass::getVkExtent3D() const noexcept
+    {
+        return mExtent;
+    }
 }

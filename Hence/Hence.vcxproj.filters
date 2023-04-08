@@ -333,6 +333,9 @@
     <ClInclude Include="..\include\Info\ColorComponent.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Info\VertexInputState.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Device.inl">

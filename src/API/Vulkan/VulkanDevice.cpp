@@ -441,7 +441,7 @@ namespace Hence
 		if (pLayerPrefix)
 		{
 			//Logger::error("[{}] {}", pLayerPrefix, pMessage);
-			std::cerr << "[" << pLayerPrefix << "] : " << pMessage << "\n";
+			std::cerr << "[" << pLayerPrefix << "] : " << pMessage << "\n\n";
 		}
 
 		return ret;

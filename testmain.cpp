@@ -22,7 +22,8 @@ int main()
 	Device<Vulkan> device;
 
 	Window window(device, WindowInfo
-		{ .width = 640,
+		{
+			.width = 640,
 			.height = 480,
 			.frameCount = 3,
 			.windowName = "testWindow",
@@ -59,6 +60,53 @@ int main()
 	BindGroup bg(device, bl);
 
 	RenderPass rp(device, window);
+
+
+	GraphicsPipeline gp(device, GraphicsPipelineInfo
+		{
+			.colorBlendingState
+			{
+				.logicOp = std::nullopt,
+				.attachments = std::vector<ColorBlendAttachment>(3,
+					ColorBlendAttachment
+					{
+						.blendEnable = false,
+						.srcColor = BlendFactor::One,
+						.dstColor = BlendFactor::Zero,
+						.colorBlendOp = BlendOp::Add,
+						.srcAlpha = BlendFactor::One,
+						.dstAlpha = BlendFactor::Zero,
+						.alphaBlendOp = BlendOp::Add,
+						.colorWriteMask = {ColorComponent{ColorComponentBit::R | ColorComponentBit::G | ColorComponentBit::B | ColorComponentBit::A}},
+					}),
+				.blendConstants = {0},
+			},
+			.depthStencilState
+			{
+				.depthTestEnable = true,
+				.depthWriteEnable = true,
+				.depthCompareOp = CompareOp::Less,
+				.stencilTestEnable = false
+			},
+			.multiSampleState
+			{
+				.rasterizationSamples = SampleCount(SampleCountFlag::b1),
+			},
+			.rasterizerState
+			{
+				.depthClampEnable = false,
+				.polygonMode = PolygonMode::Fill,
+				.cullMode = CullMode::None,
+				.frontFace = FrontFace::CCW,
+				.lineWidth = 1.f,
+			},
+			.topology{Topology::TriangleList},
+			.viewport = std::nullopt,
+			.scissor = std::nullopt
+		},
+		rp,
+		bl,
+		vs, fs);
 
 	return 0;
 }

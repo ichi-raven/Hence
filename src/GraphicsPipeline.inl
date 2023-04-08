@@ -16,9 +16,9 @@ namespace Hence
 {
     template <typename API>
     template<ShaderType<API>... ShaderTypes>
-    GraphicsPipeline<API>::GraphicsPipeline(Device<API>& device, const GraphicsPipelineInfo& gpi, RenderPass<API>& renderpass, BindLayout<API>& bindLayout, ShaderTypes... shaders) noexcept
+    GraphicsPipeline<API>::GraphicsPipeline(Device<API>& device, const GraphicsPipelineInfo& gpi, RenderPass<API>& renderpass, BindLayout<API>& bindLayout, ShaderTypes&... shaders) noexcept
         : mAPIDevice(device.getInternalAPIDevice())
-        , mImpl(gpi, renderpass.getInternalImpl(), bindLayout.getInternalImpl(), shaders.getInternalImpl()...) // TODO
+        , mImpl(mAPIDevice, gpi, renderpass.getInternalImpl(), bindLayout.getInternalImpl(), shaders.getInternalImpl()...) // TODO
     {
 
     }

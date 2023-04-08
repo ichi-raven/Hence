@@ -27,6 +27,7 @@ namespace Hence
 {
 	VulkanShader::VulkanShader(VulkanDevice& vulkanDevice, std::string_view path) noexcept
         : mDevice(vulkanDevice)
+        , mShaderStage(ShaderStage::ALL)
     {
         {// load
 
@@ -52,8 +53,6 @@ namespace Hence
         }
 
         loadShaderReflection();
-
-        
 	}
 
     VulkanShader::~VulkanShader()
@@ -272,4 +271,10 @@ namespace Hence
     {
         return mEntryPoint;
     }
+
+    ShaderStage VulkanShader::getShaderStage() const noexcept
+    {
+        return mShaderStage;
+    }
+
 }

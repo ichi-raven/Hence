@@ -33,6 +33,7 @@ namespace Hence
 		template<VulkanImageType... VulkanImageTypes>
 		VulkanRenderPass(VulkanDevice& device, VulkanImage& depthStencilTarget, VulkanImageTypes&... colorTargets) noexcept
 			: mDevice(device)
+			, mExtent(getVkExtent(colorTargets...))
 		{
 			static_assert(sizeof...(VulkanImageTypes) > 0, "cannot create renderpass from empty colorTarget!");
 
@@ -40,12 +41,13 @@ namespace Hence
 			std::vector<VkImageView> imageViews = { colorTargets.getVkImageView()... , depthStencilTarget.getVkImageView()};
 
 			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), depthStencilTarget.getVkFormat());
-			createFrameBuffer(imageViews, getVkExtent(colorTargets...));
+			createFrameBuffer(imageViews);
 		}
 
 		template<VulkanImageType... VulkanImageTypes>
 		VulkanRenderPass(VulkanDevice& device, VulkanImageTypes&... colorTargets) noexcept
 			: mDevice(device)
+			, mExtent(getVkExtent(colorTargets...))
 		{
 			static_assert(sizeof...(VulkanImageTypes) > 0, "cannot create renderpass from empty colorTarget!");
 
@@ -53,11 +55,14 @@ namespace Hence
 			std::vector<VkImageView> imageViews = { colorTargets.getVkImageView()... };
 
 			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), std::nullopt);
-			createFrameBuffer(imageViews, getVkExtent(colorTargets...));
+			createFrameBuffer(imageViews);
 		}
 
 		VulkanRenderPass(VulkanDevice& device, VulkanWindow& window) noexcept;
 
+		VkRenderPass getVkRenderPass() noexcept;
+
+		const VkExtent3D& getVkExtent3D() const noexcept;
 
 		~VulkanRenderPass();
 
@@ -65,7 +70,7 @@ namespace Hence
 
 		inline Result createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat) noexcept;
 
-		inline Result createFrameBuffer(const std::vector<VkImageView>& views, const VkExtent3D& extent) noexcept;
+		inline Result createFrameBuffer(const std::vector<VkImageView>& views) noexcept;
 
 		template<VulkanImageType HeadImage, VulkanImageType... TailImages>
 		inline const VkExtent3D& getVkExtent(HeadImage& head, TailImages... tails)
@@ -83,6 +88,7 @@ namespace Hence
 
 		VkRenderPass mRenderPass;
 		std::vector<VkFramebuffer> mFrameBuffers;
+		VkExtent3D mExtent;
 	};
 }
 

@@ -35,7 +35,7 @@ namespace Hence
 
 		VkShaderModule getVkShaderModule() noexcept;
 
-		ShaderStage getVkShaderStage() noexcept;
+		ShaderStage getShaderStage() const noexcept;
 
 	private:
 		inline Result loadShaderReflection() noexcept;

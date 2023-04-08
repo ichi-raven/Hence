@@ -31,7 +31,7 @@ namespace Hence
         using Impl = APITrait<API>::GraphicsPipelineImpl;
 
         template<ShaderType<API>... ShaderTypes>
-        GraphicsPipeline(Device<API>& device, const GraphicsPipelineInfo& gpi, RenderPass<API>& renderpass, BindLayout<API>& bindLayout, ShaderTypes... shaders) noexcept;
+        GraphicsPipeline(Device<API>& device, const GraphicsPipelineInfo& gpi, RenderPass<API>& renderpass, BindLayout<API>& bindLayout, ShaderTypes&... shaders) noexcept;
         
         ~GraphicsPipeline() noexcept;
 

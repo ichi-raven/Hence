@@ -233,11 +233,11 @@ namespace Hence
         G12X4_B12X4_R12X43Plane444Unorm3Pack16,
         G16B16G16R16_422Unorm,
         B16G16R16G16_422Unorm,
-        G16_B16_R163Plane420Unorm,
-        G16_B16R162Plane420Unorm,
-        G16_B16_R163Plane422Unorm,
-        G16_B16R162Plane422Unorm,
-        G16_B16_R163Plane444Unorm,
+        G16B16R16_3Plane420Unorm,
+        G16B16R16_2Plane420Unorm,
+        G16B16R16_3Plane422Unorm,
+        G16B16R16_2Plane422Unorm,
+        G16B16R16_3Plane444Unorm,
     };
 }
 

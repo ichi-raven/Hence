@@ -77,7 +77,7 @@ namespace Hence
         BlendFactor srcAlpha;
         BlendFactor dstAlpha;
         BlendOp alphaBlendOp;
-        ColorComponent component;
+        ColorComponent colorWriteMask;
     };
 
     struct ColorBlendState

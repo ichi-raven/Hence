@@ -1,12 +1,22 @@
+/*****************************************************************//**
+ * @file   VulkanGraphicsPipeline.hpp
+ * @brief  VulkanGraphicsPipelineクラスのヘッダファイル
+ * 
+ * @author ichi-raven
+ * @date   April 2023
+ *********************************************************************/
 #ifndef HENCE_API_VULKAN_VULKANGRAPHICSPIPELINE_HPP_
 #define HENCE_API_VULKAN_VULKANGRAPHICSPIPELINE_HPP_
 
 #include <vulkan/vulkan.hpp>
 
 #include "../../Info/ShaderStage.hpp"
+#include "../../Info/Format.hpp"
 #include "../../Info/GraphicsPipelineInfo.hpp"
 
 #include "../../Utility/Result.hpp"
+
+#include "VulkanShader.hpp"
 
 namespace Hence
 {
@@ -14,7 +24,6 @@ namespace Hence
 	class VulkanDevice;
 	class VulkanRenderPass;
 	class VulkanBindLayout;
-	class VulkanShader;
 
 	template<typename T>
 	concept VulkanShaderType = std::same_as<T, VulkanShader>;
@@ -24,13 +33,15 @@ namespace Hence
 	public:
 
 		template <VulkanShaderType... VulkanShaderTypes>
-		VulkanGraphicsPipeline(VulkanDevice& device, const GraphicsPipelineInfo& gpi, VulkanRenderPass& renderpass, VulkanBindLayout& bindLayout, VulkanShaderTypes... shaders) noexcept
+		VulkanGraphicsPipeline(VulkanDevice& device, const GraphicsPipelineInfo& gpi, VulkanRenderPass& renderpass, VulkanBindLayout& bindLayout, VulkanShaderTypes&... shaders) noexcept
 			: mDevice(device)
 		{
 			std::vector<std::tuple<std::string_view, ShaderStage, VkShaderModule>> modules
 			{
-				std::make_tuple(shaders.getEntryPoint(), shaders.getgetVkShaderStage(), shaders.getVkShaderModule())...
+				std::make_tuple(shaders.getEntryPoint(), shaders.getShaderStage(), shaders.getVkShaderModule())...
 			};
+
+			createPipeline(gpi, getInputVariables(shaders...), renderpass, bindLayout, modules);
 
 		}
 
@@ -40,10 +51,35 @@ namespace Hence
 
 	private:
 
-		inline Result createPipeline(const GraphicsPipelineInfo& gpi, VkRenderPass& renderpass, VulkanBindLayout& bindlayout, const std::vector<std::tuple<std::string_view, ShaderStage, VkShaderModule>>& shaderStages) noexcept;
+		Result createPipeline(const GraphicsPipelineInfo& gpi, const std::vector<Format>& inputVars, VulkanRenderPass& renderpass, VulkanBindLayout& bindlayout, const std::vector<std::tuple<std::string_view, ShaderStage, VkShaderModule>>& shaderStages) noexcept;
+
+		template<VulkanShaderType Head, VulkanShaderType... Tails>
+		const std::vector<Format>& getInputVariables(const Head& head, const Tails&... tails)
+		{
+			
+			if (head.getShaderStage() == ShaderStage::Vertex)
+			{
+				return head.getInputVariables();
+			}
+			else
+			{
+				if constexpr (sizeof...(Tails) > 0)
+				{
+					getInputVariables(tails...);
+				}
+				else
+				{
+					assert(!"no vertex shader!");
+					return head.getInputVariables();
+				}
+			}
+
+			return head.getInputVariables();
+		}
 
 		VulkanDevice& mDevice;
 
+		VkPipelineLayout mPipelineLayout;
 		VkPipeline mPipeline;
 	};
 }
