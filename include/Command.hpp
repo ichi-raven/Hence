@@ -11,6 +11,9 @@
 
 #include "API.hpp"
 #include "Utility/Macro.hpp"
+#include "Utility/ArrayProxy.hpp"
+
+#include "Info/ClearValue.hpp"
 
 #include <cstdint>
 

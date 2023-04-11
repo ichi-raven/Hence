@@ -29,7 +29,7 @@ namespace Hence
 
 		void bind(std::uint32_t set, std::uint32_t binding, VulkanImage& image) noexcept;
 
-		const std::vector<VkDescriptorSet>& getDescriptorSet() noexcept;
+		const std::vector<VkDescriptorSet>& getDescriptorSets() noexcept;
 
 	private:
 
