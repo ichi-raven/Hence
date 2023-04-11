@@ -62,6 +62,8 @@ namespace Hence
 
 		VkRenderPass getVkRenderPass() noexcept;
 
+		const std::vector<VkFramebuffer>& getVkFrameBuffers() noexcept;
+
 		const VkExtent3D& getVkExtent3D() const noexcept;
 
 		~VulkanRenderPass();

@@ -49,6 +49,8 @@ namespace Hence
 
 		VkPipeline getVkPipeline() noexcept;
 
+		VkPipelineLayout getVkPipelineLayout() noexcept;
+
 	private:
 
 		Result createPipeline(const GraphicsPipelineInfo& gpi, const std::vector<Format>& inputVars, VulkanRenderPass& renderpass, VulkanBindLayout& bindlayout, const std::vector<std::tuple<std::string_view, ShaderStage, VkShaderModule>>& shaderStages) noexcept;

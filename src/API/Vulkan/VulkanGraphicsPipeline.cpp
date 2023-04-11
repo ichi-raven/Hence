@@ -32,6 +32,12 @@ namespace Hence
 		return mPipeline;
 	}
 
+	VkPipelineLayout VulkanGraphicsPipeline::getVkPipelineLayout() noexcept
+	{
+		return mPipelineLayout;
+	}
+
+
 	Result VulkanGraphicsPipeline::createPipeline(const GraphicsPipelineInfo& gpi, const std::vector<Format>& inputVars, VulkanRenderPass& renderpass, VulkanBindLayout& bindlayout, const std::vector<std::tuple<std::string_view, ShaderStage, VkShaderModule>>& shaderStages) noexcept
 	{
 		VkVertexInputBindingDescription ib{ .binding = 0, .inputRate = VK_VERTEX_INPUT_RATE_VERTEX };

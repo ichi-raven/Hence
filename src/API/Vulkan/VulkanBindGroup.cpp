@@ -100,7 +100,7 @@ namespace Hence
     }
 
 
-    const std::vector<VkDescriptorSet>& VulkanBindGroup::getDescriptorSet() noexcept
+    const std::vector<VkDescriptorSet>& VulkanBindGroup::getDescriptorSets() noexcept
     {
         if (mChanged)
         {

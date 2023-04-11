@@ -108,5 +108,14 @@ int main()
 		bl,
 		vs, fs);
 
+	Command command(device);
+
+	command.begin(rp);
+
+	command.setGraphicsPipeline(gp);
+
+	
+
+
 	return 0;
 }

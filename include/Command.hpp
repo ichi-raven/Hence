@@ -70,7 +70,7 @@ namespace Hence
          *  
          * @param renderpass 描画を行うRenderPass
          */
-        Result begin(RenderPass<API>& renderpass);
+        Result begin(RenderPass<API>& renderpass, const std::uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const DepthClearValue& dcv) noexcept;
 
         /** 
          * @brief コンピュートモードでコマンド書き込み開始
@@ -112,6 +112,18 @@ namespace Hence
          * @param bindGroup 使用するバインドグループ
          */
         Result setBindGroup(const BindGroup<API>& bindGroup, const std::uint8_t space = 0);
+
+        /** 
+         * @brief  頂点バッファをセットする
+         *  
+         * @return 結果
+         */
+        Result setVertexBuffer(Buffer<API>& vertexBuffer);
+
+        /**
+         * @brief  インデックスバッファをセットする
+         */
+        Result setIndexBuffer(Buffer<API>& indexBuffer);
 
         /** 
          * @brief 描画を行う

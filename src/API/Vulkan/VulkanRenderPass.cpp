@@ -167,7 +167,7 @@ namespace Hence
         if (VK_FAILED(res, vkCreateFramebuffer(mDevice.getDevice(), &fbci, nullptr, &mFrameBuffers.back())))
         {
             Logger::error("failed to create framebuffer! (native result : {})", static_cast<std::int32_t>(res));
-            return Result(res);
+            return Result(static_cast<std::int32_t>(res));
         }
 
         return Result();
@@ -176,6 +176,11 @@ namespace Hence
     VkRenderPass VulkanRenderPass::getVkRenderPass() noexcept
     {
         return mRenderPass;
+    }
+
+    const std::vector<VkFramebuffer>& VulkanRenderPass::getVkFrameBuffers() noexcept
+    {
+        return mFrameBuffers;
     }
 
     const VkExtent3D& VulkanRenderPass::getVkExtent3D() const noexcept
