@@ -5,7 +5,6 @@
  * @author ichi-raven
  * @date   November 2022
  *********************************************************************/
-
 #ifndef HENCE_COMMAND_HPP_
 #define HENCE_COMMAND_HPP_
 
@@ -58,7 +57,7 @@ namespace Hence
          *  
          * @param device 基とするデバイス
          */
-        Command(Device<API>& device);
+        Command(Device<API>& device, const std::uint32_t bufferingCount);
 
         /** 
          * @brief デストラクタ
@@ -73,7 +72,7 @@ namespace Hence
          *  
          * @param renderpass 描画を行うRenderPass
          */
-        Result begin(RenderPass<API>& renderpass, const std::uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const DepthClearValue& dcv) noexcept;
+        Result begin(RenderPass<API>& renderpass, ArrayProxy<ColorClearValue> ccvs, const DepthClearValue& dcv) noexcept;
 
         /** 
          * @brief コンピュートモードでコマンド書き込み開始

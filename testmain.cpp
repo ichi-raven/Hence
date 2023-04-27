@@ -19,16 +19,23 @@ using namespace Hence;
 
 int main()
 {
+	constexpr std::uint32_t kWidth				= 640;
+	constexpr std::uint32_t kHeight				= 480;
+	constexpr std::uint32_t kFrameBufferCount	= 3;
+	constexpr std::string_view kWindowName		= "testWindow";
+	constexpr bool kVSyncEnable					= true;
+	constexpr bool kFullScreen					= false;
+
 	Device<Vulkan> device;
 
 	Window window(device, WindowInfo
 		{
-			.width = 640,
-			.height = 480,
-			.frameCount = 3,
-			.windowName = "testWindow",
-			.vsync = true,
-			.fullScreen = false
+			.width			= kWidth,
+			.height			= kHeight,
+			.frameCount		= kFrameBufferCount,
+			.windowName		= kWindowName,
+			.vsync			= kVSyncEnable,
+			.fullScreen		= kFullScreen
 		});
 
 	VRAMAllocator vramAllocator(device);
@@ -60,7 +67,6 @@ int main()
 	BindGroup bg(device, bl);
 
 	RenderPass rp(device, window);
-
 
 	GraphicsPipeline gp(device, GraphicsPipelineInfo
 		{
@@ -108,14 +114,27 @@ int main()
 		bl,
 		vs, fs);
 
-	Command command(device);
+	Command command(device, kFrameBufferCount);
 
-	command.begin(rp);
+	ColorClearValue ccv = std::array<std::uint32_t, 4>{ 0, 0, 0, 0 };
+	DepthClearValue dcv
+	{
+		.depth		= 1.0,
+		.stencil	= 0u
+	};
+
+	command.begin(rp, ccv, dcv);
 
 	command.setGraphicsPipeline(gp);
 
-	
+	command.end();
 
+	while (true)
+	{
+		command.execute();
+
+		window.present();
+	}
 
 	return 0;
 }

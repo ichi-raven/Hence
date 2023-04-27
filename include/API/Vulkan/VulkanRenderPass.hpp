@@ -41,7 +41,7 @@ namespace Hence
 			std::vector<VkImageView> imageViews = { colorTargets.getVkImageView()... , depthStencilTarget.getVkImageView()};
 
 			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), depthStencilTarget.getVkFormat());
-			createFrameBuffer(imageViews);
+			createFrameBufferSumUp(imageViews);
 		}
 
 		template<VulkanImageType... VulkanImageTypes>
@@ -55,7 +55,7 @@ namespace Hence
 			std::vector<VkImageView> imageViews = { colorTargets.getVkImageView()... };
 
 			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), std::nullopt);
-			createFrameBuffer(imageViews);
+			createFrameBufferSumUp(imageViews);
 		}
 
 		VulkanRenderPass(VulkanDevice& device, VulkanWindow& window) noexcept;
@@ -72,7 +72,9 @@ namespace Hence
 
 		inline Result createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat) noexcept;
 
-		inline Result createFrameBuffer(const std::vector<VkImageView>& views) noexcept;
+		inline Result createFrameBufferEach(const std::vector<VkImageView>& views) noexcept;
+
+		inline Result createFrameBufferSumUp(const std::vector<VkImageView>& views) noexcept;
 
 		template<VulkanImageType HeadImage, VulkanImageType... TailImages>
 		inline const VkExtent3D& getVkExtent(HeadImage& head, TailImages... tails)

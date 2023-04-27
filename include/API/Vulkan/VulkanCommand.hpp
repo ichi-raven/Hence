@@ -110,8 +110,14 @@ namespace Hence
         Result execute() noexcept;
 
     private:
+
         VulkanDevice& mDevice;
+        //std::vector<CommandInternal> mCommands;
+
         VkCommandBuffer mCommandBuffer;
+        VkFence mFence;
+
+        //std::vector<VkSemaphore> mSemaphores;
 	};
 }
 

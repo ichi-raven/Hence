@@ -160,6 +160,7 @@
     <ClInclude Include="..\include\API\DirectX12\DirectX12RaytracingPipeline.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12RenderPass.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12Sampler.hpp" />
+    <ClInclude Include="..\include\API\DirectX12\DirectX12Semaphore.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12Shader.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12VRAMAllocator.hpp" />
     <ClInclude Include="..\include\API\DirectX12\DirectX12Window.hpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="..\include\API\Vulkan\VulkanRaytracingPipeline.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanRenderPass.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanSampler.hpp" />
+    <ClInclude Include="..\include\API\Vulkan\VulkanSemaphore.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanShader.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanVRAMAllocator.hpp" />
     <ClInclude Include="..\include\API\Vulkan\VulkanWindow.hpp" />
@@ -224,6 +226,7 @@
     <ClInclude Include="..\include\RaytracingPipeline.hpp" />
     <ClInclude Include="..\include\RenderPass.hpp" />
     <ClInclude Include="..\include\Sampler.hpp" />
+    <ClInclude Include="..\include\Semaphore.hpp" />
     <ClInclude Include="..\include\Shader.hpp" />
     <ClInclude Include="..\include\Utility\ArrayProxy.hpp" />
     <ClInclude Include="..\include\Utility\Constants.hpp" />

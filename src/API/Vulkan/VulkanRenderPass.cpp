@@ -31,7 +31,8 @@ namespace Hence
 
         std::vector<VkImageView> views(window.getVkSwapchainImageViews());
         views.emplace_back(window.getDepthBuffer().getVkImageView());
-        createFrameBuffer(views);
+        
+        createFrameBufferEach(views);
     }
 
 
@@ -151,7 +152,35 @@ namespace Hence
         return Result();
     }
 
-    inline Result VulkanRenderPass::createFrameBuffer(const std::vector<VkImageView>& views) noexcept
+    inline Result VulkanRenderPass::createFrameBufferEach(const std::vector<VkImageView>& views) noexcept
+    {
+        VkFramebufferCreateInfo fbci{};
+        fbci.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        fbci.renderPass = mRenderPass;
+        fbci.width = mExtent.width;
+        fbci.height = mExtent.height;
+        fbci.layers = 1;
+
+        mFrameBuffers.reserve(views.size());
+
+        for (const auto& view : views)
+        {
+            mFrameBuffers.emplace_back();
+
+            fbci.attachmentCount = 1u;
+            fbci.pAttachments = &view;
+
+            if (VK_FAILED(res, vkCreateFramebuffer(mDevice.getDevice(), &fbci, nullptr, &mFrameBuffers.back())))
+            {
+                Logger::error("failed to create framebuffer! (native result : {})", static_cast<std::int32_t>(res));
+                return Result(static_cast<std::int32_t>(res));
+            }
+        }
+
+        return Result();
+    }
+
+    inline Result VulkanRenderPass::createFrameBufferSumUp(const std::vector<VkImageView>& views) noexcept
     {
         VkFramebufferCreateInfo fbci{};
         fbci.sType              = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

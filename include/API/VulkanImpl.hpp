@@ -15,6 +15,6 @@
 #include "Vulkan/VulkanGraphicsPipeline.hpp"
 #include "Vulkan/VulkanComputePipeline.hpp"
 #include "Vulkan/VulkanRaytracingPipeline.hpp"
-
+#include "Vulkan/VulkanSemaphore.hpp"
 
 #endif

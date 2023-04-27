@@ -15,6 +15,7 @@
 #include "DirectX12/DirectX12GraphicsPipeline.hpp"
 #include "DirectX12/DirectX12ComputePipeline.hpp"
 #include "DirectX12/DirectX12RaytracingPipeline.hpp"
+#include "DirectX12/DirectX12Semaphore.hpp"
 
 
 #endif

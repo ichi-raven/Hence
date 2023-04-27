@@ -13,10 +13,7 @@
 
 namespace Hence
 {
-    struct ColorClearValue
-    {
-        std::variant<std::array<float, 4>, std::array<std::int32_t, 4>, std::array<std::uint32_t, 4>> value;
-    };
+    using ColorClearValue = std::variant<std::array<float, 4>, std::array<std::int32_t, 4>, std::array<std::uint32_t, 4>>;
 
     struct DepthClearValue
     {
