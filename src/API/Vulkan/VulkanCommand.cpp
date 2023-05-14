@@ -14,26 +14,30 @@
 #include "../../../include/API/Vulkan/VulkanGraphicsPipeline.hpp"
 #include "../../../include/API/Vulkan/VulkanBindGroup.hpp"
 #include "../../../include/API/Vulkan/VulkanBuffer.hpp"
+#include "../../../include/API/Vulkan/VulkanSemaphore.hpp"
 
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
 
 
 namespace Hence
 {
-	VulkanCommand::VulkanCommand(VulkanDevice& device) noexcept
-		: mDevice(device)
+	VulkanCommand::VulkanCommand(VulkanDevice* pVulkanDevice) noexcept
+		: mpDevice(pVulkanDevice)
+		, mFence(VK_NULL_HANDLE)
 	{
+		assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
+
 		{
 			VkCommandBufferAllocateInfo ai
 			{
 				.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 				.pNext = nullptr,
-				.commandPool = mDevice.getCommandPool(),
+				.commandPool = mpDevice->getCommandPool(),
 				.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
 				.commandBufferCount = 1,
 			};
 
-			if (VK_FAILED(res, vkAllocateCommandBuffers(mDevice.getDevice(), &ai, &mCommandBuffer)))
+			if (VK_FAILED(res, vkAllocateCommandBuffers(mpDevice->getDevice(), &ai, &mCommandBuffer)))
 			{
 				Logger::error("failed to allocate command buffer! (native result : {})", static_cast<std::int32_t>(res));
 				return;
@@ -48,7 +52,7 @@ namespace Hence
 				.flags = 0
 			};
 
-			if (VK_FAILED(res, vkCreateFence(mDevice.getDevice(), &ci, nullptr, &mFence)))
+			if (VK_FAILED(res, vkCreateFence(mpDevice->getDevice(), &ci, nullptr, &mFence)))
 			{
 				Logger::error("failed to create fences! (native result : {})", static_cast<std::int32_t>(res));
 				return;
@@ -61,15 +65,15 @@ namespace Hence
 	VulkanCommand::~VulkanCommand() noexcept
 	{
 
-		if (VK_FAILED(res, vkWaitForFences(mDevice.getDevice(), 1, &mFence, VK_TRUE, std::numeric_limits<std::uint64_t>::max())))
+		if (VK_FAILED(res, vkWaitForFences(mpDevice->getDevice(), 1, &mFence, VK_TRUE, 100)))
 		{
 			Logger::error("failed to wait fences! (native result : {})", static_cast<std::int32_t>(res));
 			return;
 		}
 
-		vkDestroyFence(mDevice.getDevice(), mFence, nullptr);
+		vkDestroyFence(mpDevice->getDevice(), mFence, nullptr);
 
-		vkFreeCommandBuffers(mDevice.getDevice(), mDevice.getCommandPool(), 1, &mCommandBuffer);
+		vkFreeCommandBuffers(mpDevice->getDevice(), mpDevice->getCommandPool(), 1, &mCommandBuffer);
 	}
 
 	Result VulkanCommand::begin(VulkanRenderPass& renderpass, const std::uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const std::optional<DepthClearValue>& dcv) noexcept
@@ -92,7 +96,8 @@ namespace Hence
 
 
 		// renderpass
-		VkRect2D area;
+		VkRect2D area{};
+
 		{
 			const auto& ext = renderpass.getVkExtent3D();
 
@@ -113,26 +118,35 @@ namespace Hence
 		{
 			const auto& frameBuffers = renderpass.getVkFrameBuffers();
 
+			// サイズの不一致をチェック
+			if (frameBuffers.size() <= frameBufferIndex)
+			{
+				Logger::error("invalid framebuffer index! (specified framebuffer index : {})", frameBufferIndex);
+				return Result(0);
+			}
+
 			std::vector<VkClearValue> cvs(ccvs.size() + static_cast<std::size_t>(!!dcv));
 
-			for (std::size_t i = 0; const auto & cv : ccvs)
+			for (std::size_t i = 0; const auto& cv : ccvs)
 			{
 				switch (cv.index())
 				{
 				case 0: // float
-					std::memcpy(cvs[i].color.float32, std::get<0>(cv).data(), sizeof(float) * 4);
+					std::memcpy(cvs[i].color.float32,	std::get<0>(cv).data(),	sizeof(float) * 4);
 					break;
 				case 1: // int32_t
-					std::memcpy(cvs[i].color.int32, std::get<1>(cv).data(), sizeof(std::int32_t) * 4);
+					std::memcpy(cvs[i].color.int32,		std::get<1>(cv).data(),	sizeof(std::int32_t) * 4);
 					break;
 				case 2: // uint32_t 
-					std::memcpy(cvs[i].color.uint32, std::get<2>(cv).data(), sizeof(std::uint32_t) * 4);
+					std::memcpy(cvs[i].color.uint32,	std::get<2>(cv).data(),	sizeof(std::uint32_t) * 4);
 					break;
 				default:
 					Logger::error("invalid color clear value variant type!");
 					return Result(0);
 					break;
 				}
+
+				// 更新
 				++i;
 			}
 
@@ -152,10 +166,9 @@ namespace Hence
 				.renderPass = renderpass.getVkRenderPass(),
 				.framebuffer = frameBuffers.at(frameBufferIndex),
 				.renderArea = area,
-				.clearValueCount = cvs.size(),
+				.clearValueCount = static_cast<std::uint32_t>(cvs.size()),
 				.pClearValues = cvs.data(),
 			};
-
 
 			vkCmdBeginRenderPass(mCommandBuffer, &bi, VK_SUBPASS_CONTENTS_INLINE);
 
@@ -164,7 +177,7 @@ namespace Hence
 		return Result();
 	}
 
-	Result VulkanCommand::end()
+	Result VulkanCommand::end() noexcept
 	{
 
 		vkEndCommandBuffer(mCommandBuffer);
@@ -175,28 +188,35 @@ namespace Hence
 	Result VulkanCommand::setGraphicsPipeline(VulkanGraphicsPipeline& pipeline) noexcept
 	{
 		vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getVkPipeline());
+		mPipelineLayout = pipeline.getVkPipelineLayout();
+
+		return Result();
 	}
 
-	Result VulkanCommand::setBindGroup(VulkanGraphicsPipeline& pipeline, VulkanBindGroup& bindGroup, const std::uint8_t space = 0) noexcept
+	Result VulkanCommand::setBindGroup(VulkanBindGroup& bindGroup, const std::uint8_t space) noexcept
 	{
 		const auto& sets = bindGroup.getDescriptorSets();
+
+		if (!mPipelineLayout)
+		{
+			Logger::error("set pipeline first!");
+			return Result(0);
+		}
 
 		vkCmdBindDescriptorSets
 		(
 			mCommandBuffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			pipeline.getVkPipelineLayout(),
+			*mPipelineLayout,
 			0,
-			sets.size(),
+			static_cast<std::uint32_t>(sets.size()),
 			sets.data(),
 			0,
 			nullptr
 		);
 
-
 		return Result();
 	}
-
 
 	Result VulkanCommand::setVertexBuffer(VulkanBuffer& vertexBuffer) noexcept
 	{
@@ -217,7 +237,6 @@ namespace Hence
 
 	Result VulkanCommand::render(const std::uint32_t vertexCount, const std::uint32_t instanceCount, const std::uint32_t firstVertex, const std::uint32_t firstInstance) noexcept
 	{
-
 		vkCmdDraw(mCommandBuffer, vertexCount, instanceCount, firstVertex, firstInstance);
 
 		return Result();
@@ -231,39 +250,39 @@ namespace Hence
 		return Result();
 	}
 
-	Result VulkanCommand::execute() noexcept
+	Result VulkanCommand::execute(VulkanSemaphore& waitSemaphore, VulkanSemaphore& signalSemaphore) noexcept
 	{
 
-		if (VK_FAILED(res, vkWaitForFences(mDevice.getDevice(), 1, &mFence, VK_TRUE, std::numeric_limits<std::uint64_t>::max())))
+		if (VK_FAILED(res, vkWaitForFences(mpDevice->getDevice(), 1, &mFence, VK_TRUE, std::numeric_limits<std::uint64_t>::max())))
 		{
 			Logger::error("failed to wait previous fence!");
 			return Result(static_cast<std::int32_t>(res));
 		}
 
-		if (VK_FAILED(res, vkAcquireNextImageKHR(mDevice, wo.mSwapchain.value(), std::numeric_limits<std::uint64_t>::max(), rpo.mPresentCompletedSems[wo.mCurrentFrame], VK_NULL_HANDLE, &mNowFrameBufferIndex)))
-		{
-
-		}
-
 		VkPipelineStageFlags waitDstStageMasks[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		
+		auto waitSem	= waitSemaphore.getVkSemaphore();
+		auto signalSem	= signalSemaphore.getVkSemaphore();
+
 		VkSubmitInfo submitInfo
 		{
 			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
 			.pNext = nullptr,
 			.waitSemaphoreCount = 1,
-			.pWaitSemaphores = {},
+			.pWaitSemaphores = {&waitSem},
 			.pWaitDstStageMask = waitDstStageMasks,
 			.commandBufferCount = 1,
 			.pCommandBuffers = &mCommandBuffer,
 			.signalSemaphoreCount = 1,
-			.pSignalSemaphores = {}
+			.pSignalSemaphores = {&signalSem}
 		};
 
-		if (VK_FAILED(res, vkQueueSubmit(mDevice.getDeviceQueue(), 1, &submitInfo, mFence)))
+		if (VK_FAILED(res, vkQueueSubmit(mpDevice->getDeviceQueue(), 1, &submitInfo, mFence)))
 		{
 			Logger::error("failed to submit command!");
 			return Result(static_cast<std::int32_t>(res));
 		}
+
+		return Result();
 	}
 }

@@ -21,7 +21,7 @@ namespace Hence
 	{
 	public:
 
-		VulkanBindGroup(VulkanDevice& vulkanDevice, VulkanBindLayout& vulkanBindLayout) noexcept;
+		VulkanBindGroup(VulkanDevice* pVulkanDevice, VulkanBindLayout& vulkanBindLayout) noexcept;
 
 		~VulkanBindGroup();
 
@@ -33,7 +33,7 @@ namespace Hence
 
 	private:
 
-		VulkanDevice& mDevice;
+		VulkanDevice* mpDevice;
 
 		bool mChanged;
 		std::vector<std::vector<VkWriteDescriptorSet>> mWriteDescriptorSets;

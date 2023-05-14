@@ -38,14 +38,13 @@ namespace Hence
         ~Device();
 
         // コピー不可
-        NONCOPYABLE(Device)
+        NONCOPYABLE(Device);
 
         ///** 
         // * @brief  明示的に初期化する
         // *  
         // */
         //void initialize();
-
 
         ///** 
         // * @brief  明示的に破棄する

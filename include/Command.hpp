@@ -24,6 +24,10 @@ namespace Hence
 
     // 前方宣言
     template<typename API>
+    class Semaphore;
+
+    // 前方宣言
+    template<typename API>
     class GraphicsPipeline;
 
     // 前方宣言
@@ -52,60 +56,65 @@ namespace Hence
         // 内部実装型(一般にユーザが使用する必要はない)
         using Impl = APITrait<API>::CommandImpl;
 
+        Command() noexcept;
+
         /** 
          * @brief コンストラクタ
          *  
          * @param device 基とするデバイス
          */
-        Command(Device<API>& device, const std::uint32_t bufferingCount);
+        Command(Device<API>& device) noexcept;
 
         /** 
          * @brief デストラクタ
          *  
          */
-        ~Command();
+        ~Command() noexcept;
 
-        NONCOPYABLE(Command)
+        NONCOPYABLE(Command);
+
+        Command(Command<API>&& src);
+        Command<API>& operator=(Command<API>&& src);
 
         /** 
          * @brief コマンド書き込み開始
          *  
          * @param renderpass 描画を行うRenderPass
          */
-        Result begin(RenderPass<API>& renderpass, ArrayProxy<ColorClearValue> ccvs, const DepthClearValue& dcv) noexcept;
+        Result begin(RenderPass<API>& renderpass, const uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const DepthClearValue& dcv) noexcept;
 
         /** 
          * @brief コンピュートモードでコマンド書き込み開始
          *  
          */
-        Result beginCompute();
+        Result beginCompute() noexcept;
 
         /** 
          * @brief コマンド書き込み終了
          *  
          */
-        Result end();
+        Result end() noexcept;
 
         /** 
          * @brief 使用する描画パイプラインをセットする
          *  
          * @param pipeline 使用する描画パイプライン
          */
-        Result setGraphicsPipeline(const GraphicsPipeline<API>& pipeline);
+        Result setGraphicsPipeline(GraphicsPipeline<API>& pipeline) noexcept;
 
         /**
          * @brief 使用するコンピュートパイプラインをセットする
          *
          * @param pipeline 使用するコンピュートパイプライン
          */
-        Result setComputePipeline(const ComputePipeline<API>& pipeline);
+        Result setComputePipeline(ComputePipeline<API>& pipeline) noexcept;
 
         /** 
          * @brief 使用するレイトレースパイプラインをセットする
          *  
          * @param pipeline 使用するレイトレースパイプライン
          */
-        Result setRaytracingPipeline(const RaytracingPipeline<API>& pipeline);
+        Result setRaytracingPipeline(RaytracingPipeline<API>& pipeline) noexcept;
 
         /** 
          * @brief  使用するシェーダリソースのバインドグループをセットする
@@ -113,38 +122,40 @@ namespace Hence
          * @param space 割り当てるspace(HLSL)
          * @param bindGroup 使用するバインドグループ
          */
-        Result setBindGroup(const BindGroup<API>& bindGroup, const std::uint8_t space = 0);
+        Result setBindGroup(BindGroup<API>& bindGroup, const std::uint8_t space) noexcept;
 
         /** 
          * @brief  頂点バッファをセットする
          *  
          * @return 結果
          */
-        Result setVertexBuffer(Buffer<API>& vertexBuffer);
+        Result setVertexBuffer(Buffer<API>& vertexBuffer) noexcept;
 
         /**
          * @brief  インデックスバッファをセットする
          */
-        Result setIndexBuffer(Buffer<API>& indexBuffer);
+        Result setIndexBuffer(Buffer<API>& indexBuffer) noexcept;
 
         /** 
          * @brief 描画を行う
          *  
          */
-        Result render();
+        Result render(const std::uint32_t vertexCount, const std::uint32_t instanceCount, const std::uint32_t firstVertex, const std::uint32_t firstInstance) noexcept;
 
-        Result renderIndexed();
+        Result renderIndexed(const std::uint32_t indexCount, const std::uint32_t instanceCount, const std::uint32_t firstIndex, const std::uint32_t vertexOffset, const std::uint32_t firstInstance) noexcept;
 
-        Result execute();
+        Result execute(Semaphore<API>& waitSemaphore, Semaphore<API>& signalSemaphore) noexcept;
 
-        const Impl& getInternalImpl() const;
+        Impl& getInternalImpl() noexcept;
 
     private:
-        using APIDevice = APITrait<API>::Device;
+        //using APIDevice = APITrait<API>::Device;
 
-        APIDevice& mDevice;
-        Impl mImpl;
+        //APIDevice& mAPIDevice;
+        std::optional<Impl> mImpl;
     };
 }
+
+#include "../src/Command.inl"
 
 #endif

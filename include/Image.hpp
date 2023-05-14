@@ -19,6 +19,8 @@ namespace Hence
 
         using Impl = APITrait<API>::ImageImpl;
 
+        Image() noexcept;
+
         Image(VRAMAllocator<API>& VRAMAllocator, const ImageInfo& imageInfo) noexcept;
         
         ~Image() noexcept;
@@ -30,7 +32,7 @@ namespace Hence
     private:
         using APIVRAMAllocator = APITrait<API>::VRAMAllocatorImpl;
 
-        APIVRAMAllocator& mAPIVRAMAllocator;
+        APIVRAMAllocator* mpAPIVRAMAllocator;
         std::optional<Impl> mImpl;
     };
 }

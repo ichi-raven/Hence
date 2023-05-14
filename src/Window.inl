@@ -7,12 +7,20 @@
  *********************************************************************/
 #ifdef HENCE_WINDOW_HPP_
 
+#include "../include/Semaphore.hpp"
+
 namespace Hence
 {
 	template<typename API>
+	Window<API>::Window() noexcept
+	{
+
+	}
+
+	template<typename API>
 	Window<API>::Window(Device<API>& device, const WindowInfo& windowInfo) noexcept
-		: mAPIDevice(device.getInternalAPIDevice())
-		, mImpl(mAPIDevice, windowInfo)
+		//: mAPIDevice(device.getInternalAPIDevice())
+		: mImpl(std::make_optional<Impl>(&device.getInternalAPIDevice(), windowInfo))
 	{
 
 	}
@@ -26,19 +34,41 @@ namespace Hence
 	template<typename API>
 	void Window<API>::updateInput() noexcept 
 	{
-		mImpl.updateInput();
+		assert(mImpl || !"invalid window! (construct with device first!)");
+
+		mImpl->updateInput();
 	}
 
 	template<typename API>
 	bool Window<API>::focused() const noexcept
 	{
-		return mImpl.focused();
+		assert(mImpl || !"invalid window! (construct with device first!)");
+
+		return mImpl->focused();
+	}
+
+	template<typename API>
+	std::uint32_t Window<API>::acquireNextImage(Semaphore<API>& signalSemaphore) noexcept
+	{
+		assert(mImpl || !"invalid window! (construct with device first!)");
+
+		return mImpl->acquireNextImage(signalSemaphore.getInternalImpl());
+	}
+
+	template<typename API>
+	Result Window<API>::present(const std::uint32_t frameBufferIndex, Semaphore<API>& waitSemaphore) noexcept
+	{
+		assert(mImpl || !"invalid window! (construct with device first!)");
+
+		return mImpl->present(frameBufferIndex, waitSemaphore.getInternalImpl());
 	}
 
 	template<typename API>
 	Window<API>::template Impl& Window<API>::getInternalImpl() noexcept
 	{
-		return mImpl;
+		assert(mImpl || !"invalid window! (construct with device first!)");
+
+		return *mImpl;
 	}
 }
 

@@ -16,8 +16,8 @@
 
 namespace Hence
 {
-    VulkanRenderPass::VulkanRenderPass(VulkanDevice& device, VulkanWindow& window) noexcept
-        : mDevice(device)
+    VulkanRenderPass::VulkanRenderPass(VulkanDevice* pVulkanDevice, VulkanWindow& window) noexcept
+        : mpDevice(pVulkanDevice)
         , mExtent(
             {
                 window.getVkSwapchainExtent().width,
@@ -25,20 +25,21 @@ namespace Hence
                 1,
             })
     {
+        assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
+
         auto& depthStencilTarget = window.getDepthBuffer();
 
-        createRenderPass(window.getVkSwapchainImages().size(), window.getVkFormat(), depthStencilTarget.getVkFormat());
+        createRenderPass(1, window.getVkFormat(), depthStencilTarget.getVkFormat());
 
         std::vector<VkImageView> views(window.getVkSwapchainImageViews());
-        views.emplace_back(window.getDepthBuffer().getVkImageView());
         
-        createFrameBufferEach(views);
+        createFrameBufferEach(views, depthStencilTarget.getVkImageView());
     }
 
 
     VulkanRenderPass::~VulkanRenderPass()
     {
-        const auto vkDevice = mDevice.getDevice();
+        const auto vkDevice = mpDevice->getDevice();
 
         for (auto& fb : mFrameBuffers)
         {
@@ -142,7 +143,7 @@ namespace Hence
         ci.subpassCount = 1;
         ci.pSubpasses = &subpassDesc;
 
-        if (VK_FAILED(res, vkCreateRenderPass(mDevice.getDevice(), &ci, nullptr, &mRenderPass)))
+        if (VK_FAILED(res, vkCreateRenderPass(mpDevice->getDevice(), &ci, nullptr, &mRenderPass)))
         {
             Logger::error("failed to create renderpass! (native result : {})", static_cast<std::int32_t>(res));
             return Result(res);
@@ -152,7 +153,7 @@ namespace Hence
         return Result();
     }
 
-    inline Result VulkanRenderPass::createFrameBufferEach(const std::vector<VkImageView>& views) noexcept
+    inline Result VulkanRenderPass::createFrameBufferEach(const std::vector<VkImageView>& views, VkImageView depthView) noexcept
     {
         VkFramebufferCreateInfo fbci{};
         fbci.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -160,6 +161,14 @@ namespace Hence
         fbci.width = mExtent.width;
         fbci.height = mExtent.height;
         fbci.layers = 1;
+        if (depthView == VK_NULL_HANDLE)
+        {
+            fbci.attachmentCount = 1u;
+        }
+        else
+        {
+            fbci.attachmentCount = 2u;
+        }
 
         mFrameBuffers.reserve(views.size());
 
@@ -167,10 +176,17 @@ namespace Hence
         {
             mFrameBuffers.emplace_back();
 
-            fbci.attachmentCount = 1u;
-            fbci.pAttachments = &view;
+            if (depthView == VK_NULL_HANDLE)
+            {
+                fbci.pAttachments = &view;
+            }
+            else
+            {
+                VkImageView views[] = { view, depthView };
+                fbci.pAttachments = views;
+            }
 
-            if (VK_FAILED(res, vkCreateFramebuffer(mDevice.getDevice(), &fbci, nullptr, &mFrameBuffers.back())))
+            if (VK_FAILED(res, vkCreateFramebuffer(mpDevice->getDevice(), &fbci, nullptr, &mFrameBuffers.back())))
             {
                 Logger::error("failed to create framebuffer! (native result : {})", static_cast<std::int32_t>(res));
                 return Result(static_cast<std::int32_t>(res));
@@ -193,7 +209,7 @@ namespace Hence
 
         mFrameBuffers.emplace_back();
 
-        if (VK_FAILED(res, vkCreateFramebuffer(mDevice.getDevice(), &fbci, nullptr, &mFrameBuffers.back())))
+        if (VK_FAILED(res, vkCreateFramebuffer(mpDevice->getDevice(), &fbci, nullptr, &mFrameBuffers.back())))
         {
             Logger::error("failed to create framebuffer! (native result : {})", static_cast<std::int32_t>(res));
             return Result(static_cast<std::int32_t>(res));

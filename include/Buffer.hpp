@@ -36,6 +36,8 @@ namespace Hence
         // 内部実装型(一般にユーザが使用する必要はない)
         using Impl = APITrait<API>::BufferImpl;
 
+        Buffer() noexcept;
+
         /**
          * @brief  コンストラクタ
          * @param VRAMAllocator このバッファの割り当てに用いるVRAMAllocator
@@ -67,7 +69,7 @@ namespace Hence
     private:
         using APIVRAMAllocator = APITrait<API>::VRAMAllocatorImpl;
 
-        APIVRAMAllocator& mAPIVRAMAllocator;
+        APIVRAMAllocator* mpAPIVRAMAllocator;
 
         //! 内部実装
         std::optional<Impl> mImpl;

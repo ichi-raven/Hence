@@ -10,9 +10,14 @@
 namespace Hence
 {
 	template<typename API>
+	BindGroup<API>::BindGroup() noexcept
+	{
+
+	}
+
+	template<typename API>
 	BindGroup<API>::BindGroup(Device<API>& device, BindLayout<API>& layout) noexcept
-		: mAPIDevice(device.getInternalAPIDevice())
-		, mImpl(mAPIDevice, layout.getInternalImpl())
+		: mImpl(std::make_optional<Impl>(&device.getInternalAPIDevice(), layout.getInternalImpl()))
 	{
 		
 	}
@@ -24,21 +29,27 @@ namespace Hence
 	}
 
 	template<typename API>
-	Result BindGroup<API>::bind(uint8_t set, uint8_t binding, Buffer<API>& buffer) noexcept
+	void BindGroup<API>::bind(std::uint8_t set, std::uint8_t binding, Buffer<API>& buffer) noexcept
 	{
-		mImpl.bind(set, binding, buffer.getInternalImpl());
+		assert(mImpl || !"invalid object! (construct with device first!)");
+
+		mImpl->bind(set, binding, buffer.getInternalImpl());
 	}
 
 	template<typename API>
-	Result BindGroup<API>::bind(uint8_t set, uint8_t binding, Image<API>& image) noexcept
+	void BindGroup<API>::bind(std::uint8_t set, std::uint8_t binding, Image<API>& image) noexcept
 	{
-		mImpl.bind(set, binding, image.getInternalImpl());
+		assert(mImpl || !"invalid object! (construct with device first!)");
+
+		mImpl->bind(set, binding, image.getInternalImpl());
 	}
 
 	template<typename API>
-	const BindGroup<API>::template Impl& BindGroup<API>::getInternalImpl() const noexcept
+	BindGroup<API>::template Impl& BindGroup<API>::getInternalImpl() noexcept
 	{
-		return mImpl;
+		assert(mImpl || !"invalid object! (construct with device first!)");
+
+		return *mImpl;
 	}
 
 }

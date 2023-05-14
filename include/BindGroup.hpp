@@ -32,6 +32,8 @@ namespace Hence
 		// 内部実装型(一般にユーザが使用する必要はない)
 		using Impl = APITrait<API>::BindGroupImpl;
 
+		BindGroup() noexcept;
+
 		/**
 		 * @brief  コンストラクタ
 		 *
@@ -56,7 +58,7 @@ namespace Hence
 		 * @param buffer 紐づけるバッファ
 		 * @return 結果
 		 */
-		Result bind(std::uint8_t set, std::uint8_t binding, Buffer<API>& buffer) noexcept;
+		void bind(std::uint8_t set, std::uint8_t binding, Buffer<API>& buffer) noexcept;
 
 		/**
 		 * @brief  画像データを指定したスロットに紐づける
@@ -65,7 +67,7 @@ namespace Hence
 		 * @param image 紐づける画像データ
 		 * @return 結果
 		 */
-		Result bind(std::uint8_t set, std::uint8_t binding, Image<API>& image) noexcept;
+		void bind(std::uint8_t set, std::uint8_t binding, Image<API>& image) noexcept;
 
 		/** 
 		 * @brief  内部実装取得
@@ -73,15 +75,15 @@ namespace Hence
 		 *  
 		 * @return APIごとの内部実装
 		 */
-		const Impl& getInternalImpl() const noexcept;
+		Impl& getInternalImpl() noexcept;
 
 	private:
 		using APIDevice = APITrait<API>::Device;
 
 		//! デバイスの内部実装
-		APIDevice& mAPIDevice;
+		//APIDevice* mAPIDevice;
 		//! 内部実装
-		Impl mImpl;
+		std::optional<Impl> mImpl;
 	};
 }
 

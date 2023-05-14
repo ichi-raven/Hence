@@ -33,7 +33,7 @@ namespace Hence
 		 * @brief  コンストラクタ
 		 * @param vulkanDevice VulkanのDeviceクラス
 		 */
-		VulkanVRAMAllocator(VulkanDevice& vulkanDevice) noexcept;
+		VulkanVRAMAllocator(VulkanDevice* pVulkanDevice) noexcept;
 
 		/**
 		 * @brief  デストラクタ
@@ -56,7 +56,7 @@ namespace Hence
 
 	private:
 
-		VulkanDevice& mDevice;
+		VulkanDevice* mpDevice;
 
 	};
 }

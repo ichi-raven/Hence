@@ -16,11 +16,20 @@
 namespace Hence
 {
 	template<typename API>
+	Buffer<API>::Buffer() noexcept
+		: mpAPIVRAMAllocator(nullptr)
+	{
+
+	}
+
+	template<typename API>
 	Buffer<API>::Buffer(VRAMAllocator<API>& VRAMAllocator, const BufferInfo& bufferInfo) noexcept
-		: mAPIVRAMAllocator(VRAMAllocator.getInternalImpl())
+		: mpAPIVRAMAllocator(&VRAMAllocator.getInternalImpl())
 		//, mImpl(mAPIVRAMAllocator.allocate(bufferInfo).get())
 	{
-		auto&& either = mAPIVRAMAllocator.allocate(bufferInfo);
+		assert(mpAPIVRAMAllocator || !"invalid VRAMAllocator! (construct with VRAMAllocator first!)");
+
+		auto&& either = mpAPIVRAMAllocator->allocate(bufferInfo);
 		if (!either)
 		{
 			Logger::error("failed to allocate buffer!(result : {})", either.failed().nativeResult);
@@ -33,12 +42,14 @@ namespace Hence
 	template<typename API>
 	Buffer<API>::~Buffer() noexcept
 	{
-		mAPIVRAMAllocator.deallocate(*mImpl);
+		assert(mImpl || "invalid buffer! (allocate first!)");
+
+		mpAPIVRAMAllocator->deallocate(*mImpl);
 	}
 
 	template<typename API>
 	Buffer<API>::Buffer(Buffer&& other) noexcept
-		: mAPIVRAMAllocator(other.mAPIVRAMAllocator)
+		: mpAPIVRAMAllocator(other.mpAPIVRAMAllocator)
 		, mImpl(std::move(other.mImpl))
 	{
 		other.mImpl.reset();
@@ -47,9 +58,9 @@ namespace Hence
 	template<typename API>
 	Buffer<API>& Buffer<API>::operator=(Buffer&& other) noexcept
 	{
-		mAPIVRAMAllocator = other.mAPIVRAMAllocator;
+		mpAPIVRAMAllocator = other.mpAPIVRAMAllocator;
 
-		mAPIVRAMAllocator.deallocate(*mImpl);
+		mpAPIVRAMAllocator->deallocate(*mImpl);
 		mImpl = std::move(other.mImpl);
 		other.mImpl.reset();
 	}
@@ -57,7 +68,8 @@ namespace Hence
 	template<typename API>
 	Buffer<API>::Impl& Buffer<API>::getInternalImpl() noexcept
 	{
-		assert(mImpl || "invalid buffer!");
+		assert(mImpl || "invalid buffer! (allocate first!)");
+
 		return *mImpl;
 	}
 
@@ -65,6 +77,8 @@ namespace Hence
 	template <typename DataType>
 	Result Buffer<API>::writeData(const ArrayProxy<DataType> data)
 	{
+		assert(mImpl || "invalid buffer! (allocate first!)");
+
 		mImpl->writeData(data);
 	}
 

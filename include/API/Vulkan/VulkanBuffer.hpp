@@ -24,7 +24,7 @@ namespace Hence
 	{
 	public:
 
-		VulkanBuffer(VulkanDevice& vulkanDevice, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize size, VkDeviceSize offset) noexcept;
+		VulkanBuffer(VulkanDevice* pVulkanDevice, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize size, VkDeviceSize offset) noexcept;
 
 		~VulkanBuffer() noexcept;
 
@@ -55,7 +55,8 @@ namespace Hence
 
 		inline Result writeBuffer(void* ptr, std::size_t size) noexcept;
 
-		VulkanDevice&	mDevice;
+		VulkanDevice*	mpDevice;
+
 		VkBuffer		mBuffer;
 		VkDeviceMemory  mMemory;
 		VkDeviceSize	mSize;

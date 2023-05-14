@@ -21,17 +21,19 @@
 
 namespace Hence
 {
-    VulkanBindGroup::VulkanBindGroup(VulkanDevice& vulkanDevice, VulkanBindLayout& vulkanBindLayout) noexcept
-        : mDevice(vulkanDevice)
+    VulkanBindGroup::VulkanBindGroup(VulkanDevice* pVulkanDevice, VulkanBindLayout& vulkanBindLayout) noexcept
+        : mpDevice(pVulkanDevice)
         , mChanged(true)
     {
+        assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
+
         const auto& layouts = vulkanBindLayout.getDescriptorSetLayouts();
 
         VkDescriptorSetAllocateInfo dsai{};
 
         dsai.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         dsai.pNext = nullptr;
-        dsai.descriptorPool = mDevice.getDescriptorPool();
+        dsai.descriptorPool = mpDevice->getDescriptorPool();
         dsai.descriptorSetCount = static_cast<std::uint32_t>(layouts.size());
         dsai.pSetLayouts = layouts.data();
 
@@ -44,7 +46,7 @@ namespace Hence
             mWriteDescriptorSets.emplace_back().resize(bindingNum);
         }
 
-        if (VK_FAILED(res, vkAllocateDescriptorSets(vulkanDevice.getDevice(), &dsai, mDescriptorSets.data())))
+        if (VK_FAILED(res, vkAllocateDescriptorSets(mpDevice->getDevice(), &dsai, mDescriptorSets.data())))
         {
             Logger::error("failed to allocate descriptor set! (native result : {})", static_cast<std::int32_t>(res));
         }
@@ -53,7 +55,7 @@ namespace Hence
 
     VulkanBindGroup::~VulkanBindGroup()
     {
-        vkFreeDescriptorSets(mDevice.getDevice(), mDevice.getDescriptorPool(), static_cast<std::uint32_t>(mDescriptorSets.size()), mDescriptorSets.data());
+        vkFreeDescriptorSets(mpDevice->getDevice(), mpDevice->getDescriptorPool(), static_cast<std::uint32_t>(mDescriptorSets.size()), mDescriptorSets.data());
     }
 
     void VulkanBindGroup::bind(std::uint32_t set, std::uint32_t binding, VulkanBuffer& buffer) noexcept
@@ -106,7 +108,7 @@ namespace Hence
         {
             for (const auto& wds : mWriteDescriptorSets)
             {
-                vkUpdateDescriptorSets(mDevice.getDevice(),
+                vkUpdateDescriptorSets(mpDevice->getDevice(),
                     static_cast<uint32_t>(wds.size()),
                     wds.data(), 0, nullptr);
             }

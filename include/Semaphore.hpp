@@ -24,18 +24,27 @@ namespace Hence
 		// 内部実装型(一般にユーザが使用する必要はない)
 		using Impl = APITrait<API>::SemaphoreImpl;
 
-		Semaphore(Device<API>& device);
+		Semaphore() noexcept;
 
-		~Semaphore();
+		Semaphore(Device<API>& device) noexcept;
 
-		NONCOPYABLE(Semaphore)
+		~Semaphore() noexcept;
+
+		NONCOPYABLE(Semaphore);
+
+		Semaphore(Semaphore<API>&& src) noexcept;
+		Semaphore<API>& operator=(Semaphore<API>&& src) noexcept;
+
+		Impl& getInternalImpl() noexcept;
 
 	private:
-		using APIDevice = APITrait<API>::Device;
+		//using APIDevice = APITrait<API>::Device;
 
-		APIDevice& mDevice;
-		Impl mImpl;
+		//APIDevice& mAPIDevice;
+		std::optional<Impl> mImpl;
 	};
 }
+
+#include "../src/Semaphore.inl"
 
 #endif

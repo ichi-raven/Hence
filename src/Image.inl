@@ -10,10 +10,19 @@
 namespace Hence
 {
 	template<typename API>
-	Image<API>::Image(VRAMAllocator<API>& VRAMAllocator, const ImageInfo& imageInfo) noexcept
-		: mAPIVRAMAllocator(VRAMAllocator.getInternalImpl())
+	Image<API>::Image() noexcept
+		: mpAPIVRAMAllocator(nullptr)
 	{
-		auto&& either = mAPIVRAMAllocator.allocate(imageInfo);
+
+	}
+
+	template<typename API>
+	Image<API>::Image(VRAMAllocator<API>& VRAMAllocator, const ImageInfo& imageInfo) noexcept
+		: mpAPIVRAMAllocator(&VRAMAllocator.getInternalImpl())
+	{
+		assert(mpAPIVRAMAllocator || !"invalid VRAMAllocator! (construct with VRAMAllocator first!)");
+
+		auto&& either = mpAPIVRAMAllocator->allocate(imageInfo);
 		if (!either)
 		{
 			Logger::error("failed to allocate image!");
@@ -26,13 +35,15 @@ namespace Hence
 	template<typename API>
 	Image<API>::~Image() noexcept
 	{
-		mAPIVRAMAllocator.deallocate(*mImpl);
+		assert(mImpl || !"invalid image! (construct with VRAMAllocator first!)");
+
+		mpAPIVRAMAllocator->deallocate(*mImpl);
 	}
 
 	template<typename API>
 	Image<API>::Impl& Image<API>::getInternalImpl() noexcept
 	{
-		assert(mImpl || "invalid image!");
+		assert(mImpl || "invalid image! (construct with VRAMAllocator first!");
 		return *mImpl;
 	}
 }

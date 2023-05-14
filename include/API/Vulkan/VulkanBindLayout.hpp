@@ -27,11 +27,11 @@ namespace Hence
 	{
 	public:
 
-		VulkanBindLayout(VulkanDevice& vulkanDevice, const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& bindingLayoutTable ) noexcept;
+		VulkanBindLayout(VulkanDevice* pVulkanDevice, const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& bindingLayoutTable ) noexcept;
 		
 		template<typename... ShaderType>
-		VulkanBindLayout(VulkanDevice& vulkanDevice, const ShaderType&... shaders) noexcept
-			: VulkanBindLayout(vulkanDevice, mergeAll(shaders...))
+		VulkanBindLayout(VulkanDevice* pVulkanDevice, const ShaderType&... shaders) noexcept
+			: VulkanBindLayout(pVulkanDevice, mergeAll(shaders...))
 		{}
 
 		~VulkanBindLayout();
@@ -57,7 +57,7 @@ namespace Hence
 			}
 		}
 
-		VulkanDevice& mDevice;
+		VulkanDevice* mpDevice;
 
 		std::vector<VkDescriptorSetLayout> mDescriptorSetLayouts;
 		std::vector<std::uint32_t> mBindingNums;

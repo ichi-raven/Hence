@@ -336,9 +336,6 @@
     <ClInclude Include="..\include\Info\VertexInputState.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\API\Vulkan\VulkanCommand.cpp">
-      <Filter>ソース ファイル\API\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\Info\ClearValue.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
@@ -440,6 +437,12 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanGraphicsPipeline.cpp">
       <Filter>ソース ファイル\API\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanSemaphore.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanCommand.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\BindGroup.inl">
@@ -482,6 +485,12 @@
       <Filter>ソース ファイル</Filter>
     </None>
     <None Include="..\src\GraphicsPipeline.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\Semaphore.inl">
+      <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="..\src\Command.inl">
       <Filter>ソース ファイル</Filter>
     </None>
   </ItemGroup>

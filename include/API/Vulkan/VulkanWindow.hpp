@@ -15,18 +15,21 @@
 namespace Hence
 {
     class VulkanDevice;
+    class VulkanSemaphore;
 
 	class VulkanWindow
 	{
 	public:
 
-        VulkanWindow(VulkanDevice& vulkanDevice, const WindowInfo& windowInfo) noexcept;
+        VulkanWindow(VulkanDevice* pVulkanDevice, const WindowInfo& windowInfo) noexcept;
 
         ~VulkanWindow() noexcept;
 
 		inline void updateInput() noexcept;
 
 		inline bool focused() const noexcept;
+
+        Result present(const std::uint32_t frameBufferIndex, VulkanSemaphore& waitSemaphore) noexcept;
 
         const std::vector<VkImage>& getVkSwapchainImages() noexcept;
 
@@ -37,6 +40,8 @@ namespace Hence
         VkFormat getVkFormat() noexcept;
 
         VulkanImage& getDepthBuffer() noexcept;
+
+        std::uint32_t acquireNextImage(VulkanSemaphore& signalSemaphore) noexcept;
 
 	private:
 
@@ -57,7 +62,7 @@ namespace Hence
             VkImageLayout newLayout,
             VkImageAspectFlags aspectFlags) const noexcept;
 
-        VulkanDevice& mDevice;
+        VulkanDevice* mpDevice;
 
         GLFWwindow*                     mpWindow;
         VkSurfaceKHR                    mSurface;

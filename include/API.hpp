@@ -50,7 +50,7 @@ namespace Hence
         using GraphicsPipelineImpl      = VulkanGraphicsPipeline;
         using ComputePipelineImpl       = VulkanComputePipeline;
         using RaytracingPipelineImpl    = VulkanRaytracingPipeline;
-        using SemaphorePipelineImpl     = VulkanSemaphore;
+        using SemaphoreImpl             = VulkanSemaphore;
     };
 
     template<>
@@ -72,7 +72,7 @@ namespace Hence
         using GraphicsPipelineImpl      = DirectX12GraphicsPipeline;
         using ComputePipelineImpl       = DirectX12ComputePipeline;
         using RaytracingPipelineImpl    = DirectX12RaytracingPipeline;
-        using SemaphorePipelineImpl     = DirectX12Semaphore;
+        using SemaphoreImpl             = DirectX12Semaphore;
     };
 }
 

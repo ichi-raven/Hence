@@ -26,6 +26,8 @@ namespace Hence
         // 内部実装型(一般にユーザが使用する必要はない)
         using Impl = APITrait<API>::SamplerImpl;
 
+        Sampler() noexcept;
+
         Sampler(Device<API> device, const SamplerInfo& samplerInfo) noexcept;
 
         ~Sampler() noexcept;
@@ -35,10 +37,10 @@ namespace Hence
         const Impl& getInternalImpl() const noexcept;
 
     private:
-        using APIDevice = APITrait<API>::Device;
+        //using APIDevice = APITrait<API>::Device;
 
-        APIDevice& mAPIDevice;
-        Impl mImpl;
+        //APIDevice& mAPIDevice;
+        std::optional<Impl> mImpl;
     };
 }
 

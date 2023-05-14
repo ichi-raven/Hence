@@ -38,6 +38,8 @@ namespace Hence
 	public:
 		using Impl = APITrait<API>::VRAMAllocatorImpl;
 
+		VRAMAllocator() noexcept;
+
 		/**
 		 * @brief  コンストラクタ
 		 * @param device 基とするデバイス
@@ -82,9 +84,9 @@ namespace Hence
 		using APIDevice = APITrait<API>::Device;
 
 		//! デバイスの内部実装
-		APIDevice& mAPIDevice;
+		//APIDevice& mAPIDevice;
 		//! 内部実装
-		Impl mImpl;
+		std::optional<Impl> mImpl;
 	};
 
 }

@@ -20,11 +20,10 @@
 namespace Hence
 {
 
-
 	VulkanGraphicsPipeline::~VulkanGraphicsPipeline() noexcept
 	{
-		vkDestroyPipelineLayout(mDevice.getDevice(), mPipelineLayout, nullptr);
-		vkDestroyPipeline(mDevice.getDevice(), mPipeline, nullptr);
+		vkDestroyPipelineLayout(mpDevice->getDevice(), mPipelineLayout, nullptr);
+		vkDestroyPipeline(mpDevice->getDevice(), mPipeline, nullptr);
 	}
 
 	VkPipeline VulkanGraphicsPipeline::getVkPipeline() noexcept
@@ -266,7 +265,7 @@ namespace Hence
 			ci.setLayoutCount = static_cast<std::uint32_t>(descriptorSetLayouts.size());
 			ci.pSetLayouts = descriptorSetLayouts.data();
 
-			if (VK_FAILED(res, vkCreatePipelineLayout(mDevice.getDevice(), &ci, nullptr, &mPipelineLayout)))
+			if (VK_FAILED(res, vkCreatePipelineLayout(mpDevice->getDevice(), &ci, nullptr, &mPipelineLayout)))
 			{
 				Logger::error("failed to create pipeline layout!");
 				return Result(res);
@@ -290,7 +289,7 @@ namespace Hence
 			ci.renderPass = renderpass.getVkRenderPass();
 			ci.layout = mPipelineLayout;
 
-			if (VK_FAILED(res, vkCreateGraphicsPipelines(mDevice.getDevice(), VK_NULL_HANDLE, 1, &ci, nullptr, &mPipeline)))
+			if (VK_FAILED(res, vkCreateGraphicsPipelines(mpDevice->getDevice(), VK_NULL_HANDLE, 1, &ci, nullptr, &mPipeline)))
 			{
 				Logger::error("failed to create graphics pipeline! (native result : {})", static_cast<std::int32_t>(res));
 				return Result(res);

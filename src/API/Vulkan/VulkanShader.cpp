@@ -25,10 +25,12 @@
 
 namespace Hence
 {
-	VulkanShader::VulkanShader(VulkanDevice& vulkanDevice, std::string_view path) noexcept
-        : mDevice(vulkanDevice)
+	VulkanShader::VulkanShader(VulkanDevice* pVulkanDevice, std::string_view path) noexcept
+        : mpDevice(pVulkanDevice)
         , mShaderStage(ShaderStage::ALL)
     {
+        assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
+
         {// load
 
             std::ifstream infile(path.data(), std::ios::binary);
@@ -46,7 +48,7 @@ namespace Hence
         ci.pCode = reinterpret_cast<const uint32_t*>(mFileData.data());
         ci.codeSize = mFileData.size();
         
-        if (VK_FAILED(res, vkCreateShaderModule(vulkanDevice.getDevice(), &ci, nullptr, &mShaderModule)))
+        if (VK_FAILED(res, vkCreateShaderModule(mpDevice->getDevice(), &ci, nullptr, &mShaderModule)))
         {
             Logger::error("failed to create shader module!");
             return;
@@ -57,7 +59,7 @@ namespace Hence
 
     VulkanShader::~VulkanShader()
     {
-        vkDestroyShaderModule(mDevice.getDevice(), mShaderModule, nullptr);
+        vkDestroyShaderModule(mpDevice->getDevice(), mShaderModule, nullptr);
     }
 
     Result VulkanShader::loadShaderReflection() noexcept

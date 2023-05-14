@@ -33,6 +33,8 @@ namespace Hence
     public:
         using Impl = APITrait<API>::RenderPassImpl;
 
+        RenderPass() noexcept;
+
         RenderPass(Device<API>& device, Window<API>& window) noexcept;
 
         template<ImageType<API>... ImageTypes>
@@ -45,10 +47,10 @@ namespace Hence
         Impl& getInternalImpl() noexcept;
 
     private:
-        using APIDevice = APITrait<API>::Device;
+        //using APIDevice = APITrait<API>::Device;
 
-        APIDevice& mAPIDevice;
-        Impl mImpl;
+        //APIDevice& mAPIDevice;
+        std::optional<Impl> mImpl;
     };
 }
 

@@ -9,6 +9,7 @@
 #include "include/Hence.hpp"
 
 #include <iostream>
+#include <vector>
 
 struct Vertex
 {
@@ -65,6 +66,7 @@ int main()
 
 	BindLayout bl(device, vs, fs);
 	BindGroup bg(device, bl);
+	bg.bind(0, 0, image);
 
 	RenderPass rp(device, window);
 
@@ -73,7 +75,7 @@ int main()
 			.colorBlendingState
 			{
 				.logicOp = std::nullopt,
-				.attachments = std::vector<ColorBlendAttachment>(3,
+				.attachments = std::vector<ColorBlendAttachment>(1,
 					ColorBlendAttachment
 					{
 						.blendEnable = false,
@@ -111,10 +113,8 @@ int main()
 			.scissor = std::nullopt
 		},
 		rp,
-		bl,
-		vs, fs);
+		bl, vs, fs);
 
-	Command command(device, kFrameBufferCount);
 
 	ColorClearValue ccv = std::array<std::uint32_t, 4>{ 0, 0, 0, 0 };
 	DepthClearValue dcv
@@ -123,17 +123,39 @@ int main()
 		.stencil	= 0u
 	};
 
-	command.begin(rp, ccv, dcv);
-
-	command.setGraphicsPipeline(gp);
-
-	command.end();
-
-	while (true)
+	std::vector<Command<Vulkan>> commands;
+	std::vector<Semaphore<Vulkan>> renderCompletedSemaphores;
+	std::vector<Semaphore<Vulkan>> frameBufferReadySemaphores;
+	
+	for (int i = 0; i < kFrameBufferCount; ++i)
 	{
-		command.execute();
+		commands.emplace_back(device);
+		renderCompletedSemaphores.emplace_back(device);
+		frameBufferReadySemaphores.emplace_back(device);
+	}
 
-		window.present();
+	std::uint32_t currentFrameIndex = 0;
+
+	// debug
+	for (int i = 0; i < 100; ++i)
+	{
+		std::cerr << "now : " << i << "\n";
+
+		const std::uint32_t imageIndex = window.acquireNextImage(frameBufferReadySemaphores[currentFrameIndex]);
+
+		auto& command = commands[currentFrameIndex];
+
+		command.begin(rp, imageIndex, ccv, dcv);
+		command.setGraphicsPipeline(gp);
+		command.setBindGroup(bg, 0);
+		command.render(4, 1, 0, 0);
+		command.end();
+
+		command.execute(frameBufferReadySemaphores[currentFrameIndex], renderCompletedSemaphores[currentFrameIndex]);
+
+		window.present(imageIndex, renderCompletedSemaphores[currentFrameIndex]);
+
+		currentFrameIndex = (currentFrameIndex + 1) % kFrameBufferCount;
 	}
 
 	return 0;

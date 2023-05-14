@@ -19,7 +19,7 @@ namespace Hence
 	{
 	public:
 
-		VulkanShader(VulkanDevice& vulkanDevice, std::string_view path) noexcept;
+		VulkanShader(VulkanDevice* pVulkanDevice, std::string_view path) noexcept;
 
 		~VulkanShader() noexcept;
 
@@ -40,7 +40,7 @@ namespace Hence
 	private:
 		inline Result loadShaderReflection() noexcept;
 
-		VulkanDevice& mDevice;
+		VulkanDevice* mpDevice;
 
 		std::vector<char> mFileData;
 

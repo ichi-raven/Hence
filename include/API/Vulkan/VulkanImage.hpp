@@ -21,7 +21,7 @@ namespace Hence
 	{
 	public:
 
-		VulkanImage(VulkanDevice& vulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView view, VkFormat format, const VkExtent3D& extent, std::uint32_t sizeOfChannel) noexcept;
+		VulkanImage(VulkanDevice* pVulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView view, VkFormat format, const VkExtent3D& extent, std::uint32_t sizeOfChannel) noexcept;
 
 		~VulkanImage() noexcept;
 
@@ -49,7 +49,7 @@ namespace Hence
 
 		Result writeImage(void* ptr, std::uint32_t size);
 
-		VulkanDevice& mDevice;
+		VulkanDevice* mpDevice;
 
 		VkImage mImage;
 		VkDeviceMemory mMemory;

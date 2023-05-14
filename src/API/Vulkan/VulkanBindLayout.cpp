@@ -17,9 +17,11 @@
 namespace Hence
 {
 
-	VulkanBindLayout::VulkanBindLayout(VulkanDevice& vulkanDevice, const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& bindingLayoutTable) noexcept
-		: mDevice(vulkanDevice)
+	VulkanBindLayout::VulkanBindLayout(VulkanDevice* pVulkanDevice, const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& bindingLayoutTable) noexcept
+		: mpDevice(pVulkanDevice)
 	{
+		assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
+
 		std::vector<std::vector<VkDescriptorSetLayoutBinding>> allBindings;
 		allBindings.reserve(8);
 		{  // HACK
@@ -75,7 +77,7 @@ namespace Hence
 
 			mDescriptorSetLayouts.emplace_back();
 
-			if (VK_FAILED(res, vkCreateDescriptorSetLayout(vulkanDevice.getDevice(), &descLayoutci, nullptr, &mDescriptorSetLayouts.back())))
+			if (VK_FAILED(res, vkCreateDescriptorSetLayout(mpDevice->getDevice(), &descLayoutci, nullptr, &mDescriptorSetLayouts.back())))
 			{
 				Logger::error("failed to create descriptor set layout! (native error : {}", static_cast<std::int32_t>(res));
 				return;
@@ -87,7 +89,7 @@ namespace Hence
 	{
 		for (auto& dsl : mDescriptorSetLayouts)
 		{
-			vkDestroyDescriptorSetLayout(mDevice.getDevice(), dsl, nullptr);
+			vkDestroyDescriptorSetLayout(mpDevice->getDevice(), dsl, nullptr);
 		}
 	}
 

@@ -244,7 +244,7 @@
     <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imstb_textedit.h" />
     <ClInclude Include="..\src\API\Vulkan\ThirdParty\imgui\imstb_truetype.h" />
-    <ClInclude Include="..\src\API\Vulkan\VulkanCommand.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\API\Vulkan\ThirdParty\imgui\imgui.cpp" />
@@ -264,6 +264,7 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanImage.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanRenderPass.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanSampler.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanSemaphore.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanShader.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanVRAMAllocator.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanWindow.cpp" />
@@ -283,10 +284,12 @@
     <None Include="..\src\BindGroup.inl" />
     <None Include="..\src\BindLayout.inl" />
     <None Include="..\src\Buffer.inl" />
+    <None Include="..\src\Command.inl" />
     <None Include="..\src\GraphicsPipeline.inl" />
     <None Include="..\src\Image.inl" />
     <None Include="..\src\RenderPass.inl" />
     <None Include="..\src\Sampler.inl" />
+    <None Include="..\src\Semaphore.inl" />
     <None Include="..\src\Shader.inl" />
     <None Include="..\src\Utility\ArrayProxy.inl" />
     <None Include="..\src\Utility\Either.inl" />

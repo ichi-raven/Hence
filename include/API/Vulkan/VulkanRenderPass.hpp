@@ -31,8 +31,8 @@ namespace Hence
 	public:
 
 		template<VulkanImageType... VulkanImageTypes>
-		VulkanRenderPass(VulkanDevice& device, VulkanImage& depthStencilTarget, VulkanImageTypes&... colorTargets) noexcept
-			: mDevice(device)
+		VulkanRenderPass(VulkanDevice* pVulkanDevice, VulkanImage& depthStencilTarget, VulkanImageTypes&... colorTargets) noexcept
+			: mpDevice(pVulkanDevice)
 			, mExtent(getVkExtent(colorTargets...))
 		{
 			static_assert(sizeof...(VulkanImageTypes) > 0, "cannot create renderpass from empty colorTarget!");
@@ -45,8 +45,8 @@ namespace Hence
 		}
 
 		template<VulkanImageType... VulkanImageTypes>
-		VulkanRenderPass(VulkanDevice& device, VulkanImageTypes&... colorTargets) noexcept
-			: mDevice(device)
+		VulkanRenderPass(VulkanDevice* pVulkanDevice, VulkanImageTypes&... colorTargets) noexcept
+			: mpDevice(pVulkanDevice)
 			, mExtent(getVkExtent(colorTargets...))
 		{
 			static_assert(sizeof...(VulkanImageTypes) > 0, "cannot create renderpass from empty colorTarget!");
@@ -58,7 +58,7 @@ namespace Hence
 			createFrameBufferSumUp(imageViews);
 		}
 
-		VulkanRenderPass(VulkanDevice& device, VulkanWindow& window) noexcept;
+		VulkanRenderPass(VulkanDevice* pVulaknDevice, VulkanWindow& window) noexcept;
 
 		VkRenderPass getVkRenderPass() noexcept;
 
@@ -72,7 +72,7 @@ namespace Hence
 
 		inline Result createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat) noexcept;
 
-		inline Result createFrameBufferEach(const std::vector<VkImageView>& views) noexcept;
+		inline Result createFrameBufferEach(const std::vector<VkImageView>& colorViews, VkImageView depthView = VK_NULL_HANDLE) noexcept;
 
 		inline Result createFrameBufferSumUp(const std::vector<VkImageView>& views) noexcept;
 
@@ -88,7 +88,7 @@ namespace Hence
 			return head.getVkFormat();
 		}
 
-		VulkanDevice& mDevice;
+		VulkanDevice* mpDevice;
 
 		VkRenderPass mRenderPass;
 		std::vector<VkFramebuffer> mFrameBuffers;

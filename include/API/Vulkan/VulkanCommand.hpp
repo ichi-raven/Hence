@@ -16,6 +16,7 @@
 #include <vulkan/vulkan.hpp>
 
 #include <variant>
+#include <optional>
 
 namespace Hence
 {
@@ -26,13 +27,16 @@ namespace Hence
     class VulkanRaytracingPipeline;
     class VulkanBuffer;
     class VulkanBindGroup;
+    class VulkanSemaphore;
 
 	class VulkanCommand
 	{
+    public:
+
         /**
          * @brief  コンストラクタ
          */
-        VulkanCommand(VulkanDevice& device) noexcept;
+        VulkanCommand(VulkanDevice* pVulkanDevice) noexcept;
 
         /**
          * @brief  デストラクタ
@@ -85,7 +89,7 @@ namespace Hence
          * @param space 割り当てるspace(HLSL)
          * @param bindGroup 使用するバインドグループ
          */
-        Result setBindGroup(VulkanGraphicsPipeline& pipeline, VulkanBindGroup& bindGroup, const std::uint8_t space = 0) noexcept;
+        Result setBindGroup(VulkanBindGroup& bindGroup, const std::uint8_t space) noexcept;
 
         /**
          * @brief  頂点バッファをセットする
@@ -107,12 +111,12 @@ namespace Hence
 
         Result renderIndexed(const std::uint32_t indexCount, const std::uint32_t instanceCount, const std::uint32_t firstIndex, const std::uint32_t vertexOffset, const std::uint32_t firstInstance) noexcept;
 
-        Result execute() noexcept;
+        Result execute(VulkanSemaphore& waitSemaphore, VulkanSemaphore& signalSemaphore) noexcept;
 
     private:
 
-        VulkanDevice& mDevice;
-        //std::vector<CommandInternal> mCommands;
+        VulkanDevice* mpDevice;
+        std::optional<VkPipelineLayout> mPipelineLayout;
 
         VkCommandBuffer mCommandBuffer;
         VkFence mFence;

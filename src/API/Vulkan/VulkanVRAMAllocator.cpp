@@ -18,10 +18,10 @@
 
 namespace Hence
 {
-	VulkanVRAMAllocator::VulkanVRAMAllocator(VulkanDevice& vulkanDevice) noexcept
-		: mDevice(vulkanDevice)
+	VulkanVRAMAllocator::VulkanVRAMAllocator(VulkanDevice* pVulkanDevice) noexcept
+		: mpDevice(pVulkanDevice)
 	{
-
+        assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
 	}
 
 	VulkanVRAMAllocator::~VulkanVRAMAllocator() noexcept
@@ -54,7 +54,7 @@ namespace Hence
 
             ci.size = bufferInfo.memorySize;
 
-            if (VK_FAILED(res, vkCreateBuffer(mDevice.getDevice(), &ci, nullptr, &buffer)))
+            if (VK_FAILED(res, vkCreateBuffer(mpDevice->getDevice(), &ci, nullptr, &buffer)))
             {
                 return Either<VulkanBuffer, Result>(Result(res));
             }
@@ -78,15 +78,15 @@ namespace Hence
             }
 
             VkMemoryRequirements reqs;
-            vkGetBufferMemoryRequirements(mDevice.getDevice(), buffer, &reqs);
+            vkGetBufferMemoryRequirements(mpDevice->getDevice(), buffer, &reqs);
             VkMemoryAllocateInfo ai{};
             ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             ai.allocationSize = reqs.size;
-            ai.memoryTypeIndex = mDevice.getMemoryTypeIndex(reqs.memoryTypeBits, fb);
+            ai.memoryTypeIndex = mpDevice->getMemoryTypeIndex(reqs.memoryTypeBits, fb);
 
             // VRAMŠ„‚è“–‚Ä
             {
-                if (VK_FAILED(res, vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory)))
+                if (VK_FAILED(res, vkAllocateMemory(mpDevice->getDevice(), &ai, nullptr, &memory)))
                 {
                     Logger::error("failed to allocate VkDeviceMemory to the VkBuffer!");
                     return Either<VulkanBuffer, Result>(Result(static_cast<std::int32_t>(res)));
@@ -94,7 +94,7 @@ namespace Hence
             }
 
             // buffer‚Æ•R‚Ã‚¯
-            if (VK_FAILED(res, vkBindBufferMemory(mDevice.getDevice(), buffer, memory, 0)))
+            if (VK_FAILED(res, vkBindBufferMemory(mpDevice->getDevice(), buffer, memory, 0)))
             {
                 Logger::error("failed to bind VkDeviceMemory to the VkBuffer!");
                 return Either<VulkanBuffer, Result>(Result(static_cast<std::int32_t>(res)));
@@ -103,7 +103,7 @@ namespace Hence
 
         VkDeviceSize offset = 0;
 
-        return Either<VulkanBuffer, Result>(VulkanBuffer(mDevice, buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset));
+        return Either<VulkanBuffer, Result>(VulkanBuffer(mpDevice, buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset));
         //return VulkanBuffer(mDevice, buffer, memory, static_cast<VkDeviceSize>(bufferInfo.memorySize), offset);
     }
 
@@ -153,7 +153,7 @@ namespace Hence
             ci.tiling = VK_IMAGE_TILING_OPTIMAL;
             ci.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-            if (VK_FAILED(res, vkCreateImage(mDevice.getDevice(), &ci, nullptr, &image)))
+            if (VK_FAILED(res, vkCreateImage(mpDevice->getDevice(), &ci, nullptr, &image)))
             {
                 Logger::error("failed to create VkImage!");
                 return Either<VulkanImage, Result>(Result(static_cast<std::int32_t>(res)));
@@ -164,7 +164,7 @@ namespace Hence
         VkDeviceMemory memory = VK_NULL_HANDLE;
         {
             VkMemoryRequirements reqs;
-            vkGetImageMemoryRequirements(mDevice.getDevice(), image, &reqs);
+            vkGetImageMemoryRequirements(mpDevice->getDevice(), image, &reqs);
             VkMemoryAllocateInfo ai{};
             ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
             ai.allocationSize = reqs.size;
@@ -181,16 +181,16 @@ namespace Hence
                     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
             }
 
-            ai.memoryTypeIndex = mDevice.getMemoryTypeIndex(reqs.memoryTypeBits, fb);
+            ai.memoryTypeIndex = mpDevice->getMemoryTypeIndex(reqs.memoryTypeBits, fb);
             // VRAMŠ„‚è“–‚Ä
-            if (VK_FAILED(res, vkAllocateMemory(mDevice.getDevice(), &ai, nullptr, &memory)))
+            if (VK_FAILED(res, vkAllocateMemory(mpDevice->getDevice(), &ai, nullptr, &memory)))
             {
                 Logger::error("failed to allocate VkDeviceMemory to the VkImage!");
                 return Either<VulkanImage, Result>(Result(static_cast<std::int32_t>(res)));
             }
 
             // image‚Æ•R‚Ã‚¯
-            if (VK_FAILED(res, vkBindImageMemory(mDevice.getDevice(), image, memory, 0)))
+            if (VK_FAILED(res, vkBindImageMemory(mpDevice->getDevice(), image, memory, 0)))
             {
                 Logger::error("failed to bind VkDeviceMemory to the VkImage!");
                 return Either<VulkanImage, Result>(Result(static_cast<std::int32_t>(res)));
@@ -235,7 +235,7 @@ namespace Hence
 
             ci.subresourceRange = { aspectFlag, 0, 1, 0, 1 };
 
-            if (VK_FAILED(res, vkCreateImageView(mDevice.getDevice(), &ci, nullptr, &imageView)))
+            if (VK_FAILED(res, vkCreateImageView(mpDevice->getDevice(), &ci, nullptr, &imageView)))
             {
                 Logger::error("failed to create vkImageView!");
                 return Either<VulkanImage, Result>(Result(res));
@@ -268,9 +268,9 @@ namespace Hence
                     VkCommandBufferAllocateInfo ai{};
                     ai.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
                     ai.commandBufferCount = 1;
-                    ai.commandPool = mDevice.getCommandPool();
+                    ai.commandPool = mpDevice->getCommandPool();
                     ai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-                    vkAllocateCommandBuffers(mDevice.getDevice(), &ai, &command);
+                    vkAllocateCommandBuffers(mpDevice->getDevice(), &ai, &command);
                 }
 
                 VkCommandBufferBeginInfo commandBI{};
@@ -288,11 +288,11 @@ namespace Hence
                 submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
                 submitInfo.commandBufferCount = 1;
                 submitInfo.pCommandBuffers = &command;
-                vkQueueSubmit(mDevice.getDeviceQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+                vkQueueSubmit(mpDevice->getDeviceQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 
                 // ƒŒƒCƒAƒEƒg‘JˆÚI—¹
-                vkDeviceWaitIdle(mDevice.getDevice());
-                vkFreeCommandBuffers(mDevice.getDevice(), mDevice.getCommandPool(), 1, &command);
+                vkDeviceWaitIdle(mpDevice->getDevice());
+                vkFreeCommandBuffers(mpDevice->getDevice(), mpDevice->getCommandPool(), 1, &command);
             }
             else
             {
@@ -302,14 +302,14 @@ namespace Hence
 
         //VulkanImage rtn(mDevice, image, memory, imageView, extent, imageInfo.sizeOfChannel);
 
-        return Either<VulkanImage, Result>(std::move(VulkanImage(mDevice, image, memory, imageView, ci.format, extent, imageInfo.sizeOfChannel)));
+        return Either<VulkanImage, Result>(std::move(VulkanImage(mpDevice, image, memory, imageView, ci.format, extent, imageInfo.sizeOfChannel)));
 	}
 
 	void VulkanVRAMAllocator::deallocate(VulkanBuffer& vulkanBuffer) noexcept
 	{
-        const auto vkDevice = mDevice.getDevice();
+        const auto vkDevice = mpDevice->getDevice();
 
-        vkQueueWaitIdle(mDevice.getDeviceQueue());
+        vkQueueWaitIdle(mpDevice->getDeviceQueue());
 
         vkDestroyBuffer(vkDevice, vulkanBuffer.getVkBuffer(), nullptr);
         // !Š„‚è“–‚Ä•û–@‚ð•Ï‚¦‚éê‡‚Í‚±‚±‚É’ˆÓ
@@ -318,9 +318,9 @@ namespace Hence
 
 	void VulkanVRAMAllocator::deallocate(VulkanImage& vulkanImage) noexcept
 	{
-        const auto vkDevice = mDevice.getDevice();
+        const auto vkDevice = mpDevice->getDevice();
 
-        vkQueueWaitIdle(mDevice.getDeviceQueue());
+        vkQueueWaitIdle(mpDevice->getDeviceQueue());
 
         vkDestroyImageView(vkDevice, vulkanImage.getVkImageView(), nullptr);
         vkDestroyImage(vkDevice, vulkanImage.getVkImage(), nullptr);

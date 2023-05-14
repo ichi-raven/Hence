@@ -10,23 +10,31 @@
 namespace Hence
 {
 	template<typename API>
-	Shader<API>::Shader(Device<API>& device, std::string_view path)
-		: mAPIDevice(device.getInternalAPIDevice())
-		, mImpl(mAPIDevice, path)
+	Shader<API>::Shader() noexcept
+	{
+
+	}
+
+	template<typename API>
+	Shader<API>::Shader(Device<API>& device, std::string_view path) noexcept
+		//: mAPIDevice(device.getInternalAPIDevice())
+		: mImpl(std::make_optional<Impl>(&device.getInternalAPIDevice(), path))
 	{
 		
 	}
 
 	template<typename API>
-	Shader<API>::~Shader()
+	Shader<API>::~Shader() noexcept
 	{
 
 	}
 
 	template<typename API>
-	Shader<API>::Impl& Shader<API>::getInternalImpl()
+	Shader<API>::Impl& Shader<API>::getInternalImpl() noexcept
 	{
-		return mImpl;
+		assert(mImpl || !"invalid shader! (construct with device first!)");
+
+		return *mImpl;
 	}
 }
 

@@ -7,6 +7,7 @@
  *********************************************************************/
 #include "../../../include/API/Vulkan/VulkanWindow.hpp"
 #include "../../../include/API/Vulkan/VulkanDevice.hpp"
+#include "../../../include/API/Vulkan/VulkanSemaphore.hpp"
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
 
 #include "../../../include/Utility/Logger.hpp"
@@ -14,9 +15,11 @@
 
 namespace Hence
 {
-	VulkanWindow::VulkanWindow(VulkanDevice& vulkanDevice, const WindowInfo& windowInfo) noexcept
-		: mDevice(vulkanDevice)
+	VulkanWindow::VulkanWindow(VulkanDevice* pVulkanDevice, const WindowInfo& windowInfo) noexcept
+		: mpDevice(pVulkanDevice)
 	{
+		assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
+
 		mMaxFrameNum = windowInfo.frameCount;
 		mMaxFrameInFlight = std::max(1, static_cast<int>(windowInfo.frameCount) - 1);
 		mCurrentFrame = 0;
@@ -54,7 +57,7 @@ namespace Hence
 
 	VulkanWindow::~VulkanWindow() noexcept
 	{
-		const auto& vkDevice = mDevice.getDevice();
+		const auto& vkDevice = mpDevice->getDevice();
 		
 		vkDestroyImageView(vkDevice, mDepthBuffer->getVkImageView(), nullptr);
 		vkFreeMemory(vkDevice, mDepthBuffer->getVkDeviceMemory(), nullptr);
@@ -68,7 +71,7 @@ namespace Hence
 		vkDestroySwapchainKHR(vkDevice, mSwapchain, nullptr);
 		Logger::info("destroyed swapchain");
 		
-		vkDestroySurfaceKHR(mDevice.getInstance(), mSurface, nullptr);
+		vkDestroySurfaceKHR(mpDevice->getInstance(), mSurface, nullptr);
 		Logger::info("destroyed surface");
 
 		glfwDestroyWindow(mpWindow);
@@ -84,6 +87,43 @@ namespace Hence
 	inline bool VulkanWindow::focused() const noexcept
 	{
 		return static_cast<bool>(glfwGetWindowAttrib(mpWindow, GLFW_FOCUSED));
+	}
+
+	std::uint32_t VulkanWindow::acquireNextImage(VulkanSemaphore& signalSemaphore) noexcept
+	{
+		std::uint32_t rtnIndex = 0;
+
+		if (VK_FAILED(res, vkAcquireNextImageKHR(mpDevice->getDevice(), mSwapchain, std::numeric_limits<std::uint64_t>::max(), signalSemaphore.getVkSemaphore(), VK_NULL_HANDLE, &rtnIndex)))
+		{
+			Logger::error("failed to acquire next image from swapchain! (native error : {})", static_cast<std::int32_t>(res));
+			return 0;
+		}
+
+		return rtnIndex;
+	}
+
+	Result VulkanWindow::present(const std::uint32_t frameBufferIndex, VulkanSemaphore& waitSemaphore) noexcept
+	{
+		auto vkSem = waitSemaphore.getVkSemaphore();
+
+		// present
+		VkPresentInfoKHR presentInfo
+		{
+			.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+			.waitSemaphoreCount		= 1,
+			.pWaitSemaphores		= &vkSem,
+			.swapchainCount			= 1,
+			.pSwapchains			= &mSwapchain,
+			.pImageIndices			= &frameBufferIndex,
+		};
+
+		if (VK_FAILED(res, vkQueuePresentKHR(mpDevice->getDeviceQueue(), &presentInfo)))
+		{
+			Logger::error("failed to present queue! (native error : {})", static_cast<std::int32_t>(res));
+			return Result(res);
+		}
+
+		return Result();
 	}
 
 	inline Result VulkanWindow::createGLFWWindow(const int width, const int height, std::string_view windowName, const bool fullscreen) noexcept
@@ -108,9 +148,9 @@ namespace Hence
 
 	inline Result VulkanWindow::createSurface() noexcept
 	{
-		const auto vkInstance			= mDevice.getInstance();
-		const auto vkPhysicalDevice		= mDevice.getPhysicalDevice();
-		const auto graphicsQueueIndex	= mDevice.getGraphicsQueueIndex();
+		const auto vkInstance			= mpDevice->getInstance();
+		const auto vkPhysicalDevice		= mpDevice->getPhysicalDevice();
+		const auto graphicsQueueIndex	= mpDevice->getGraphicsQueueIndex();
 
 		if (VK_FAILED(res, glfwCreateWindowSurface(vkInstance, mpWindow, nullptr, &mSurface)))
 		{
@@ -147,8 +187,8 @@ namespace Hence
 
 	inline Result VulkanWindow::createSwapchain(const bool vsync) noexcept
 	{
-		const auto vkDevice				= mDevice.getDevice();
-		const auto graphicsQueueIndex	= mDevice.getGraphicsQueueIndex();
+		const auto vkDevice				= mpDevice->getDevice();
+		const auto graphicsQueueIndex	= mpDevice->getGraphicsQueueIndex();
 
 		if (mMaxFrameNum < mSurfaceCaps.minImageCount)
 		{
@@ -209,7 +249,7 @@ namespace Hence
 
 	inline Result VulkanWindow::createSwapchainImages() noexcept
 	{
-		const auto vkDevice = mDevice.getDevice();
+		const auto vkDevice = mpDevice->getDevice();
 
 		uint32_t imageCount = 0;
 		if (VK_FAILED(res, vkGetSwapchainImagesKHR(vkDevice, mSwapchain, &imageCount, nullptr)))
@@ -256,9 +296,9 @@ namespace Hence
 
 	inline Result VulkanWindow::createDepthBuffer() noexcept
 	{
-		const auto vkDevice			= mDevice.getDevice();
-		const auto vkDeviceQueue	= mDevice.getDeviceQueue();
-		const auto vkCommandPool	= mDevice.getCommandPool();
+		const auto vkDevice			= mpDevice->getDevice();
+		const auto vkDeviceQueue	= mpDevice->getDeviceQueue();
+		const auto vkCommandPool	= mpDevice->getCommandPool();
 
 		VkImage image = VK_NULL_HANDLE;
 		{
@@ -292,7 +332,7 @@ namespace Hence
 			VkMemoryAllocateInfo ai{};
 			ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			ai.allocationSize = reqs.size;
-			ai.memoryTypeIndex = mDevice.getMemoryTypeIndex(
+			ai.memoryTypeIndex = mpDevice->getMemoryTypeIndex(
 				reqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 			if (VK_FAILED(res, vkAllocateMemory(vkDevice, &ai, nullptr, &memory)))
@@ -368,7 +408,7 @@ namespace Hence
 
 		VkExtent3D extent{ mSwapchainExtent.width, mSwapchainExtent.height, 1 };
 
-		mDepthBuffer.emplace(mDevice, image, memory, imageView, VK_FORMAT_D32_SFLOAT, extent, 1u);
+		mDepthBuffer.emplace(mpDevice, image, memory, imageView, VK_FORMAT_D32_SFLOAT, extent, 1u);
 
 		return Result();
 	}
@@ -377,7 +417,7 @@ namespace Hence
 	{
 		Result result;
 
-		auto physicalDevice = mDevice.getPhysicalDevice();
+		auto physicalDevice = mpDevice->getPhysicalDevice();
 
 		std::uint32_t surfaceFormatCount = 0;  // get count of formats
 		if (VK_FAILED(res, vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, mSurface, &surfaceFormatCount, nullptr)))

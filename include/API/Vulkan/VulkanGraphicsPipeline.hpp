@@ -33,9 +33,13 @@ namespace Hence
 	public:
 
 		template <VulkanShaderType... VulkanShaderTypes>
-		VulkanGraphicsPipeline(VulkanDevice& device, const GraphicsPipelineInfo& gpi, VulkanRenderPass& renderpass, VulkanBindLayout& bindLayout, VulkanShaderTypes&... shaders) noexcept
-			: mDevice(device)
+		VulkanGraphicsPipeline(VulkanDevice* pVulkanDevice, const GraphicsPipelineInfo& gpi, VulkanRenderPass& renderpass, VulkanBindLayout& bindLayout, VulkanShaderTypes&... shaders) noexcept
+			: mpDevice(pVulkanDevice)
+			, mPipelineLayout(VK_NULL_HANDLE)
+			, mPipeline(VK_NULL_HANDLE)
 		{
+			assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
+
 			std::vector<std::tuple<std::string_view, ShaderStage, VkShaderModule>> modules
 			{
 				std::make_tuple(shaders.getEntryPoint(), shaders.getShaderStage(), shaders.getVkShaderModule())...
@@ -79,7 +83,7 @@ namespace Hence
 			return head.getInputVariables();
 		}
 
-		VulkanDevice& mDevice;
+		VulkanDevice* mpDevice;
 
 		VkPipelineLayout mPipelineLayout;
 		VkPipeline mPipeline;

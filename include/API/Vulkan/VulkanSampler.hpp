@@ -20,14 +20,14 @@ namespace Hence
 	{
 	public:
 		
-		VulkanSampler(VulkanDevice& vulkanDevice, SamplerInfo samplerInfo) noexcept;
+		VulkanSampler(VulkanDevice* pVulkanDevice, SamplerInfo samplerInfo) noexcept;
 		
 		~VulkanSampler() noexcept;
 
 		VkSampler getVkSampler() noexcept;
 
 	private:
-		VulkanDevice& mVulkanDevice;
+		VulkanDevice* mpDevice;
 		
 		VkSampler mSampler;
 	};

@@ -30,20 +30,22 @@ namespace Hence
 
         using Impl = APITrait<API>::GraphicsPipelineImpl;
 
+        GraphicsPipeline() noexcept;
+
         template<ShaderType<API>... ShaderTypes>
         GraphicsPipeline(Device<API>& device, const GraphicsPipelineInfo& gpi, RenderPass<API>& renderpass, BindLayout<API>& bindLayout, ShaderTypes&... shaders) noexcept;
         
         ~GraphicsPipeline() noexcept;
 
-        NONCOPYABLE(GraphicsPipeline)
+        NONCOPYABLE(GraphicsPipeline);
 
         Impl& getInternalImpl() noexcept;
 
     private:
-        using APIDevice = APITrait<API>::Device;
+        //using APIDevice = APITrait<API>::Device;
 
-        APIDevice& mAPIDevice;
-        Impl mImpl;
+        //APIDevice& mAPIDevice;
+        std::optional<Impl> mImpl;
     };
 }
 

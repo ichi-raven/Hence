@@ -15,14 +15,14 @@
 
 namespace Hence
 {
-	VulkanBuffer::VulkanBuffer(VulkanDevice& vulkanDevice, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize size, VkDeviceSize offset) noexcept
-		: mDevice(vulkanDevice)
+	VulkanBuffer::VulkanBuffer(VulkanDevice* pVulkanDevice, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize size, VkDeviceSize offset) noexcept
+		: mpDevice(pVulkanDevice)
 		, mBuffer(buffer)
 		, mMemory(memory)
 		, mSize(size)
 		, mOffset(offset)
 	{
-
+		assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
 	}
 
 	VulkanBuffer::~VulkanBuffer() noexcept
@@ -32,7 +32,7 @@ namespace Hence
 	}
 
 	VulkanBuffer::VulkanBuffer(VulkanBuffer&& other) noexcept
-		: mDevice(other.mDevice)
+		: mpDevice(other.mpDevice)
 	{
 		mBuffer = std::move(other.mBuffer);
 		mMemory = std::move(other.mMemory);
@@ -53,7 +53,7 @@ namespace Hence
 	inline Result VulkanBuffer::writeBuffer(void* ptr, std::size_t size) noexcept
 	{
 		void* mappedMemory = nullptr;
-		const auto vkDevice = mDevice.getDevice();
+		const auto vkDevice = mpDevice->getDevice();
 
 		if (VK_FAILED(res, vkMapMemory(vkDevice, mMemory, mOffset, mSize, 0, &mappedMemory)))
 		{

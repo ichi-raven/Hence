@@ -12,15 +12,21 @@
 namespace Hence
 {
 	template <typename API>
-	Sampler<API>::Sampler(Device<API> device, const SamplerInfo& samplerInfo)
-		: mAPIDevice(device.getInternalAPIDevice())
-		, mImpl(mAPIDevice, samplerInfo)
+	Sampler<API>::Sampler() noexcept
 	{
 
 	}
 
 	template <typename API>
-	Sampler<API>::~Sampler()
+	Sampler<API>::Sampler(Device<API> device, const SamplerInfo& samplerInfo)
+		//: mAPIDevice(device.getInternalAPIDevice())
+		: mImpl(std::make_optional<Impl>(&device.getInternalAPIDevice(), samplerInfo))
+	{
+
+	}
+
+	template <typename API>
+	Sampler<API>::~Sampler() noexcept
 	{
 
 	}
@@ -28,7 +34,9 @@ namespace Hence
 	template <typename API>
 	const Sampler<API>::template Impl& Sampler<API>::getInternalImpl() const noexcept
 	{
-		return mImpl;
+		assert(mImpl || !"invalid sampler! (construct with device first!)");
+
+		return *mImpl;
 	}
 
 }

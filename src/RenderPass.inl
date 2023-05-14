@@ -12,9 +12,15 @@
 namespace Hence
 {
 	template<typename API>
+	RenderPass<API>::RenderPass() noexcept
+	{
+
+	}
+
+	template<typename API>
 	RenderPass<API>::RenderPass(Device<API>& device, Window<API>& window) noexcept
-		: mAPIDevice(device.getInternalAPIDevice())
-		, mImpl(mAPIDevice, window.getInternalImpl())
+		//: mAPIDevice(device.getInternalAPIDevice())
+		: mImpl(std::make_optional<Impl>(&device.getInternalAPIDevice(), window.getInternalImpl()))
 	{
 
 	}
@@ -28,7 +34,9 @@ namespace Hence
 	template<typename API>
 	RenderPass<API>::Impl& RenderPass<API>::getInternalImpl() noexcept
 	{
-		return mImpl;
+		assert(mImpl || !"invalid renderpass! (construct with device first!)");
+
+		return *mImpl;
 	}
 
 }

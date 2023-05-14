@@ -15,14 +15,14 @@ namespace Hence
 	class VulkanSemaphore
 	{
 	public:
-		VulkanSemaphore(VulkanDevice& device) noexcept;
+		VulkanSemaphore(VulkanDevice* pVulkanDevice) noexcept;
 
 		~VulkanSemaphore() noexcept;
 
 		VkSemaphore getVkSemaphore() noexcept;
 
 	private:
-		VulkanDevice& mDevice;
+		VulkanDevice* mpDevice;
 
 		VkSemaphore mSemaphore;
 	};

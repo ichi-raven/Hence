@@ -15,10 +15,16 @@
 namespace Hence
 {
     template <typename API>
+    GraphicsPipeline<API>::GraphicsPipeline() noexcept
+    {
+
+    }
+
+    template <typename API>
     template<ShaderType<API>... ShaderTypes>
     GraphicsPipeline<API>::GraphicsPipeline(Device<API>& device, const GraphicsPipelineInfo& gpi, RenderPass<API>& renderpass, BindLayout<API>& bindLayout, ShaderTypes&... shaders) noexcept
-        : mAPIDevice(device.getInternalAPIDevice())
-        , mImpl(mAPIDevice, gpi, renderpass.getInternalImpl(), bindLayout.getInternalImpl(), shaders.getInternalImpl()...) // TODO
+        //: mAPIDevice(device.getInternalAPIDevice())
+        : mImpl(std::make_optional<Impl>(&device.getInternalAPIDevice(), gpi, renderpass.getInternalImpl(), bindLayout.getInternalImpl(), shaders.getInternalImpl()...)) // TODO
     {
 
     }
@@ -32,7 +38,9 @@ namespace Hence
     template<typename API>
     GraphicsPipeline<API>::Impl& GraphicsPipeline<API>::getInternalImpl() noexcept
     {
-        return mImpl;
+        assert(mImpl || !"invalid graphics pipeline! (construct with device first!)");
+
+        return *mImpl;
     }
 }
 

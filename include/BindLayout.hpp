@@ -21,10 +21,12 @@ namespace Hence
 	public:
 		using Impl = APITrait<API>::BindLayoutImpl;
 
+		BindLayout() noexcept;
+
 		template<typename... ShaderType>
 		BindLayout(Device<API>& device, ShaderType&... shaders);
 
-		~BindLayout();
+		~BindLayout() noexcept;
 
 		// いったんおいとく
 		//BindLayout(const std::map<std::pair<uint8_t, uint8_t>, ResourceType>& bindingLayoutTable);
@@ -37,9 +39,9 @@ namespace Hence
 		using APIDevice = APITrait<API>::Device;
 
 		//! デバイスの内部実装
-		APIDevice& mAPIDevice;
+		//APIDevice& mAPIDevice;
 		//! 内部実装
-		Impl mImpl;
+		std::optional<Impl> mImpl;
 
 
 	};

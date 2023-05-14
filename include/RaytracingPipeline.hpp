@@ -16,18 +16,20 @@ namespace Hence
 
         using Impl = APITrait<API>::RaytracingPipelineImpl;
 
-        RaytracingPipeline(Device<API>& device);
+        RaytracingPipeline() noexcept;
 
-        ~RaytracingPipeline();
+        RaytracingPipeline(Device<API>& device) noexcept;
+
+        ~RaytracingPipeline() noexcept;
 
         NONCOPYABLE(RaytracingPipeline)
 
-        const Impl& getInternalImpl() const;
+        Impl& getInternalImpl() noexcept;
 
     private:
-        using APIDevice = APITrait<API>::Device;
+        //using APIDevice = APITrait<API>::Device;
 
-        APIDevice& mAPIDevice;
+        //APIDevice& mAPIDevice;
         Impl mImpl;
     };
 }

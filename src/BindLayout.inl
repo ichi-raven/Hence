@@ -10,17 +10,23 @@
 namespace Hence
 {
 	template<typename API>
+	BindLayout<API>::BindLayout() noexcept
+	{
+		
+	}
+
+	template<typename API>
 	template<typename... ShaderType>
 	BindLayout<API>::BindLayout(Device<API>& device, ShaderType&... shaders)
-		: mAPIDevice(device.getInternalAPIDevice())
-		, mImpl(mAPIDevice, shaders.getInternalImpl()...)
+		//: mAPIDevice(device.getInternalAPIDevice())
+		: mImpl(std::make_optional<Impl>(&device.getInternalAPIDevice(), shaders.getInternalImpl()...))
 	{
 		
 	}
 
 
 	template<typename API>
-	BindLayout<API>::~BindLayout()
+	BindLayout<API>::~BindLayout() noexcept
 	{
 
 	}
@@ -28,7 +34,9 @@ namespace Hence
 	template<typename API>
 	BindLayout<API>::Impl& BindLayout<API>::getInternalImpl() noexcept
 	{
-		return mImpl;
+		assert(mImpl || !"invalid object! (construct with device first!)");
+
+		return *mImpl;
 	}
 }
 

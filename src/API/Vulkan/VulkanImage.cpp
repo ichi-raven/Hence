@@ -14,15 +14,17 @@
 
 namespace Hence
 {
-	VulkanImage::VulkanImage(VulkanDevice& vulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView imageView, VkFormat format, const VkExtent3D& extent, std::uint32_t sizeOfChannel) noexcept
-		: mDevice(vulkanDevice)
+	VulkanImage::VulkanImage(VulkanDevice* pVulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView imageView, VkFormat format, const VkExtent3D& extent, std::uint32_t sizeOfChannel) noexcept
+		: mpDevice(pVulkanDevice)
         , mImage(image)
 		, mMemory(memory)
 		, mImageView(imageView)
         , mFormat(format)
         , mExtent(extent)
         , mSizeOfChannel(sizeOfChannel)
-	{}
+	{
+        assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
+    }
 
 	VulkanImage::~VulkanImage() noexcept
 	{
@@ -32,7 +34,7 @@ namespace Hence
 	}
 
     VulkanImage::VulkanImage(VulkanImage&& other) noexcept
-        : mDevice(other.mDevice)
+        : mpDevice(other.mpDevice)
     {
         mImage          = std::move(other.mImage);
         mMemory         = std::move(other.mMemory);
@@ -56,7 +58,7 @@ namespace Hence
 
 	Result VulkanImage::writeImage(void* ptr, std::uint32_t size)
 	{
-        const auto vkDevice = mDevice.getDevice();
+        const auto vkDevice = mpDevice->getDevice();
 
         // ‚±‚ê‚ð‚Ç‚¤‚â‚Á‚ÄŽó‚¯Žæ‚é‚©‚ª–â‘è
 
@@ -85,7 +87,7 @@ namespace Hence
                 VkMemoryAllocateInfo ai{};
                 ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
                 ai.allocationSize = reqs.size;
-                ai.memoryTypeIndex = mDevice.getMemoryTypeIndex(reqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+                ai.memoryTypeIndex = mpDevice->getMemoryTypeIndex(reqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
 
                 if (VK_FAILED(res, vkAllocateMemory(vkDevice, &ai, nullptr, &stagingMemory)))
                 {
@@ -129,7 +131,7 @@ namespace Hence
             VkCommandBufferAllocateInfo ai{};
             ai.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
             ai.commandBufferCount = 1;
-            ai.commandPool = mDevice.getCommandPool();
+            ai.commandPool = mpDevice->getCommandPool();
             ai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
             vkAllocateCommandBuffers(vkDevice, &ai, &command);
         }
@@ -151,11 +153,11 @@ namespace Hence
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &command;
-        vkQueueSubmit(mDevice.getDeviceQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueSubmit(mpDevice->getDeviceQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 
         // end copying
         vkDeviceWaitIdle(vkDevice);
-        vkFreeCommandBuffers(vkDevice, mDevice.getCommandPool(), 1, &command);
+        vkFreeCommandBuffers(vkDevice, mpDevice->getCommandPool(), 1, &command);
 
         // release staging buffer
         vkFreeMemory(vkDevice, stagingMemory, nullptr);
