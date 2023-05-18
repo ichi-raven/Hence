@@ -19,6 +19,8 @@
 #include "Image.hpp"
 #include "RaytracingPipeline.hpp"
 #include "RenderPass.hpp"
+#include "Sampler.hpp"
+#include "Semaphore.hpp"
 #include "Shader.hpp"
 #include "VRAMAllocator.hpp"
 #include "Window.hpp"

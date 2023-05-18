@@ -49,7 +49,7 @@ namespace Hence
 			{
 				.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
 				.pNext = nullptr,
-				.flags = 0
+				.flags = VK_FENCE_CREATE_SIGNALED_BIT
 			};
 
 			if (VK_FAILED(res, vkCreateFence(mpDevice->getDevice(), &ci, nullptr, &mFence)))
@@ -180,6 +180,7 @@ namespace Hence
 	Result VulkanCommand::end() noexcept
 	{
 
+		vkCmdEndRenderPass(mCommandBuffer);
 		vkEndCommandBuffer(mCommandBuffer);
 
 		return Result();
@@ -276,6 +277,12 @@ namespace Hence
 			.signalSemaphoreCount = 1,
 			.pSignalSemaphores = {&signalSem}
 		};
+
+		if (VK_FAILED(res, vkResetFences(mpDevice->getDevice(), 1, &mFence)))
+		{
+			Logger::error("failed to reset fence!");
+			return Result(static_cast<std::int32_t>(res));
+		}
 
 		if (VK_FAILED(res, vkQueueSubmit(mpDevice->getDeviceQueue(), 1, &submitInfo, mFence)))
 		{

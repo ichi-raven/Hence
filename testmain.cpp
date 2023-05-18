@@ -16,6 +16,15 @@ struct Vertex
 	float pos[3];
 };
 
+template <typename T>
+struct RGBA
+{
+	T R;
+	T G;
+	T B;
+	T A;
+};
+
 using namespace Hence;
 
 int main()
@@ -60,13 +69,22 @@ int main()
 			.hostVisible = true,
 		});
 
+	RGBA<std::uint8_t> pixel{ 100, 100, 100, 0 };
+	std::vector<RGBA<std::uint8_t>> data(128 * 128, pixel);
+	int debug = sizeof(pixel);
+
+	image.write(ArrayProxy(data.size(), data.data()));
+
+	SamplerInfo si{};
+
+	Sampler sampler(device, si);
 
 	Shader vs(device, "testShaders/vert.spv");
 	Shader fs(device, "testShaders/frag.spv");
 
 	BindLayout bl(device, vs, fs);
 	BindGroup bg(device, bl);
-	bg.bind(0, 0, image);
+	bg.bind(0, 0, image, sampler);
 
 	RenderPass rp(device, window);
 
@@ -127,6 +145,10 @@ int main()
 	std::vector<Semaphore<Vulkan>> renderCompletedSemaphores;
 	std::vector<Semaphore<Vulkan>> frameBufferReadySemaphores;
 	
+	commands.reserve(kFrameBufferCount);
+	renderCompletedSemaphores.reserve(kFrameBufferCount);
+	frameBufferReadySemaphores.reserve(kFrameBufferCount);
+
 	for (int i = 0; i < kFrameBufferCount; ++i)
 	{
 		commands.emplace_back(device);

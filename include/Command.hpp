@@ -73,8 +73,9 @@ namespace Hence
 
         NONCOPYABLE(Command);
 
-        Command(Command<API>&& src);
-        Command<API>& operator=(Command<API>&& src);
+        Command(Command<API>&& src) noexcept;
+        Command<API>& operator=(Command<API>&& src) noexcept;
+
 
         /** 
          * @brief コマンド書き込み開始

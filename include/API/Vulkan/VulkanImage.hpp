@@ -30,9 +30,9 @@ namespace Hence
 		VulkanImage& operator=(VulkanImage&& other) noexcept;
 
 		template <typename DataType>
-		Result writeData(const ArrayProxy<DataType> data) noexcept
+		Result writeImage(const ArrayProxy<DataType> data) noexcept
 		{
-			return writeImage(data.data(), data.size());
+			return writeImage(reinterpret_cast<const void*>(data.data()), data.size());
 		}
 
 		VkImage getVkImage() noexcept;
@@ -47,7 +47,7 @@ namespace Hence
 
 	private:
 
-		Result writeImage(void* ptr, std::uint32_t size);
+		Result writeImage(const void* ptr, std::uint32_t size);
 
 		VulkanDevice* mpDevice;
 

@@ -11,6 +11,7 @@
 #include "../../../include/API/Vulkan/VulkanBindLayout.hpp"
 #include "../../../include/API/Vulkan/VulkanBuffer.hpp"
 #include "../../../include/API/Vulkan/VulkanImage.hpp"
+#include "../../../include/API/Vulkan/VulkanSampler.hpp"
 
 #include "../../../include/API/Vulkan/VulkanDevice.hpp"
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
@@ -43,6 +44,7 @@ namespace Hence
 
         for (const auto& bindingNum : bindingNums)
         {
+            mDescriptorSetInfos.emplace_back().resize(bindingNum);
             mWriteDescriptorSets.emplace_back().resize(bindingNum);
         }
 
@@ -60,41 +62,54 @@ namespace Hence
 
     void VulkanBindGroup::bind(std::uint32_t set, std::uint32_t binding, VulkanBuffer& buffer) noexcept
     {
-        VkDescriptorBufferInfo dbi{};
-        dbi.buffer = buffer.getVkBuffer();
-        dbi.offset = 0;
-        dbi.range = VK_WHOLE_SIZE;
+        VkDescriptorBufferInfo dbi
+        {
+            .buffer = buffer.getVkBuffer(),
+            .offset = 0,
+            .range = VK_WHOLE_SIZE
+        };
 
-        VkWriteDescriptorSet wdi{};
-
-        wdi.sType                   = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        wdi.pNext                   = nullptr;
-        wdi.dstBinding              = binding;
-        wdi.dstArrayElement         = 0;
-        wdi.descriptorCount         = 1;
-        wdi.descriptorType          = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        wdi.pBufferInfo             = &dbi;
-        wdi.dstSet                  = mDescriptorSets[set];
+        mDescriptorSetInfos[set][binding] = dbi;
+        
+        VkWriteDescriptorSet wdi
+        {
+            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+            .pNext = nullptr,
+            .dstSet = mDescriptorSets[set],
+            .dstBinding = binding,
+            .dstArrayElement = 0,
+            .descriptorCount = 1,
+            .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+            .pBufferInfo = &std::get<0>(mDescriptorSetInfos[set][binding])
+        };
 
         mWriteDescriptorSets[set][binding] = wdi;
 
         mChanged = true;
     }
 
-    void VulkanBindGroup::bind(std::uint32_t set, std::uint32_t binding, VulkanImage& image) noexcept
+    void VulkanBindGroup::bind(std::uint32_t set, std::uint32_t binding, VulkanImage& image, VulkanSampler& sampler) noexcept
     {
-        VkDescriptorImageInfo dii{};
-        dii.imageView   = image.getVkImageView();
-        dii.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        VkDescriptorImageInfo dii
+        {
+            .sampler        = sampler.getVkSampler(),
+            .imageView      = image.getVkImageView(),
+            .imageLayout    = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+        };
 
-        VkWriteDescriptorSet wdi{};
-        wdi.sType               = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        wdi.dstBinding          = binding;
-        wdi.dstArrayElement     = 0;
-        wdi.descriptorCount     = 1;
-        wdi.descriptorType      = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        wdi.pImageInfo          = &dii;
-        wdi.dstSet              = mDescriptorSets[set];
+        mDescriptorSetInfos[set][binding] = dii;
+        
+        VkWriteDescriptorSet wdi
+        {
+            .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+            .pNext = nullptr,
+            .dstSet = mDescriptorSets[set],
+            .dstBinding = binding,
+            .dstArrayElement = 0,
+            .descriptorCount = 1,
+            .descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+            .pImageInfo = &std::get<1>(mDescriptorSetInfos[set][binding])
+        };
 
         mWriteDescriptorSets[set][binding] = wdi;
 

@@ -44,7 +44,17 @@ namespace Hence
 	Image<API>::Impl& Image<API>::getInternalImpl() noexcept
 	{
 		assert(mImpl || "invalid image! (construct with VRAMAllocator first!");
+		
 		return *mImpl;
+	}
+
+	template<typename API>
+	template <typename DataType>
+	Result Image<API>::write(const ArrayProxy<DataType> data) noexcept
+	{
+		assert(mImpl || "invalid image! (construct with VRAMAllocator first!");
+
+		return mImpl->writeImage(data);
 	}
 }
 

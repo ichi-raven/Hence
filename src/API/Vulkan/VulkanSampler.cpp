@@ -45,7 +45,7 @@ namespace Hence
 
 	VulkanSampler::~VulkanSampler() noexcept
 	{
-
+		vkDestroySampler(mpDevice->getDevice(), mSampler, nullptr);
 	}
 
 	VkSampler VulkanSampler::getVkSampler() noexcept

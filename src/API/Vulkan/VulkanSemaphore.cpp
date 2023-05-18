@@ -33,6 +33,8 @@ namespace Hence
 
 	VulkanSemaphore::~VulkanSemaphore() noexcept
 	{
+		vkDeviceWaitIdle(mpDevice->getDevice());
+
 		vkDestroySemaphore(mpDevice->getDevice(), mSemaphore, nullptr);
 	}
 

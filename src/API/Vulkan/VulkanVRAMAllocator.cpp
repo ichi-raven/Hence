@@ -146,6 +146,7 @@ namespace Hence
             }
 
             ci.usage = static_cast<VkImageUsageFlags>(imageInfo.usage.usage);
+            ci.usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
             ci.arrayLayers = 1;
             ci.mipLevels = 1;

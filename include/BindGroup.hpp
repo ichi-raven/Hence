@@ -17,6 +17,7 @@
 #include "Device.hpp"
 #include "Buffer.hpp"
 #include "Image.hpp"
+#include "Sampler.hpp"
 #include "BindLayout.hpp"
 
 namespace Hence
@@ -67,7 +68,7 @@ namespace Hence
 		 * @param image •R‚Ã‚¯‚é‰æ‘œƒf[ƒ^
 		 * @return Œ‹‰Ê
 		 */
-		void bind(std::uint8_t set, std::uint8_t binding, Image<API>& image) noexcept;
+		void bind(std::uint8_t set, std::uint8_t binding, Image<API>& image, Sampler<API>& sampler) noexcept;
 
 		/** 
 		 * @brief  “à•”À‘•æ“¾

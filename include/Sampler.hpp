@@ -28,13 +28,13 @@ namespace Hence
 
         Sampler() noexcept;
 
-        Sampler(Device<API> device, const SamplerInfo& samplerInfo) noexcept;
+        Sampler(Device<API>& device, const SamplerInfo& samplerInfo) noexcept;
 
         ~Sampler() noexcept;
 
         NONCOPYABLE(Sampler)
 
-        const Impl& getInternalImpl() const noexcept;
+        Impl& getInternalImpl() noexcept;
 
     private:
         //using APIDevice = APITrait<API>::Device;

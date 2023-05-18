@@ -37,11 +37,11 @@ namespace Hence
 	}
 
 	template<typename API>
-	void BindGroup<API>::bind(std::uint8_t set, std::uint8_t binding, Image<API>& image) noexcept
+	void BindGroup<API>::bind(std::uint8_t set, std::uint8_t binding, Image<API>& image, Sampler<API>& sampler) noexcept
 	{
 		assert(mImpl || !"invalid object! (construct with device first!)");
 
-		mImpl->bind(set, binding, image.getInternalImpl());
+		mImpl->bind(set, binding, image.getInternalImpl(), sampler.getInternalImpl());
 	}
 
 	template<typename API>

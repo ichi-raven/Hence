@@ -31,7 +31,7 @@ namespace Hence
 	}
 	
 	template<typename API>
-	Command<API>::Command(Command<API>&& src)
+	Command<API>::Command(Command<API>&& src) noexcept
 		//: mAPIDevice(src.mAPIDevice)
 		: mImpl(std::move(src.mImpl))
 	{
@@ -39,7 +39,7 @@ namespace Hence
 	}
 
 	template<typename API>
-	Command<API>& Command<API>::operator=(Command<API>&& src)
+	Command<API>& Command<API>::operator=(Command<API>&& src) noexcept
 	{
 		//mAPIDevice = src.mAPIDevice;
 		mImpl = std::move(src.mImpl);

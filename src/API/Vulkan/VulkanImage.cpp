@@ -56,23 +56,28 @@ namespace Hence
         return *this;
     }
 
-	Result VulkanImage::writeImage(void* ptr, std::uint32_t size)
+	Result VulkanImage::writeImage(const void* ptr, std::uint32_t size)
 	{
         const auto vkDevice = mpDevice->getDevice();
 
         // ‚±‚ê‚ð‚Ç‚¤‚â‚Á‚ÄŽó‚¯Žæ‚é‚©‚ª–â‘è
 
-        std::size_t imageSize = 
+        const std::size_t imageSize = 
             mExtent.width * mExtent.height * mExtent.depth * mSizeOfChannel;
         
         VkBuffer        stagingBuffer = VK_NULL_HANDLE;
         VkDeviceMemory  stagingMemory = VK_NULL_HANDLE;
+
         {
             
-            VkBufferCreateInfo ci{};
-            ci.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-            ci.size = imageSize;
-            ci.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+            VkBufferCreateInfo ci
+            {
+                .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                .pNext = nullptr,
+                .flags = 0,
+                .size  = imageSize,
+                .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+            };
 
             if (VK_FAILED(res, vkCreateBuffer(vkDevice, &ci, nullptr, &stagingBuffer)))
             {
@@ -82,12 +87,20 @@ namespace Hence
             
 
             {
-                VkMemoryRequirements reqs{};
+                VkMemoryRequirements reqs
+                {
+                    .size           = imageSize,
+                    .alignment      = 4,
+                    .memoryTypeBits = 0 // temporary
+                };
+
                 vkGetBufferMemoryRequirements(vkDevice, stagingBuffer, &reqs);
-                VkMemoryAllocateInfo ai{};
-                ai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-                ai.allocationSize = reqs.size;
-                ai.memoryTypeIndex = mpDevice->getMemoryTypeIndex(reqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+                VkMemoryAllocateInfo ai
+                {
+                    .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+                    .allocationSize = reqs.size,
+                    .memoryTypeIndex = mpDevice->getMemoryTypeIndex(reqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)
+                };
 
                 if (VK_FAILED(res, vkAllocateMemory(vkDevice, &ai, nullptr, &stagingMemory)))
                 {
@@ -125,6 +138,7 @@ namespace Hence
             static_cast<uint32_t>(mExtent.height),
             static_cast<uint32_t>(mExtent.depth) 
         };
+
         copyRegion.imageSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
         VkCommandBuffer command;
         {

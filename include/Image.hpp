@@ -3,6 +3,7 @@
 
 #include "API.hpp"
 #include "Utility/Macro.hpp"
+#include "Utility/ArrayProxy.hpp"
 
 #include <optional>
 
@@ -28,6 +29,14 @@ namespace Hence
         NONCOPYABLE(Image)
 
         Impl& getInternalImpl() noexcept;
+
+        /**
+         * @brief 画像にデータを書き込む(ステージング及びコマンド実行コストがかかる)
+         * @tparam DataType 書き込むデータの型
+         * @param data 書き込むデータのArrayProxy(配列/array/vector/initializer_list)
+         */
+        template <typename DataType>
+        Result write(const ArrayProxy<DataType> data) noexcept;
 
     private:
         using APIVRAMAllocator = APITrait<API>::VRAMAllocatorImpl;

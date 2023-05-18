@@ -10,12 +10,15 @@
 
 #include <vulkan/vulkan.hpp>
 
+#include <variant>
+
 namespace Hence
 {
 	class VulkanDevice;
 	class VulkanBindLayout;
 	class VulkanBuffer;
 	class VulkanImage;
+	class VulkanSampler;
 
 	class VulkanBindGroup
 	{
@@ -27,17 +30,20 @@ namespace Hence
 
 		void bind(std::uint32_t set, std::uint32_t binding, VulkanBuffer& buffer) noexcept;
 
-		void bind(std::uint32_t set, std::uint32_t binding, VulkanImage& image) noexcept;
+		void bind(std::uint32_t set, std::uint32_t binding, VulkanImage& image, VulkanSampler& sampler) noexcept;
 
 		const std::vector<VkDescriptorSet>& getDescriptorSets() noexcept;
 
 	private:
+		
+		using DescriptorInfo		= std::variant<VkDescriptorBufferInfo, VkDescriptorImageInfo>; 
 
 		VulkanDevice* mpDevice;
 
 		bool mChanged;
-		std::vector<std::vector<VkWriteDescriptorSet>> mWriteDescriptorSets;
-		std::vector<VkDescriptorSet> mDescriptorSets;
+		std::vector<std::vector<DescriptorInfo>>		mDescriptorSetInfos;
+		std::vector<std::vector<VkWriteDescriptorSet>>	mWriteDescriptorSets;
+		std::vector<VkDescriptorSet>					mDescriptorSets;
 	};
 }
 
