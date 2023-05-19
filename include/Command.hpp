@@ -13,6 +13,7 @@
 #include "Utility/ArrayProxy.hpp"
 
 #include "Info/ClearValue.hpp"
+#include "Info/ImageLayout.hpp"
 
 #include <cstdint>
 
@@ -144,6 +145,8 @@ namespace Hence
         Result render(const std::uint32_t vertexCount, const std::uint32_t instanceCount, const std::uint32_t firstVertex, const std::uint32_t firstInstance) noexcept;
 
         Result renderIndexed(const std::uint32_t indexCount, const std::uint32_t instanceCount, const std::uint32_t firstIndex, const std::uint32_t vertexOffset, const std::uint32_t firstInstance) noexcept;
+
+        Result barrier(Image<API>& image, ImageLayout from, ImageLayout to) noexcept;
 
         Result execute(Semaphore<API>& waitSemaphore, Semaphore<API>& signalSemaphore) noexcept;
 

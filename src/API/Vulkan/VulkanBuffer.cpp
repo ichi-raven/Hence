@@ -38,6 +38,9 @@ namespace Hence
 		mMemory = std::move(other.mMemory);
 		mSize	= std::move(other.mSize);
 		mOffset = std::move(other.mOffset);
+
+		other.mBuffer = VK_NULL_HANDLE;
+		other.mMemory = VK_NULL_HANDLE;
 	}
 
 	VulkanBuffer& VulkanBuffer::operator=(VulkanBuffer&& other) noexcept
@@ -46,6 +49,9 @@ namespace Hence
 		mMemory		= std::move(other.mMemory);
 		mSize		= std::move(other.mSize);
 		mOffset		= std::move(other.mOffset);
+
+		other.mBuffer = VK_NULL_HANDLE;
+		other.mMemory = VK_NULL_HANDLE;
 
 		return *this;
 	}

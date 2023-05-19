@@ -110,6 +110,14 @@ namespace Hence
 	}
 
 	template<typename API>
+	Result Command<API>::barrier(Image<API>& image, ImageLayout from, ImageLayout to) noexcept
+	{
+		assert(mImpl || !"invalid command! (construct with device first!)");
+
+		return mImpl->barrier(image, from, to);
+	}
+
+	template<typename API>
 	Result Command<API>::execute(Semaphore<API>& waitSemaphore, Semaphore<API>& signalSemaphore) noexcept
 	{
 		assert(mImpl || !"invalid command! (construct with device first!)");

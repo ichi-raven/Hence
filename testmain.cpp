@@ -27,6 +27,51 @@ struct RGBA
 
 using namespace Hence;
 
+template<typename API, std::uint32_t kFrameBufferNum>
+Result render
+	(
+		Window<API>& window,
+		std::array<Command<API>,	kFrameBufferNum>& commands, 
+		std::array<Semaphore<API>,	kFrameBufferNum>& renderCompletedSemaphores,
+		std::array<Semaphore<API>,	kFrameBufferNum>& frameBufferReadySemaphores,
+		const std::uint32_t frameIndex,
+		std::function<Result(Command<API>&, const std::uint32_t)> commandRecordingProc
+	)
+{
+	//static std::uint32_t currentFrameIndex = 0;
+
+	assert
+	(	
+		(
+			commands.size() == renderCompletedSemaphores.size()
+			&&
+			commands.size() == frameBufferReadySemaphores.size()
+		)
+		|| !"invalid commands or semaphores size!"
+	);
+
+	const std::uint32_t imageIndex = window.acquireNextImage(frameBufferReadySemaphores[frameIndex]);
+
+	auto& command = commands[frameIndex];
+
+	if (FAILED(res, commandRecordingProc(command, imageIndex)))
+	{
+		return res;
+	}
+
+	if (FAILED(res, command.execute(frameBufferReadySemaphores[frameIndex], renderCompletedSemaphores[frameIndex])))
+	{
+		return res;
+	}
+
+	if (FAILED(res, window.present(imageIndex, renderCompletedSemaphores[frameIndex])))
+	{
+		return res;
+	}
+
+	return Result();
+}
+
 int main()
 {
 	constexpr std::uint32_t kWidth				= 640;
@@ -69,7 +114,7 @@ int main()
 			.hostVisible = true,
 		});
 
-	RGBA<std::uint8_t> pixel{ 100, 100, 100, 0 };
+	RGBA<std::uint8_t> pixel{ 100, 100, 100, 1 };
 	std::vector<RGBA<std::uint8_t>> data(128 * 128, pixel);
 	int debug = sizeof(pixel);
 
@@ -134,48 +179,57 @@ int main()
 		bl, vs, fs);
 
 
-	ColorClearValue ccv = std::array<std::uint32_t, 4>{ 0, 0, 0, 0 };
+	ColorClearValue ccv = std::array<float, 4>{ 1.0, 0, 0, 1 };
 	DepthClearValue dcv
 	{
 		.depth		= 1.0,
 		.stencil	= 0u
 	};
 
-	std::vector<Command<Vulkan>> commands;
-	std::vector<Semaphore<Vulkan>> renderCompletedSemaphores;
-	std::vector<Semaphore<Vulkan>> frameBufferReadySemaphores;
+	std::array<Command<Vulkan>,		kFrameBufferCount>	commands;
+	std::array<Semaphore<Vulkan>,	kFrameBufferCount>	renderCompletedSemaphores;
+	std::array<Semaphore<Vulkan>,	kFrameBufferCount>	frameBufferReadySemaphores;
 	
-	commands.reserve(kFrameBufferCount);
-	renderCompletedSemaphores.reserve(kFrameBufferCount);
-	frameBufferReadySemaphores.reserve(kFrameBufferCount);
-
 	for (int i = 0; i < kFrameBufferCount; ++i)
 	{
-		commands.emplace_back(device);
-		renderCompletedSemaphores.emplace_back(device);
-		frameBufferReadySemaphores.emplace_back(device);
+		commands[i] = std::move(Command(device));
+		renderCompletedSemaphores[i] = std::move(Semaphore(device));
+		frameBufferReadySemaphores[i] = std::move(Semaphore(device));
 	}
 
 	std::uint32_t currentFrameIndex = 0;
 
-	// debug
-	for (int i = 0; i < 100; ++i)
+	auto recordingProc = [&](Command<Vulkan>& command, const std::uint32_t imageIndex) -> Result
 	{
-		std::cerr << "now : " << i << "\n";
+		if (FAILED(res, command.begin(rp, imageIndex, ccv, dcv)))
+		{
+			return res;
+		}
 
-		const std::uint32_t imageIndex = window.acquireNextImage(frameBufferReadySemaphores[currentFrameIndex]);
-
-		auto& command = commands[currentFrameIndex];
-
-		command.begin(rp, imageIndex, ccv, dcv);
 		command.setGraphicsPipeline(gp);
 		command.setBindGroup(bg, 0);
 		command.render(4, 1, 0, 0);
 		command.end();
 
-		command.execute(frameBufferReadySemaphores[currentFrameIndex], renderCompletedSemaphores[currentFrameIndex]);
+		return Result();
+	};
 
-		window.present(imageIndex, renderCompletedSemaphores[currentFrameIndex]);
+	// debug
+	for (int i = 0; i < 100; ++i)
+	{
+
+		std::cerr << "now : " << currentFrameIndex << "\n";
+
+		render<Vulkan, kFrameBufferCount>
+			(
+				window,
+				commands,
+				renderCompletedSemaphores,
+				frameBufferReadySemaphores,
+				currentFrameIndex,
+				recordingProc
+			);
+
 
 		currentFrameIndex = (currentFrameIndex + 1) % kFrameBufferCount;
 	}

@@ -19,6 +19,10 @@ namespace Hence
 
 		~VulkanSemaphore() noexcept;
 
+		VulkanSemaphore(VulkanSemaphore&& other) noexcept;
+
+		VulkanSemaphore& operator=(VulkanSemaphore&& other) noexcept;
+
 		VkSemaphore getVkSemaphore() noexcept;
 
 	private:

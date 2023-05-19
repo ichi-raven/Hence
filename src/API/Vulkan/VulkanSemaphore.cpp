@@ -35,8 +35,30 @@ namespace Hence
 	{
 		vkDeviceWaitIdle(mpDevice->getDevice());
 
-		vkDestroySemaphore(mpDevice->getDevice(), mSemaphore, nullptr);
+		if (mSemaphore != VK_NULL_HANDLE)
+		{
+			vkDestroySemaphore(mpDevice->getDevice(), mSemaphore, nullptr);
+		}
 	}
+
+	VulkanSemaphore::VulkanSemaphore(VulkanSemaphore&& other) noexcept
+	{
+		mpDevice			= other.mpDevice;
+		mSemaphore			= other.mSemaphore;
+
+		other.mSemaphore	= VK_NULL_HANDLE;
+	}
+
+	VulkanSemaphore& VulkanSemaphore::operator=(VulkanSemaphore&& other) noexcept
+	{
+		mpDevice			= other.mpDevice;
+		mSemaphore			= other.mSemaphore;
+
+		other.mSemaphore	= VK_NULL_HANDLE;
+
+		return *this;
+	}
+
 
 	VkSemaphore VulkanSemaphore::getVkSemaphore() noexcept
 	{

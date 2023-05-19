@@ -40,7 +40,7 @@ namespace Hence
 			//std::vector<VkImage> colorTargetImages = { colorTargets.getVkImage()...};
 			std::vector<VkImageView> imageViews = { colorTargets.getVkImageView()... , depthStencilTarget.getVkImageView()};
 
-			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), depthStencilTarget.getVkFormat());
+			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), depthStencilTarget.getVkFormat(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 			createFrameBufferSumUp(imageViews);
 		}
 
@@ -54,7 +54,7 @@ namespace Hence
 			//std::vector<VkImage> colorTargetImages = { colorTargets.getVkImage()... };
 			std::vector<VkImageView> imageViews = { colorTargets.getVkImageView()... };
 
-			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), std::nullopt);
+			createRenderPass(sizeof...(colorTargets), getVkFormat(colorTargets...), std::nullopt, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 			createFrameBufferSumUp(imageViews);
 		}
 
@@ -70,7 +70,7 @@ namespace Hence
 
 	private:
 
-		inline Result createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat) noexcept;
+		inline Result createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat, VkImageLayout finalLayout) noexcept;
 
 		inline Result createFrameBufferEach(const std::vector<VkImageView>& colorViews, VkImageView depthView = VK_NULL_HANDLE) noexcept;
 

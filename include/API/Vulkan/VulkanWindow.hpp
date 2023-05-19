@@ -57,11 +57,6 @@ namespace Hence
 
         inline Result selectSurfaceFormat(const VkFormat format) noexcept;
 
-        inline Result setImageMemoryBarrier(VkCommandBuffer command, VkImage image,
-            VkImageLayout oldLayout,
-            VkImageLayout newLayout,
-            VkImageAspectFlags aspectFlags) const noexcept;
-
         VulkanDevice* mpDevice;
 
         GLFWwindow*                     mpWindow;

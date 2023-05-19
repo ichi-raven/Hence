@@ -29,7 +29,7 @@ namespace Hence
 
         auto& depthStencilTarget = window.getDepthBuffer();
 
-        createRenderPass(1, window.getVkFormat(), depthStencilTarget.getVkFormat());
+        createRenderPass(1, window.getVkFormat(), depthStencilTarget.getVkFormat(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 
         std::vector<VkImageView> views(window.getVkSwapchainImageViews());
         
@@ -49,7 +49,7 @@ namespace Hence
         vkDestroyRenderPass(vkDevice, mRenderPass, nullptr);
     }
 
-    inline Result VulkanRenderPass::createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat) noexcept
+    inline Result VulkanRenderPass::createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat, VkImageLayout finalLayout) noexcept
     {
         std::vector<VkAttachmentDescription> adVec;
         std::vector<VkAttachmentReference> arVec;
@@ -95,7 +95,9 @@ namespace Hence
 
                 ad.format = colorFormat;
                 ad.samples = VK_SAMPLE_COUNT_1_BIT;
-                ad.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                //ad.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+                ad.finalLayout = finalLayout;
+
                 ar.attachment = static_cast<std::uint32_t>(i);
                 ar.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             }

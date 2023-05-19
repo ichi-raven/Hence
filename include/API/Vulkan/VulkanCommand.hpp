@@ -12,6 +12,7 @@
 #include "../../Utility/ArrayProxy.hpp"
 
 #include "../../Info/ClearValue.hpp"
+#include "../../Info/ImageLayout.hpp"
 
 #include <vulkan/vulkan.hpp>
 
@@ -26,6 +27,7 @@ namespace Hence
     class VulkanComputePipeline;
     class VulkanRaytracingPipeline;
     class VulkanBuffer;
+    class VulkanImage;
     class VulkanBindGroup;
     class VulkanSemaphore;
 
@@ -42,6 +44,10 @@ namespace Hence
          * @brief  デストラクタ
          */
         ~VulkanCommand() noexcept;
+
+        VulkanCommand(VulkanCommand&& other) noexcept;
+
+        VulkanCommand& operator=(VulkanCommand&& other) noexcept;
 
         /**
          * @brief コマンド書き込み開始
@@ -110,6 +116,8 @@ namespace Hence
         Result render(const std::uint32_t vertexCount, const std::uint32_t instanceCount, const std::uint32_t firstVertex, const std::uint32_t firstInstance) noexcept;
 
         Result renderIndexed(const std::uint32_t indexCount, const std::uint32_t instanceCount, const std::uint32_t firstIndex, const std::uint32_t vertexOffset, const std::uint32_t firstInstance) noexcept;
+
+        Result barrier(VulkanImage& image, const ImageLayout old, const ImageLayout dst) noexcept;
 
         Result execute(VulkanSemaphore& waitSemaphore, VulkanSemaphore& signalSemaphore) noexcept;
 

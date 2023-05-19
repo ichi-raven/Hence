@@ -308,6 +308,15 @@ namespace Hence
 
 	void VulkanVRAMAllocator::deallocate(VulkanBuffer& vulkanBuffer) noexcept
 	{
+        if (
+            vulkanBuffer.getVkBuffer() == VK_NULL_HANDLE
+            ||
+            vulkanBuffer.getVkDeviceMemory() == VK_NULL_HANDLE
+            )
+        {
+            return;
+        }
+
         const auto vkDevice = mpDevice->getDevice();
 
         vkQueueWaitIdle(mpDevice->getDeviceQueue());
@@ -320,6 +329,17 @@ namespace Hence
 	void VulkanVRAMAllocator::deallocate(VulkanImage& vulkanImage) noexcept
 	{
         const auto vkDevice = mpDevice->getDevice();
+
+        if (
+            vulkanImage.getVkImageView() == VK_NULL_HANDLE
+            ||
+            vulkanImage.getVkImage() == VK_NULL_HANDLE
+            ||
+            vulkanImage.getVkDeviceMemory() == VK_NULL_HANDLE
+            )
+        {
+            return;
+        }
 
         vkQueueWaitIdle(mpDevice->getDeviceQueue());
 

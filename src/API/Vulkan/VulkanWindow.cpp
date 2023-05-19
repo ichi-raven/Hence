@@ -9,6 +9,7 @@
 #include "../../../include/API/Vulkan/VulkanDevice.hpp"
 #include "../../../include/API/Vulkan/VulkanSemaphore.hpp"
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
+#include "../../../include/API/Vulkan/Utility/HelperFunctions.hpp"
 
 #include "../../../include/Utility/Logger.hpp"
 #include "../../../include/Utility/Macro.hpp"
@@ -110,6 +111,7 @@ namespace Hence
 		VkPresentInfoKHR presentInfo
 		{
 			.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+			.pNext = nullptr,
 			.waitSemaphoreCount		= 1,
 			.pWaitSemaphores		= &vkSem,
 			.swapchainCount			= 1,
@@ -218,23 +220,24 @@ namespace Hence
 		mPresentMode = VK_PRESENT_MODE_FIFO_KHR;
 
 		uint32_t queueFamilyIndices[] = { graphicsQueueIndex };
-		VkSwapchainCreateInfoKHR ci{};
-		ci.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-		ci.surface = mSurface;
-		ci.minImageCount = mMaxFrameNum;// mSurfaceCaps.minImageCount;
-		ci.imageFormat = mSurfaceFormat.format;
-		ci.imageColorSpace = mSurfaceFormat.colorSpace;
-		ci.imageExtent = extent;
-		ci.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-		ci.preTransform = mSurfaceCaps.currentTransform;
-		ci.imageArrayLayers = 1;
-		ci.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		ci.queueFamilyIndexCount = 0;
-		ci.presentMode =
-			vsync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR;
-		ci.oldSwapchain = VK_NULL_HANDLE;
-		ci.clipped = VK_TRUE;
-		ci.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		VkSwapchainCreateInfoKHR ci
+		{
+			.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+			.surface = mSurface,
+			.minImageCount = mMaxFrameNum,// mSurfaceCaps.minImageCount;
+			.imageFormat = mSurfaceFormat.format,
+			.imageColorSpace = mSurfaceFormat.colorSpace,
+			.imageExtent = extent,
+			.imageArrayLayers = 1,
+			.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+			.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
+			.queueFamilyIndexCount = 0,
+			.preTransform = mSurfaceCaps.currentTransform,
+			.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+			.presentMode = vsync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_IMMEDIATE_KHR,
+			.clipped = VK_TRUE,
+			.oldSwapchain = VK_NULL_HANDLE
+		};
 
 		if (VK_FAILED(res, vkCreateSwapchainKHR(vkDevice, &ci, nullptr, &mSwapchain)))
 		{
@@ -264,6 +267,47 @@ namespace Hence
 		{
 			Logger::error("failed to get swapchain images!");
 			return Result(static_cast<std::int32_t>(res));
+		}
+
+
+		{
+			
+			VkCommandBuffer command = VK_NULL_HANDLE;
+			{
+				VkCommandBufferAllocateInfo ai
+				{
+					.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+					.commandPool = mpDevice->getCommandPool(),
+					.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+					.commandBufferCount = 1,
+				};
+				vkAllocateCommandBuffers(vkDevice, &ai, &command);
+			}
+
+			VkCommandBufferBeginInfo commandBI{};
+			commandBI.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			vkBeginCommandBuffer(command, &commandBI);
+
+			for (auto image : mSwapchainImages)
+			{
+				setImageMemoryBarrier(command, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+			}
+
+			vkEndCommandBuffer(command);
+
+			VkSubmitInfo submitInfo
+			{
+				.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+				.pNext = nullptr,
+				.commandBufferCount = 1,
+				.pCommandBuffers = &command
+			};
+
+			vkQueueSubmit(mpDevice->getDeviceQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+
+			// end copying
+			vkDeviceWaitIdle(vkDevice);
+			vkFreeCommandBuffers(vkDevice, mpDevice->getCommandPool(), 1, &command);
 		}
 
 		mSwapchainImageViews.resize(imageCount);
@@ -302,19 +346,24 @@ namespace Hence
 
 		VkImage image = VK_NULL_HANDLE;
 		{
-			VkImageCreateInfo ci{};
-			ci.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-			ci.pNext = nullptr;
-			ci.imageType = VK_IMAGE_TYPE_2D;
-			ci.format = VK_FORMAT_D32_SFLOAT;
-			ci.extent.width = mSwapchainExtent.width;
-			ci.extent.height = mSwapchainExtent.height;
-			ci.extent.depth = 1;
-			ci.mipLevels = 1;
-			ci.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-			ci.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			ci.samples = VK_SAMPLE_COUNT_1_BIT;
-			ci.arrayLayers = 1;
+			VkImageCreateInfo ci
+			{
+				.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+				.pNext = nullptr,
+				.imageType = VK_IMAGE_TYPE_2D,
+				.format = VK_FORMAT_D32_SFLOAT,
+				.extent
+					{
+						.width = mSwapchainExtent.width,
+						.height = mSwapchainExtent.height,
+						.depth = 1
+					},
+				.mipLevels = 1,
+				.arrayLayers = 1,
+				.samples = VK_SAMPLE_COUNT_1_BIT,
+				.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+				.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
+			};
 
 
 			if (VK_FAILED(res, vkCreateImage(vkDevice, &ci, nullptr, &image)))
@@ -472,67 +521,5 @@ namespace Hence
 	{
 		return *mDepthBuffer;
 	}
-
-	inline Result VulkanWindow::setImageMemoryBarrier(VkCommandBuffer command, VkImage image,
-		VkImageLayout oldLayout,
-		VkImageLayout newLayout,
-		VkImageAspectFlags aspectFlags) const noexcept
-	{
-
-		VkImageMemoryBarrier imb{};
-		imb.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		imb.oldLayout = oldLayout;
-		imb.newLayout = newLayout;
-		imb.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		imb.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		imb.subresourceRange = { aspectFlags, 0, 1, 0, 1 };
-		imb.image = image;
-
-		// final stage that write to resource in pipelines
-		VkPipelineStageFlags srcStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-		// next state that write to resource in pipelines
-		VkPipelineStageFlags dstStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-
-		switch (oldLayout)
-		{
-		case VK_IMAGE_LAYOUT_UNDEFINED:
-			imb.srcAccessMask = 0;
-			break;
-		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-			imb.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-			srcStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-			break;
-		case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
-			imb.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			break;
-		}
-
-		switch (newLayout)
-		{
-		case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
-			imb.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-			dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-			break;
-		case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
-			imb.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-			dstStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-			break;
-		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
-			imb.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-			dstStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-			break;
-		}
-
-		vkCmdPipelineBarrier(command, srcStage, dstStage, 0,
-			0,  // memoryBarrierCount
-			nullptr,
-			0,  // bufferMemoryBarrierCount
-			nullptr,
-			1,  // imageMemoryBarrierCount
-			&imb);
-
-		return Result();
-	}
-
 
 }

@@ -348,6 +348,9 @@
     <ClInclude Include="..\include\API\DirectX12\DirectX12Semaphore.hpp">
       <Filter>ヘッダー ファイル\API\DirectX12</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Info\ImageLayout.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Device.inl">

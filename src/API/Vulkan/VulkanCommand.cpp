@@ -14,9 +14,11 @@
 #include "../../../include/API/Vulkan/VulkanGraphicsPipeline.hpp"
 #include "../../../include/API/Vulkan/VulkanBindGroup.hpp"
 #include "../../../include/API/Vulkan/VulkanBuffer.hpp"
+#include "../../../include/API/Vulkan/VulkanImage.hpp"
 #include "../../../include/API/Vulkan/VulkanSemaphore.hpp"
 
 #include "../../../include/API/Vulkan/Utility/Macro.hpp"
+#include "../../../include/API/Vulkan/Utility/HelperFunctions.hpp"
 
 
 namespace Hence
@@ -65,16 +67,47 @@ namespace Hence
 	VulkanCommand::~VulkanCommand() noexcept
 	{
 
-		if (VK_FAILED(res, vkWaitForFences(mpDevice->getDevice(), 1, &mFence, VK_TRUE, 100)))
+		if (mFence != VK_NULL_HANDLE)
 		{
-			Logger::error("failed to wait fences! (native result : {})", static_cast<std::int32_t>(res));
-			return;
+			if (VK_FAILED(res, vkWaitForFences(mpDevice->getDevice(), 1, &mFence, VK_TRUE, 100)))
+			{
+				Logger::error("failed to wait fences! (native result : {})", static_cast<std::int32_t>(res));
+				return;
+			}
+
+			vkDestroyFence(mpDevice->getDevice(), mFence, nullptr);
 		}
 
-		vkDestroyFence(mpDevice->getDevice(), mFence, nullptr);
-
-		vkFreeCommandBuffers(mpDevice->getDevice(), mpDevice->getCommandPool(), 1, &mCommandBuffer);
+		if (mCommandBuffer != VK_NULL_HANDLE)
+		{
+			vkFreeCommandBuffers(mpDevice->getDevice(), mpDevice->getCommandPool(), 1, &mCommandBuffer);
+		}
 	}
+
+	VulkanCommand::VulkanCommand(VulkanCommand&& other) noexcept
+	{
+		mpDevice		= other.mpDevice;
+		mPipelineLayout = other.mPipelineLayout;
+		mCommandBuffer	= other.mCommandBuffer;
+		mFence			= other.mFence;
+
+		other.mCommandBuffer	= VK_NULL_HANDLE;
+		other.mFence			= VK_NULL_HANDLE;
+	}
+
+	VulkanCommand& VulkanCommand::operator=(VulkanCommand&& other) noexcept
+	{
+		mpDevice		= other.mpDevice;
+		mPipelineLayout = other.mPipelineLayout;
+		mCommandBuffer	= other.mCommandBuffer;
+		mFence			= other.mFence;
+
+		other.mCommandBuffer	= VK_NULL_HANDLE;
+		other.mFence			= VK_NULL_HANDLE;
+
+		return *this;
+	}
+
 
 	Result VulkanCommand::begin(VulkanRenderPass& renderpass, const std::uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const std::optional<DepthClearValue>& dcv) noexcept
 	{
@@ -86,6 +119,13 @@ namespace Hence
 			.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
 			.pInheritanceInfo = nullptr,
 		};
+
+		// wait until this command buffer is available
+		if (VK_FAILED(res, vkWaitForFences(mpDevice->getDevice(), 1, &mFence, VK_TRUE, std::numeric_limits<std::uint64_t>::max())))
+		{
+			Logger::error("failed to wait previous fence!");
+			return Result(static_cast<std::int32_t>(res));
+		}
 
 		if (VK_FAILED(res, vkBeginCommandBuffer(mCommandBuffer, &bi)))
 		{
@@ -251,12 +291,29 @@ namespace Hence
 		return Result();
 	}
 
+	Result VulkanCommand::barrier(VulkanImage& image, const ImageLayout src, const ImageLayout dst) noexcept
+	{
+		auto oldVK = static_cast<VkImageLayout>(src);
+		auto newVK = static_cast<VkImageLayout>(dst);
+
+		setImageMemoryBarrier(mCommandBuffer, image.getVkImage(), oldVK, newVK);
+	
+		return Result();
+	}
+
+
 	Result VulkanCommand::execute(VulkanSemaphore& waitSemaphore, VulkanSemaphore& signalSemaphore) noexcept
 	{
 
 		if (VK_FAILED(res, vkWaitForFences(mpDevice->getDevice(), 1, &mFence, VK_TRUE, std::numeric_limits<std::uint64_t>::max())))
 		{
 			Logger::error("failed to wait previous fence!");
+			return Result(static_cast<std::int32_t>(res));
+		}
+
+		if (VK_FAILED(res, vkResetFences(mpDevice->getDevice(), 1, &mFence)))
+		{
+			Logger::error("failed to reset fence!");
 			return Result(static_cast<std::int32_t>(res));
 		}
 
@@ -277,12 +334,6 @@ namespace Hence
 			.signalSemaphoreCount = 1,
 			.pSignalSemaphores = {&signalSem}
 		};
-
-		if (VK_FAILED(res, vkResetFences(mpDevice->getDevice(), 1, &mFence)))
-		{
-			Logger::error("failed to reset fence!");
-			return Result(static_cast<std::int32_t>(res));
-		}
 
 		if (VK_FAILED(res, vkQueueSubmit(mpDevice->getDeviceQueue(), 1, &submitInfo, mFence)))
 		{

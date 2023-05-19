@@ -42,6 +42,10 @@ namespace Hence
         mFormat         = other.mFormat;
         mExtent         = other.mExtent;
         mSizeOfChannel  = other.mSizeOfChannel;
+
+        other.mImage = VK_NULL_HANDLE;
+        other.mMemory = VK_NULL_HANDLE;
+        other.mImageView = VK_NULL_HANDLE;
     }
 
     VulkanImage& VulkanImage::operator=(VulkanImage&& other) noexcept
@@ -53,6 +57,10 @@ namespace Hence
         mExtent         = other.mExtent;
         mSizeOfChannel  = other.mSizeOfChannel;
 
+        other.mImage = VK_NULL_HANDLE;
+        other.mMemory = VK_NULL_HANDLE;
+        other.mImageView = VK_NULL_HANDLE;
+
         return *this;
     }
 
@@ -63,7 +71,7 @@ namespace Hence
         // ‚±‚ê‚ð‚Ç‚¤‚â‚Á‚ÄŽó‚¯Žæ‚é‚©‚ª–â‘è
 
         const std::size_t imageSize = 
-            mExtent.width * mExtent.height * mExtent.depth * mSizeOfChannel;
+            static_cast<size_t>(mExtent.width) * mExtent.height * mExtent.depth * mSizeOfChannel;
         
         VkBuffer        stagingBuffer = VK_NULL_HANDLE;
         VkDeviceMemory  stagingMemory = VK_NULL_HANDLE;
@@ -163,10 +171,14 @@ namespace Hence
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         vkEndCommandBuffer(command);
 
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &command;
+        VkSubmitInfo submitInfo
+        {
+            .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            .pNext = nullptr,
+            .commandBufferCount = 1,
+            .pCommandBuffers = &command
+        };
+
         vkQueueSubmit(mpDevice->getDeviceQueue(), 1, &submitInfo, VK_NULL_HANDLE);
 
         // end copying

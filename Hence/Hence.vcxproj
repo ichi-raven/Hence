@@ -214,6 +214,7 @@
     <ClInclude Include="..\include\Info\Format.hpp" />
     <ClInclude Include="..\include\Info\GraphicsPipelineInfo.hpp" />
     <ClInclude Include="..\include\Info\ImageInfo.hpp" />
+    <ClInclude Include="..\include\Info\ImageLayout.hpp" />
     <ClInclude Include="..\include\Info\ImageUsage.hpp" />
     <ClInclude Include="..\include\Info\MultiSamplingState.hpp" />
     <ClInclude Include="..\include\Info\RasterizerState.hpp" />
