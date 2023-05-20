@@ -114,7 +114,7 @@ int main()
 			.hostVisible = true,
 		});
 
-	RGBA<std::uint8_t> pixel{ 100, 100, 100, 1 };
+	RGBA<std::uint8_t> pixel{ 100, 50, 100, 1 };
 	std::vector<RGBA<std::uint8_t>> data(128 * 128, pixel);
 	int debug = sizeof(pixel);
 
@@ -171,7 +171,7 @@ int main()
 				.frontFace = FrontFace::CCW,
 				.lineWidth = 1.f,
 			},
-			.topology{Topology::TriangleList},
+			.topology{Topology::TriangleStrip},
 			.viewport = std::nullopt,
 			.scissor = std::nullopt
 		},
@@ -179,7 +179,7 @@ int main()
 		bl, vs, fs);
 
 
-	ColorClearValue ccv = std::array<float, 4>{ 1.0, 0, 0, 1 };
+	ColorClearValue ccv = std::array<float, 4>{ 0.95, 0.05, 0.05, 1 };
 	DepthClearValue dcv
 	{
 		.depth		= 1.0,
@@ -215,10 +215,17 @@ int main()
 	};
 
 	// debug
-	for (int i = 0; i < 100; ++i)
+	while(!window.getKey(Key::Escape))
 	{
 
+		window.updateInput();
+		
 		std::cerr << "now : " << currentFrameIndex << "\n";
+
+		const auto [mx, my] = window.getMousePos();
+
+		std::cout << "mouse x : " << mx << " y : " << my << "\n";
+
 
 		render<Vulkan, kFrameBufferCount>
 			(
@@ -233,6 +240,8 @@ int main()
 
 		currentFrameIndex = (currentFrameIndex + 1) % kFrameBufferCount;
 	}
+
+	std::cout << "end\n";
 
 	return 0;
 }

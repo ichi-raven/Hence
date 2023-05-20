@@ -53,6 +53,17 @@ namespace Hence
 		void updateInput() noexcept;
 
 		/**
+		 * @brief  キーの入力を取得する
+		 */
+		bool getKey(const Key key) const noexcept;
+
+
+		/**
+		 * @brief  マウスの座標を取得する
+		 */
+		std::pair<double, double> getMousePos() const noexcept;
+
+		/**
 		 * @brief  このウィンドウがフォーカスされているか
 		 * @return フォーカスされていればtrue
 		 */

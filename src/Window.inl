@@ -39,6 +39,25 @@ namespace Hence
 		mImpl->updateInput();
 	}
 
+
+	template<typename API>
+	bool Window<API>::getKey(const Key key) const noexcept
+	{
+		assert(mImpl || !"invalid window! (construct with device first!)");
+
+		return mImpl->getKey(key);
+	}
+
+
+	template<typename API>
+	std::pair<double, double> Window<API>::getMousePos() const noexcept
+	{
+		assert(mImpl || !"invalid window! (construct with device first!)");
+
+		return mImpl->getMousePos();
+	}
+
+
 	template<typename API>
 	bool Window<API>::focused() const noexcept
 	{

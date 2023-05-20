@@ -100,6 +100,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,6 +137,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>D:\include\vulkan;D:\include\glfw;</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -216,6 +218,7 @@
     <ClInclude Include="..\include\Info\ImageInfo.hpp" />
     <ClInclude Include="..\include\Info\ImageLayout.hpp" />
     <ClInclude Include="..\include\Info\ImageUsage.hpp" />
+    <ClInclude Include="..\include\Info\Keys.hpp" />
     <ClInclude Include="..\include\Info\MultiSamplingState.hpp" />
     <ClInclude Include="..\include\Info\RasterizerState.hpp" />
     <ClInclude Include="..\include\Info\ResourceType.hpp" />

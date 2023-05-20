@@ -351,6 +351,9 @@
     <ClInclude Include="..\include\Info\ImageLayout.hpp">
       <Filter>ヘッダー ファイル\Info</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Info\Keys.hpp">
+      <Filter>ヘッダー ファイル\Info</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Device.inl">

@@ -2,6 +2,8 @@
 #define HENCE_API_VULKAN_VULKANWINDOW_HPP_
 
 #include "../../Info/WindowInfo.hpp"
+#include "../../Info/Keys.hpp"
+
 #include "../../Utility/Result.hpp"
 
 #include "VulkanImage.hpp"
@@ -25,9 +27,19 @@ namespace Hence
 
         ~VulkanWindow() noexcept;
 
-		inline void updateInput() noexcept;
+		void updateInput() noexcept;
 
-		inline bool focused() const noexcept;
+        /**
+        * @brief  キーの入力を取得する
+        */
+        bool getKey(const Key key) const noexcept;
+
+        /**
+         * @brief  マウスの座標を取得する
+         */
+        std::pair<double, double> getMousePos() const noexcept;
+
+		bool focused() const noexcept;
 
         Result present(const std::uint32_t frameBufferIndex, VulkanSemaphore& waitSemaphore) noexcept;
 

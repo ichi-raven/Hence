@@ -80,12 +80,40 @@ namespace Hence
 		
 	}
 
-	inline void VulkanWindow::updateInput() noexcept
+	void VulkanWindow::updateInput() noexcept
 	{
 		glfwPollEvents();
 	}
 
-	inline bool VulkanWindow::focused() const noexcept
+	bool VulkanWindow::getKey(const Key key) const noexcept
+	{
+		if (!glfwGetWindowAttrib(mpWindow, GLFW_VISIBLE))
+		{
+			return false;
+		}
+
+		if (const bool rtn = glfwGetKey(mpWindow, static_cast<int>(key)) > 0)
+		{
+			return rtn;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @brief  マウスの座標を取得する
+	 */
+	std::pair<double, double> VulkanWindow::getMousePos() const noexcept
+	{
+		double x = 0, y = 0;
+
+		glfwGetCursorPos(mpWindow, &x, &y);
+
+		return { x, y };
+	}
+
+
+	bool VulkanWindow::focused() const noexcept
 	{
 		return static_cast<bool>(glfwGetWindowAttrib(mpWindow, GLFW_FOCUSED));
 	}
