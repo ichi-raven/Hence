@@ -70,20 +70,20 @@ namespace Hence
 
 	private:
 
-		inline Result createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat, VkImageLayout finalLayout) noexcept;
+		Result createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat, VkImageLayout finalLayout) noexcept;
 
-		inline Result createFrameBufferEach(const std::vector<VkImageView>& colorViews, VkImageView depthView = VK_NULL_HANDLE) noexcept;
+		Result createFrameBufferEach(const std::vector<VkImageView>& colorViews, VkImageView depthView = VK_NULL_HANDLE) noexcept;
 
-		inline Result createFrameBufferSumUp(const std::vector<VkImageView>& views) noexcept;
+		Result createFrameBufferSumUp(const std::vector<VkImageView>& views) noexcept;
 
 		template<VulkanImageType HeadImage, VulkanImageType... TailImages>
-		inline const VkExtent3D& getVkExtent(HeadImage& head, TailImages... tails)
+		const VkExtent3D& getVkExtent(HeadImage& head, TailImages... tails)
 		{
 			return head.getVkExtent();
 		}
 
 		template<VulkanImageType HeadImage, VulkanImageType... TailImages>
-		inline VkFormat getVkFormat(HeadImage& head, TailImages... tails)
+		VkFormat getVkFormat(HeadImage& head, TailImages... tails)
 		{
 			return head.getVkFormat();
 		}

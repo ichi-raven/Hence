@@ -199,7 +199,7 @@ namespace Hence
 				};
 			}
 
-			VkRenderPassBeginInfo bi
+			VkRenderPassBeginInfo rpbi
 			{
 				.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 				.pNext = nullptr,
@@ -210,7 +210,7 @@ namespace Hence
 				.pClearValues = cvs.data(),
 			};
 
-			vkCmdBeginRenderPass(mCommandBuffer, &bi, VK_SUBPASS_CONTENTS_INLINE);
+			vkCmdBeginRenderPass(mCommandBuffer, &rpbi, VK_SUBPASS_CONTENTS_INLINE);
 
 		}
 
@@ -221,6 +221,7 @@ namespace Hence
 	{
 
 		vkCmdEndRenderPass(mCommandBuffer);
+
 		vkEndCommandBuffer(mCommandBuffer);
 
 		return Result();

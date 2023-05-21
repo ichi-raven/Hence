@@ -49,10 +49,11 @@ namespace Hence
         vkDestroyRenderPass(vkDevice, mRenderPass, nullptr);
     }
 
-    inline Result VulkanRenderPass::createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat, VkImageLayout finalLayout) noexcept
+    Result VulkanRenderPass::createRenderPass(const std::size_t colorTargetNum, VkFormat colorFormat, std::optional<VkFormat> depthFormat, VkImageLayout finalLayout) noexcept
     {
         std::vector<VkAttachmentDescription> adVec;
         std::vector<VkAttachmentReference> arVec;
+        VkAttachmentReference depthAr{};
         
         adVec.reserve(colorTargetNum);
         arVec.reserve(colorTargetNum);
@@ -110,7 +111,6 @@ namespace Hence
 
         if (depthFormat)
         {
-            VkAttachmentReference depthAr{};
             auto&& depthAd = adVec.emplace_back();
             //auto& depthBuffer = mImageMap[depthTarget];
 
@@ -135,15 +135,15 @@ namespace Hence
             subpassDesc.pDepthStencilAttachment = &depthAr;
         }
 
-        VkRenderPassCreateInfo ci{};
-
-
-
-        ci.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        ci.attachmentCount = static_cast<std::uint32_t>(adVec.size());
-        ci.pAttachments = adVec.data();
-        ci.subpassCount = 1;
-        ci.pSubpasses = &subpassDesc;
+        VkRenderPassCreateInfo ci
+        {
+            .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+            .pNext = nullptr,
+            .attachmentCount = static_cast<std::uint32_t>(adVec.size()),
+            .pAttachments = adVec.data(),
+            .subpassCount = 1,
+            .pSubpasses = &subpassDesc,
+        };
 
         if (VK_FAILED(res, vkCreateRenderPass(mpDevice->getDevice(), &ci, nullptr, &mRenderPass)))
         {
@@ -155,7 +155,7 @@ namespace Hence
         return Result();
     }
 
-    inline Result VulkanRenderPass::createFrameBufferEach(const std::vector<VkImageView>& views, VkImageView depthView) noexcept
+    Result VulkanRenderPass::createFrameBufferEach(const std::vector<VkImageView>& views, VkImageView depthView) noexcept
     {
         VkFramebufferCreateInfo fbci{};
         fbci.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -177,6 +177,8 @@ namespace Hence
         for (const auto& view : views)
         {
             mFrameBuffers.emplace_back();
+            
+            VkImageView views[] = { view, depthView };
 
             if (depthView == VK_NULL_HANDLE)
             {
@@ -184,7 +186,6 @@ namespace Hence
             }
             else
             {
-                VkImageView views[] = { view, depthView };
                 fbci.pAttachments = views;
             }
 
@@ -198,7 +199,7 @@ namespace Hence
         return Result();
     }
 
-    inline Result VulkanRenderPass::createFrameBufferSumUp(const std::vector<VkImageView>& views) noexcept
+    Result VulkanRenderPass::createFrameBufferSumUp(const std::vector<VkImageView>& views) noexcept
     {
         VkFramebufferCreateInfo fbci{};
         fbci.sType              = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

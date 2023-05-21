@@ -10,6 +10,8 @@
 
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <numeric>
 
 struct Vertex
 {
@@ -26,6 +28,7 @@ struct RGBA
 };
 
 using namespace Hence;
+using API = Vulkan;
 
 template<typename API, std::uint32_t kFrameBufferNum>
 Result render
@@ -38,10 +41,8 @@ Result render
 		std::function<Result(Command<API>&, const std::uint32_t)> commandRecordingProc
 	)
 {
-	//static std::uint32_t currentFrameIndex = 0;
-
 	assert
-	(	
+	(
 		(
 			commands.size() == renderCompletedSemaphores.size()
 			&&
@@ -81,7 +82,7 @@ int main()
 	constexpr bool kVSyncEnable					= true;
 	constexpr bool kFullScreen					= false;
 
-	Device<Vulkan> device;
+	Device<API> device;
 
 	Window window(device, WindowInfo
 		{
@@ -114,7 +115,7 @@ int main()
 			.hostVisible = true,
 		});
 
-	RGBA<std::uint8_t> pixel{ 100, 50, 100, 1 };
+	RGBA<std::uint8_t> pixel{ 50, 50, 100, 1 };
 	std::vector<RGBA<std::uint8_t>> data(128 * 128, pixel);
 	int debug = sizeof(pixel);
 
@@ -179,33 +180,29 @@ int main()
 		bl, vs, fs);
 
 
-	ColorClearValue ccv = std::array<float, 4>{ 0.95, 0.05, 0.05, 1 };
+	ColorClearValue ccv = std::array<float, 4>{ 0.9f, 0.0f, 0.0f, 1.f};
 	DepthClearValue dcv
 	{
 		.depth		= 1.0,
 		.stencil	= 0u
 	};
 
-	std::array<Command<Vulkan>,		kFrameBufferCount>	commands;
-	std::array<Semaphore<Vulkan>,	kFrameBufferCount>	renderCompletedSemaphores;
-	std::array<Semaphore<Vulkan>,	kFrameBufferCount>	frameBufferReadySemaphores;
+	std::array<Command<API>,		kFrameBufferCount>	commands;
+	std::array<Semaphore<API>,	kFrameBufferCount>	renderCompletedSemaphores;
+	std::array<Semaphore<API>,	kFrameBufferCount>	frameBufferReadySemaphores;
 	
-	for (int i = 0; i < kFrameBufferCount; ++i)
+	for (std::size_t i = 0; i < kFrameBufferCount; ++i)
 	{
-		commands[i] = std::move(Command(device));
-		renderCompletedSemaphores[i] = std::move(Semaphore(device));
-		frameBufferReadySemaphores[i] = std::move(Semaphore(device));
+		commands[i]						= std::move(Command(device));
+		renderCompletedSemaphores[i]	= std::move(Semaphore(device));
+		frameBufferReadySemaphores[i]	= std::move(Semaphore(device));
 	}
 
 	std::uint32_t currentFrameIndex = 0;
 
-	auto recordingProc = [&](Command<Vulkan>& command, const std::uint32_t imageIndex) -> Result
+	auto recordingProc = [&](Command<API>& command, const std::uint32_t imageIndex) -> Result
 	{
-		if (FAILED(res, command.begin(rp, imageIndex, ccv, dcv)))
-		{
-			return res;
-		}
-
+		command.begin(rp, imageIndex, ccv, dcv);
 		command.setGraphicsPipeline(gp);
 		command.setBindGroup(bg, 0);
 		command.render(4, 1, 0, 0);
@@ -214,20 +211,26 @@ int main()
 		return Result();
 	};
 
-	// debug
+	//FPSŒv‘ª
+	std::uint32_t elapsedFrame = 0;
+	constexpr std::size_t avgSize = 60;
+	std::array<double, avgSize> times;
+	double time = 0, deltatime = 0;
+	std::chrono::high_resolution_clock::time_point now, prev = std::chrono::high_resolution_clock::now();
+
 	while(!window.getKey(Key::Escape))
 	{
-
 		window.updateInput();
 		
-		std::cerr << "now : " << currentFrameIndex << "\n";
-
 		const auto [mx, my] = window.getMousePos();
+		
+		{
+			now = std::chrono::high_resolution_clock::now();
+			time += times[elapsedFrame % avgSize] = std::chrono::duration_cast<std::chrono::microseconds>(now - prev).count() / 1000000.;
+			deltatime = times[elapsedFrame % avgSize];
+		}
 
-		std::cout << "mouse x : " << mx << " y : " << my << "\n";
-
-
-		render<Vulkan, kFrameBufferCount>
+		render<API, kFrameBufferCount>
 			(
 				window,
 				commands,
@@ -237,9 +240,15 @@ int main()
 				recordingProc
 			);
 
-
-		currentFrameIndex = (currentFrameIndex + 1) % kFrameBufferCount;
+		{
+			currentFrameIndex = (currentFrameIndex + 1) % kFrameBufferCount;
+			++elapsedFrame;
+			prev = now;
+		}
 	}
+
+	
+	std::cerr << "fps : " << 1. / (std::accumulate(times.begin(), times.end(), 0.) / static_cast<double>(avgSize)) << "\n";
 
 	std::cout << "end\n";
 

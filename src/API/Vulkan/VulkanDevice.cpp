@@ -21,6 +21,7 @@
 // DEBUG
 #include <iostream>
 
+
 namespace Hence
 {
 	VulkanDevice::VulkanDevice() noexcept
