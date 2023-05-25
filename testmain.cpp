@@ -75,11 +75,11 @@ Result render
 
 int main()
 {
-	constexpr std::uint32_t kWidth				= 640;
-	constexpr std::uint32_t kHeight				= 480;
+	constexpr std::uint32_t kWidth				= 1920;
+	constexpr std::uint32_t kHeight				= 1080;
 	constexpr std::uint32_t kFrameBufferCount	= 3;
 	constexpr std::string_view kWindowName		= "testWindow";
-	constexpr bool kVSyncEnable					= true;
+	constexpr bool kVSyncEnable					= false;
 	constexpr bool kFullScreen					= false;
 
 	Device<API> device;
@@ -115,18 +115,15 @@ int main()
 			.hostVisible = true,
 		});
 
-	RGBA<std::uint8_t> pixel{ 50, 50, 100, 1 };
+	RGBA<std::uint8_t> pixel{ 50, 50, 50, 1 };
 	std::vector<RGBA<std::uint8_t>> data(128 * 128, pixel);
-	int debug = sizeof(pixel);
 
 	image.write(ArrayProxy(data.size(), data.data()));
 
-	SamplerInfo si{};
+	Sampler sampler(device, SamplerInfo{});
 
-	Sampler sampler(device, si);
-
-	Shader vs(device, "testShaders/vert.spv");
-	Shader fs(device, "testShaders/frag.spv");
+	Shader vs(device, "testShaders/shader.vert");
+	Shader fs(device, "testShaders/shader.frag");
 
 	BindLayout bl(device, vs, fs);
 	BindGroup bg(device, bl);
@@ -187,7 +184,7 @@ int main()
 		.stencil	= 0u
 	};
 
-	std::array<Command<API>,		kFrameBufferCount>	commands;
+	std::array<Command<API>,	kFrameBufferCount>	commands;
 	std::array<Semaphore<API>,	kFrameBufferCount>	renderCompletedSemaphores;
 	std::array<Semaphore<API>,	kFrameBufferCount>	frameBufferReadySemaphores;
 	
@@ -218,6 +215,7 @@ int main()
 	double time = 0, deltatime = 0;
 	std::chrono::high_resolution_clock::time_point now, prev = std::chrono::high_resolution_clock::now();
 
+	std::cout << "running\n";
 	while(!window.getKey(Key::Escape))
 	{
 		window.updateInput();

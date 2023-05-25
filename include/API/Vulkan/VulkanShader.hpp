@@ -38,11 +38,9 @@ namespace Hence
 		ShaderStage getShaderStage() const noexcept;
 
 	private:
-		inline Result loadShaderReflection() noexcept;
+		inline Result loadShaderReflection(const std::vector<std::uint32_t>& fileData) noexcept;
 
 		VulkanDevice* mpDevice;
-
-		std::vector<char> mFileData;
 
 		std::string mEntryPoint;
 		std::map<std::pair<uint8_t, uint8_t>, ResourceType> mResourceLayoutTable;

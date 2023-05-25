@@ -20,33 +20,229 @@
 #include "../../../include/Info/ResourceType.hpp"
 #include "../../../include/Info/Format.hpp"
 
+#include <glslang/SPIRV/GlslangToSpv.h>
+#include <glslang/Include/ResourceLimits.h>
 
 #include <fstream>
 
 namespace Hence
 {
+    namespace Compiler
+    {
+        static TBuiltInResource InitResources()
+        {
+            TBuiltInResource Resources;
+
+            Resources.maxLights = 32;
+            Resources.maxClipPlanes = 6;
+            Resources.maxTextureUnits = 32;
+            Resources.maxTextureCoords = 32;
+            Resources.maxVertexAttribs = 64;
+            Resources.maxVertexUniformComponents = 4096;
+            Resources.maxVaryingFloats = 64;
+            Resources.maxVertexTextureImageUnits = 32;
+            Resources.maxCombinedTextureImageUnits = 80;
+            Resources.maxTextureImageUnits = 32;
+            Resources.maxFragmentUniformComponents = 4096;
+            Resources.maxDrawBuffers = 32;
+            Resources.maxVertexUniformVectors = 128;
+            Resources.maxVaryingVectors = 8;
+            Resources.maxFragmentUniformVectors = 16;
+            Resources.maxVertexOutputVectors = 16;
+            Resources.maxFragmentInputVectors = 15;
+            Resources.minProgramTexelOffset = -8;
+            Resources.maxProgramTexelOffset = 7;
+            Resources.maxClipDistances = 8;
+            Resources.maxComputeWorkGroupCountX = 65535;
+            Resources.maxComputeWorkGroupCountY = 65535;
+            Resources.maxComputeWorkGroupCountZ = 65535;
+            Resources.maxComputeWorkGroupSizeX = 1024;
+            Resources.maxComputeWorkGroupSizeY = 1024;
+            Resources.maxComputeWorkGroupSizeZ = 64;
+            Resources.maxComputeUniformComponents = 1024;
+            Resources.maxComputeTextureImageUnits = 16;
+            Resources.maxComputeImageUniforms = 8;
+            Resources.maxComputeAtomicCounters = 8;
+            Resources.maxComputeAtomicCounterBuffers = 1;
+            Resources.maxVaryingComponents = 60;
+            Resources.maxVertexOutputComponents = 64;
+            Resources.maxGeometryInputComponents = 64;
+            Resources.maxGeometryOutputComponents = 128;
+            Resources.maxFragmentInputComponents = 128;
+            Resources.maxImageUnits = 8;
+            Resources.maxCombinedImageUnitsAndFragmentOutputs = 8;
+            Resources.maxCombinedShaderOutputResources = 8;
+            Resources.maxImageSamples = 0;
+            Resources.maxVertexImageUniforms = 0;
+            Resources.maxTessControlImageUniforms = 0;
+            Resources.maxTessEvaluationImageUniforms = 0;
+            Resources.maxGeometryImageUniforms = 0;
+            Resources.maxFragmentImageUniforms = 8;
+            Resources.maxCombinedImageUniforms = 8;
+            Resources.maxGeometryTextureImageUnits = 16;
+            Resources.maxGeometryOutputVertices = 256;
+            Resources.maxGeometryTotalOutputComponents = 1024;
+            Resources.maxGeometryUniformComponents = 1024;
+            Resources.maxGeometryVaryingComponents = 64;
+            Resources.maxTessControlInputComponents = 128;
+            Resources.maxTessControlOutputComponents = 128;
+            Resources.maxTessControlTextureImageUnits = 16;
+            Resources.maxTessControlUniformComponents = 1024;
+            Resources.maxTessControlTotalOutputComponents = 4096;
+            Resources.maxTessEvaluationInputComponents = 128;
+            Resources.maxTessEvaluationOutputComponents = 128;
+            Resources.maxTessEvaluationTextureImageUnits = 16;
+            Resources.maxTessEvaluationUniformComponents = 1024;
+            Resources.maxTessPatchComponents = 120;
+            Resources.maxPatchVertices = 32;
+            Resources.maxTessGenLevel = 64;
+            Resources.maxViewports = 16;
+            Resources.maxVertexAtomicCounters = 0;
+            Resources.maxTessControlAtomicCounters = 0;
+            Resources.maxTessEvaluationAtomicCounters = 0;
+            Resources.maxGeometryAtomicCounters = 0;
+            Resources.maxFragmentAtomicCounters = 8;
+            Resources.maxCombinedAtomicCounters = 8;
+            Resources.maxAtomicCounterBindings = 1;
+            Resources.maxVertexAtomicCounterBuffers = 0;
+            Resources.maxTessControlAtomicCounterBuffers = 0;
+            Resources.maxTessEvaluationAtomicCounterBuffers = 0;
+            Resources.maxGeometryAtomicCounterBuffers = 0;
+            Resources.maxFragmentAtomicCounterBuffers = 1;
+            Resources.maxCombinedAtomicCounterBuffers = 1;
+            Resources.maxAtomicCounterBufferSize = 16384;
+            Resources.maxTransformFeedbackBuffers = 4;
+            Resources.maxTransformFeedbackInterleavedComponents = 64;
+            Resources.maxCullDistances = 8;
+            Resources.maxCombinedClipAndCullDistances = 8;
+            Resources.maxSamples = 4;
+            Resources.maxMeshOutputVerticesNV = 256;
+            Resources.maxMeshOutputPrimitivesNV = 512;
+            Resources.maxMeshWorkGroupSizeX_NV = 32;
+            Resources.maxMeshWorkGroupSizeY_NV = 1;
+            Resources.maxMeshWorkGroupSizeZ_NV = 1;
+            Resources.maxTaskWorkGroupSizeX_NV = 32;
+            Resources.maxTaskWorkGroupSizeY_NV = 1;
+            Resources.maxTaskWorkGroupSizeZ_NV = 1;
+            Resources.maxMeshViewCountNV = 4;
+
+            Resources.limits.nonInductiveForLoops = 1;
+            Resources.limits.whileLoops = 1;
+            Resources.limits.doWhileLoops = 1;
+            Resources.limits.generalUniformIndexing = 1;
+            Resources.limits.generalAttributeMatrixVectorIndexing = 1;
+            Resources.limits.generalVaryingIndexing = 1;
+            Resources.limits.generalSamplerIndexing = 1;
+            Resources.limits.generalVariableIndexing = 1;
+            Resources.limits.generalConstantMatrixVectorIndexing = 1;
+
+            return Resources;
+        }
+
+        std::string readFile(std::string_view path)
+        {
+            std::ifstream file(path.data());
+
+            if (!file.is_open()) 
+            {
+                Logger::error("failed to load shader file {}!", path.data());
+                return std::string("FAILED TO LOAD");
+            }
+
+            std::stringstream buffer;
+            buffer << file.rdbuf();
+            return buffer.str();
+        }
+
+        EShLanguage translateShaderStage(std::string_view filepath)
+        {
+            if (filepath.ends_with("vert")) return EShLangVertex;
+            else if (filepath.ends_with("frag")) return EShLangFragment;
+            else if (filepath.ends_with("comp")) return EShLangCompute;
+            else if (filepath.ends_with("rgen")) return EShLangRayGenNV;
+            else if (filepath.ends_with("rmiss")) return EShLangMissNV;
+            else if (filepath.ends_with("rchit")) return EShLangClosestHitNV;
+            else if (filepath.ends_with("rahit")) return EShLangAnyHitNV;
+            else assert(!"Unknown shader stage");
+
+            return static_cast<EShLanguage>(0);//一応(しらん)
+        }
+
+        std::vector<unsigned int> compileText(EShLanguage stage,
+            const std::string& shaderSource)
+        {
+            glslang::InitializeProcess();
+
+            const char* shaderStrings[1];
+            shaderStrings[0] = shaderSource.data();
+
+            glslang::TShader shader(stage);
+            // RayTracingを使えるようにバージョン設定
+            shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv,
+                glslang::EShTargetLanguageVersion::EShTargetSpv_1_5);
+            shader.setStrings(shaderStrings, 1);
+
+            EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
+            auto defaultResource = InitResources();
+            if (!shader.parse(&defaultResource, 100, false, messages))
+            {
+                Logger::error("shader {} : \ncompile error! : {}", shaderSource, shader.getInfoLog());
+            }
+
+            glslang::TProgram program;
+            program.addShader(&shader);
+
+            if (!program.link(messages)) 
+            {
+                Logger::error("shader {} : \nlink error! : {}", shaderSource, shader.getInfoLog());
+            }
+
+            std::vector<std::uint32_t> spvShader;
+            glslang::GlslangToSpv(*program.getIntermediate(stage), spvShader);
+            glslang::FinalizeProcess();
+            return spvShader;
+        }
+
+        std::vector<std::uint32_t> compileFile(std::string_view path)
+        {
+            EShLanguage stage = translateShaderStage(path);
+            return compileText(stage, readFile(path));
+        }
+
+    } // namespace Compiler
+
 	VulkanShader::VulkanShader(VulkanDevice* pVulkanDevice, std::string_view path) noexcept
         : mpDevice(pVulkanDevice)
         , mShaderStage(ShaderStage::ALL)
     {
         assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
 
+        std::vector<std::uint32_t> fileData;
+
+        if (path.ends_with(".spv")) // 末尾がspv
         {// load
 
             std::ifstream infile(path.data(), std::ios::binary);
             assert(infile);
 
-            mFileData.resize(uint32_t(infile.seekg(0, std::ifstream::end).tellg()));
-            infile.seekg(0, std::ifstream::beg).read(mFileData.data(), mFileData.size());
+            fileData.resize(uint32_t(infile.seekg(0, std::ifstream::end).tellg()) / sizeof(std::uint32_t));
+            infile.seekg(0, std::ifstream::beg).read(reinterpret_cast<char*>(fileData.data()), fileData.size() * sizeof(fileData[0]));
+            
+            Logger::info("loaded shader : {}", path);
+        }
+        else // 末尾がそれ以外
+        {
+            fileData = Compiler::compileFile(path);
+            Logger::info("compiled shader : {}", path);
         }
 
-        Logger::info("loaded shader : {}", path);
-
-        VkShaderModuleCreateInfo ci{};
-        ci.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        ci.pNext = nullptr;
-        ci.pCode = reinterpret_cast<const uint32_t*>(mFileData.data());
-        ci.codeSize = mFileData.size();
+        VkShaderModuleCreateInfo ci
+        {
+            .sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+            .pNext = nullptr,
+            .codeSize = sizeof(fileData[0]) * fileData.size(),
+            .pCode = fileData.data()
+        };
         
         if (VK_FAILED(res, vkCreateShaderModule(mpDevice->getDevice(), &ci, nullptr, &mShaderModule)))
         {
@@ -54,19 +250,21 @@ namespace Hence
             return;
         }
 
-        loadShaderReflection();
+        loadShaderReflection(fileData);
 	}
+
+
 
     VulkanShader::~VulkanShader()
     {
         vkDestroyShaderModule(mpDevice->getDevice(), mShaderModule, nullptr);
     }
 
-    Result VulkanShader::loadShaderReflection() noexcept
+    Result VulkanShader::loadShaderReflection(const std::vector<std::uint32_t>& fileData) noexcept
     {
         //load shader module
         SpvReflectShaderModule module = {};
-        SpvReflectResult result = spvReflectCreateShaderModule(sizeof(mFileData[0]) * mFileData.size(), mFileData.data(), &module);
+        SpvReflectResult result = spvReflectCreateShaderModule(sizeof(fileData[0]) * fileData.size(), fileData.data(), &module);
         if (result != SPV_REFLECT_RESULT_SUCCESS)
         {
             Logger::error("failed to create SPIRV-Reflect shader module!");
