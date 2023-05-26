@@ -511,5 +511,8 @@
     <None Include="testShaders\testFrag.frag">
       <Filter>リソース ファイル\shaders</Filter>
     </None>
+    <None Include="testShaders\testFrag2.frag">
+      <Filter>リソース ファイル\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -310,6 +310,7 @@
     <None Include="testShaders\shader.frag" />
     <None Include="testShaders\shader.vert" />
     <None Include="testShaders\testFrag.frag" />
+    <None Include="testShaders\testFrag2.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

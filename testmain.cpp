@@ -143,7 +143,7 @@ int main()
 	Sampler sampler(device, SamplerInfo{});
 
 	Shader vs(device, "testShaders/shader.vert");
-	Shader fs(device, "testShaders/testFrag.frag");
+	Shader fs(device, "testShaders/testFrag2.frag");
 	//Shader fs(device, "testShaders/shader.frag");
 
 
