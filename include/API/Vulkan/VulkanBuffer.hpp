@@ -40,7 +40,7 @@ namespace Hence
 		template <typename DataType>
 		Result writeData(const ArrayProxy<DataType> data) noexcept
 		{
-			return writeBuffer(data.data(), data.size());
+			return writeBuffer(reinterpret_cast<const void*>(data.data()), data.size());
 		}
 
 		VkBuffer getVkBuffer() noexcept;
@@ -53,7 +53,7 @@ namespace Hence
 
 	private:
 
-		inline Result writeBuffer(void* ptr, std::size_t size) noexcept;
+		Result writeBuffer(const void* ptr, std::size_t size) noexcept;
 
 		VulkanDevice*	mpDevice;
 

@@ -66,7 +66,7 @@ namespace Hence
 	}
 
 	template<typename API>
-	Buffer<API>::Impl& Buffer<API>::getInternalImpl() noexcept
+	Buffer<API>::template Impl& Buffer<API>::getInternalImpl() noexcept
 	{
 		assert(mImpl || "invalid buffer! (allocate first!)");
 
@@ -79,7 +79,7 @@ namespace Hence
 	{
 		assert(mImpl || "invalid buffer! (allocate first!)");
 
-		mImpl->writeData(data);
+		return mImpl->writeData(data);
 	}
 
 }

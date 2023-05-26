@@ -32,7 +32,7 @@ namespace Hence
 	}
 
 	template<typename API>
-	RenderPass<API>::Impl& RenderPass<API>::getInternalImpl() noexcept
+	RenderPass<API>::template Impl& RenderPass<API>::getInternalImpl() noexcept
 	{
 		assert(mImpl || !"invalid renderpass! (construct with device first!)");
 

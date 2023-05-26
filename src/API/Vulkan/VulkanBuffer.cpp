@@ -56,7 +56,7 @@ namespace Hence
 		return *this;
 	}
 
-	inline Result VulkanBuffer::writeBuffer(void* ptr, std::size_t size) noexcept
+	Result VulkanBuffer::writeBuffer(const void* ptr, std::size_t size) noexcept
 	{
 		void* mappedMemory = nullptr;
 		const auto vkDevice = mpDevice->getDevice();
@@ -67,7 +67,7 @@ namespace Hence
 			return Result(static_cast<std::int32_t>(res));
 		}
 
-		std::memcpy(mappedMemory, ptr, size);
+		std::memcpy(mappedMemory, ptr, mSize);
 		vkUnmapMemory(vkDevice, mMemory);
 
 		return Result();

@@ -30,7 +30,7 @@ namespace Hence
 	}
 
 	template<typename API>
-	Shader<API>::Impl& Shader<API>::getInternalImpl() noexcept
+	Shader<API>::template Impl& Shader<API>::getInternalImpl() noexcept
 	{
 		assert(mImpl || !"invalid shader! (construct with device first!)");
 

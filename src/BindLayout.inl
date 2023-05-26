@@ -32,7 +32,7 @@ namespace Hence
 	}
 
 	template<typename API>
-	BindLayout<API>::Impl& BindLayout<API>::getInternalImpl() noexcept
+	BindLayout<API>::template Impl& BindLayout<API>::getInternalImpl() noexcept
 	{
 		assert(mImpl || !"invalid object! (construct with device first!)");
 

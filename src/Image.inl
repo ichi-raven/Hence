@@ -41,7 +41,7 @@ namespace Hence
 	}
 
 	template<typename API>
-	Image<API>::Impl& Image<API>::getInternalImpl() noexcept
+	Image<API>::template Impl& Image<API>::getInternalImpl() noexcept
 	{
 		assert(mImpl || "invalid image! (construct with VRAMAllocator first!");
 		

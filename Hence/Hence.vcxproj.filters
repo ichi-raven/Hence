@@ -55,6 +55,9 @@
     <Filter Include="ソース ファイル\API\Vulkan\ThirdParty">
       <UniqueIdentifier>{859405ae-4b6a-41e0-9c7b-83b9886126f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="リソース ファイル\shaders">
+      <UniqueIdentifier>{58f0ba8c-e0bd-48bf-bc7f-cca5cd0bbddd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\API.hpp">
@@ -498,6 +501,15 @@
     </None>
     <None Include="..\src\Command.inl">
       <Filter>ソース ファイル</Filter>
+    </None>
+    <None Include="testShaders\shader.frag">
+      <Filter>リソース ファイル\shaders</Filter>
+    </None>
+    <None Include="testShaders\shader.vert">
+      <Filter>リソース ファイル\shaders</Filter>
+    </None>
+    <None Include="testShaders\testFrag.frag">
+      <Filter>リソース ファイル\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

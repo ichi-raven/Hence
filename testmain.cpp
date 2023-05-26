@@ -27,6 +27,13 @@ struct RGBA
 	T A;
 };
 
+struct ShaderToy
+{
+		float iResolution[4];
+		float iMouse[4];
+		float iTime;
+};
+
 using namespace Hence;
 using API = Vulkan;
 
@@ -75,33 +82,44 @@ Result render
 
 int main()
 {
-	constexpr std::uint32_t kWidth				= 1920;
-	constexpr std::uint32_t kHeight				= 1080;
-	constexpr std::uint32_t kFrameBufferCount	= 3;
-	constexpr std::string_view kWindowName		= "testWindow";
-	constexpr bool kVSyncEnable					= false;
-	constexpr bool kFullScreen					= false;
+	constexpr std::uint32_t kWidth = 1920;
+	constexpr std::uint32_t kHeight = 1080;
+	constexpr std::uint32_t kFrameBufferCount = 3;
+	constexpr std::string_view kWindowName = "testWindow";
+	constexpr bool kVSyncEnable = true;
+	constexpr bool kFullScreen = false;
 
 	Device<API> device;
 
 	Window window(device, WindowInfo
 		{
-			.width			= kWidth,
-			.height			= kHeight,
-			.frameCount		= kFrameBufferCount,
-			.windowName		= kWindowName,
-			.vsync			= kVSyncEnable,
-			.fullScreen		= kFullScreen
+			.width = kWidth,
+			.height = kHeight,
+			.frameCount = kFrameBufferCount,
+			.windowName = kWindowName,
+			.vsync = kVSyncEnable,
+			.fullScreen = kFullScreen
 		});
 
 	VRAMAllocator vramAllocator(device);
 
 	Buffer buffer(vramAllocator, BufferInfo
 		{
-			.memorySize = 10,
-			.usage{BufferUsageBit::Vertex},
+			.memorySize = sizeof(ShaderToy),
+			.usage{BufferUsageBit::Uniform},
 			.hostVisible = true,
 		});
+
+	{// write
+		ShaderToy data
+		{
+			.iResolution = { kWidth, kHeight, 1.f, 0},
+			.iMouse = {0.f, 0.f, 0.f, 0.f},
+			.iTime = 0.f
+		};
+
+		buffer.writeData(ArrayProxy(1, &data));
+	}
 
 	Image image(vramAllocator, ImageInfo
 		{
@@ -115,19 +133,24 @@ int main()
 			.hostVisible = true,
 		});
 
-	RGBA<std::uint8_t> pixel{ 50, 50, 50, 1 };
-	std::vector<RGBA<std::uint8_t>> data(128 * 128, pixel);
+	{// write
+		RGBA<std::uint8_t> pixel{ 50, 50, 50, 1 };
+		std::vector<RGBA<std::uint8_t>> data(128 * 128, pixel);
 
-	image.write(ArrayProxy(data.size(), data.data()));
+		image.write(ArrayProxy(static_cast<std::uint32_t>(data.size()), data.data()));
+	}
 
 	Sampler sampler(device, SamplerInfo{});
 
 	Shader vs(device, "testShaders/shader.vert");
-	Shader fs(device, "testShaders/shader.frag");
+	Shader fs(device, "testShaders/testFrag.frag");
+	//Shader fs(device, "testShaders/shader.frag");
+
 
 	BindLayout bl(device, vs, fs);
 	BindGroup bg(device, bl);
 	bg.bind(0, 0, image, sampler);
+	bg.bind(0, 1, buffer);
 
 	RenderPass rp(device, window);
 
@@ -190,7 +213,7 @@ int main()
 	
 	for (std::size_t i = 0; i < kFrameBufferCount; ++i)
 	{
-		commands[i]						= std::move(Command(device));
+		commands[i]								= std::move(Command(device));
 		renderCompletedSemaphores[i]	= std::move(Semaphore(device));
 		frameBufferReadySemaphores[i]	= std::move(Semaphore(device));
 	}
@@ -211,11 +234,11 @@ int main()
 	//FPSŒv‘ª
 	std::uint32_t elapsedFrame = 0;
 	constexpr std::size_t avgSize = 60;
-	std::array<double, avgSize> times;
+	std::array<double, avgSize> times = {};
 	double time = 0, deltatime = 0;
 	std::chrono::high_resolution_clock::time_point now, prev = std::chrono::high_resolution_clock::now();
 
-	std::cout << "running\n";
+	std::cout << "now running\n";
 	while(!window.getKey(Key::Escape))
 	{
 		window.updateInput();
@@ -226,6 +249,17 @@ int main()
 			now = std::chrono::high_resolution_clock::now();
 			time += times[elapsedFrame % avgSize] = std::chrono::duration_cast<std::chrono::microseconds>(now - prev).count() / 1000000.;
 			deltatime = times[elapsedFrame % avgSize];
+		}
+
+		{// write
+			ShaderToy data
+			{
+				.iResolution = { kWidth, kHeight, 1.f, 0},
+				.iMouse = {static_cast<float>(mx), static_cast<float>(my) , 0.f, 0.f},
+				.iTime = static_cast<float>(time)
+			};
+
+			buffer.writeData(ArrayProxy(1, &data));
 		}
 
 		render<API, kFrameBufferCount>

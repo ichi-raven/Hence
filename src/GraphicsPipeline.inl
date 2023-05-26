@@ -36,7 +36,7 @@ namespace Hence
     }
 
     template<typename API>
-    GraphicsPipeline<API>::Impl& GraphicsPipeline<API>::getInternalImpl() noexcept
+    GraphicsPipeline<API>::template Impl& GraphicsPipeline<API>::getInternalImpl() noexcept
     {
         assert(mImpl || !"invalid graphics pipeline! (construct with device first!)");
 
