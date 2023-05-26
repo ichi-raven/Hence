@@ -30,13 +30,14 @@ namespace Hence
 
         const auto& layouts = vulkanBindLayout.getDescriptorSetLayouts();
 
-        VkDescriptorSetAllocateInfo dsai{};
-
-        dsai.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        dsai.pNext = nullptr;
-        dsai.descriptorPool = mpDevice->getDescriptorPool();
-        dsai.descriptorSetCount = static_cast<std::uint32_t>(layouts.size());
-        dsai.pSetLayouts = layouts.data();
+        VkDescriptorSetAllocateInfo dsai
+        {
+            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+            .pNext = nullptr,
+            .descriptorPool = mpDevice->getDescriptorPool(),
+            .descriptorSetCount = static_cast<std::uint32_t>(layouts.size()),
+            .pSetLayouts = layouts.data()
+        };
 
         mDescriptorSets.resize(layouts.size());
 

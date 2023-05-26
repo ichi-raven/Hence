@@ -143,7 +143,7 @@ int main()
 	Sampler sampler(device, SamplerInfo{});
 
 	Shader vs(device, "testShaders/shader.vert");
-	Shader fs(device, "testShaders/testFrag2.frag");
+	Shader fs(device, "testShaders/testFrag.frag");
 	//Shader fs(device, "testShaders/shader.frag");
 
 
@@ -224,7 +224,7 @@ int main()
 	{
 		command.begin(rp, imageIndex, ccv, dcv);
 		command.setGraphicsPipeline(gp);
-		command.setBindGroup(bg, 0);
+		command.setBindGroup(bg);
 		command.render(4, 1, 0, 0);
 		command.end();
 
@@ -256,7 +256,7 @@ int main()
 			{
 				.iResolution = { kWidth, kHeight, 1.f, 0},
 				.iMouse = {static_cast<float>(mx), static_cast<float>(my) , 0.f, 0.f},
-				.iTime = static_cast<float>(time)
+				.iTime = static_cast<float>(time) * 10.f
 			};
 
 			buffer.writeData(ArrayProxy(1, &data));

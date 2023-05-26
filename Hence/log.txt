@@ -12,17 +12,14 @@
 [0m[36m[info] : VK_EXT_swapchain_colorspace
 [0m[36m[info] : VK_EXT_debug_report
 [0m[36m[info] : VK_EXT_debug_utils
-[0m[36m[info] : enabled debug mode
 [0m[36m[info] : physical device number : 1
 [0m[36m[info] : compiled shader : testShaders/shader.vert
-[0m[36m[info] : compiled shader : testShaders/testFrag2.frag
+[0m[36m[info] : compiled shader : testShaders/testFrag.frag
 [0m[36m[info] : destroyed swapchain
 [0m[36m[info] : destroyed surface
 [0m[36m[info] : destroyed GLFW window
 [0m[36m[info] : destroyed descriptor pool
 [0m[36m[info] : destroyed command pool
-[0m[36m[info] : disabled debug mode
-[0m[36m[info] : disabled debug report
 [0m[36m[info] : destroyed device
 [0m[36m[info] : destroyed instance
 [0m[36m[info] : destroying finished successfully

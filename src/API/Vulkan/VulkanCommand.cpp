@@ -235,7 +235,7 @@ namespace Hence
 		return Result();
 	}
 
-	Result VulkanCommand::setBindGroup(VulkanBindGroup& bindGroup, const std::uint8_t space) noexcept
+	Result VulkanCommand::setBindGroup(VulkanBindGroup& bindGroup) noexcept
 	{
 		const auto& sets = bindGroup.getDescriptorSets();
 

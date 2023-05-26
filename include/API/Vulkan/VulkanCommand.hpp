@@ -95,7 +95,7 @@ namespace Hence
          * @param space 割り当てるspace(HLSL)
          * @param bindGroup 使用するバインドグループ
          */
-        Result setBindGroup(VulkanBindGroup& bindGroup, const std::uint8_t space) noexcept;
+        Result setBindGroup(VulkanBindGroup& bindGroup) noexcept;
 
         /**
          * @brief  頂点バッファをセットする

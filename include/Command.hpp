@@ -124,7 +124,7 @@ namespace Hence
          * @param space 割り当てるspace(HLSL)
          * @param bindGroup 使用するバインドグループ
          */
-        Result setBindGroup(BindGroup<API>& bindGroup, const std::uint8_t space) noexcept;
+        Result setBindGroup(BindGroup<API>& bindGroup) noexcept;
 
         /** 
          * @brief  頂点バッファをセットする

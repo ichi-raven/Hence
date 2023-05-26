@@ -72,11 +72,11 @@ namespace Hence
 	}
 
 	template<typename API>
-	Result Command<API>::setBindGroup(BindGroup<API>& bindGroup, const std::uint8_t space) noexcept
+	Result Command<API>::setBindGroup(BindGroup<API>& bindGroup) noexcept
 	{
 		assert(mImpl || !"invalid command! (construct with device first!)");
 
-		return mImpl->setBindGroup(bindGroup.getInternalImpl(), space);
+		return mImpl->setBindGroup(bindGroup.getInternalImpl());
 	}
 
 	template<typename API>
