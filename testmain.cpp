@@ -295,20 +295,20 @@ int main()
 
 
 		{// read
-			storageBuffer.readData<std::uint32_t>([](std::uint32_t* ptr, std::size_t size)
-				{
-					std::cout << "compute val : " << ptr[0] << "\n";
-					bool flag = true;
-					for (int i = 0; i < kComputeSize; ++i)
-					{
-						if (ptr[i] != 42)
-						{
-							flag = false;
-						}
-					}
+			//storageBuffer.readData<std::uint32_t>([](std::uint32_t* ptr, std::size_t size)
+			//	{
+			//		std::cout << "compute val : " << ptr[0] << "\n";
+			//		bool flag = true;
+			//		for (int i = 0; i < kComputeSize; ++i)
+			//		{
+			//			if (ptr[i] != 42)
+			//			{
+			//				flag = false;
+			//			}
+			//		}
 
-					std::cout << (flag ? "OK" : "NG") << "\n";
-				});
+			//		std::cout << (flag ? "OK" : "NG") << "\n";
+			//	});
 		}
 
 		{

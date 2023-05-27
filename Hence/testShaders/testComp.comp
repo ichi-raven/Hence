@@ -10,5 +10,6 @@ layout(binding = 0) buffer Data
 void main()
 {
     int index = int(gl_GlobalInvocationID.x);
-    data.val[index] = 42;
+    //data.val[index] = 42;
+    data.val[index] = index * index - index;
 }
