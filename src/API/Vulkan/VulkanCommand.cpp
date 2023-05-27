@@ -12,6 +12,7 @@
 #include "../../../include/API/Vulkan/VulkanDevice.hpp"
 #include "../../../include/API/Vulkan/VulkanRenderPass.hpp"
 #include "../../../include/API/Vulkan/VulkanGraphicsPipeline.hpp"
+#include "../../../include/API/Vulkan/VulkanComputePipeline.hpp"
 #include "../../../include/API/Vulkan/VulkanBindGroup.hpp"
 #include "../../../include/API/Vulkan/VulkanBuffer.hpp"
 #include "../../../include/API/Vulkan/VulkanImage.hpp"
@@ -86,10 +87,10 @@ namespace Hence
 
 	VulkanCommand::VulkanCommand(VulkanCommand&& other) noexcept
 	{
-		mpDevice		= other.mpDevice;
-		mPipelineLayout = other.mPipelineLayout;
-		mCommandBuffer	= other.mCommandBuffer;
-		mFence			= other.mFence;
+		mpDevice			= other.mpDevice;
+		mNowPipelineData	= other.mNowPipelineData;
+		mCommandBuffer		= other.mCommandBuffer;
+		mFence				= other.mFence;
 
 		other.mCommandBuffer	= VK_NULL_HANDLE;
 		other.mFence			= VK_NULL_HANDLE;
@@ -97,10 +98,10 @@ namespace Hence
 
 	VulkanCommand& VulkanCommand::operator=(VulkanCommand&& other) noexcept
 	{
-		mpDevice		= other.mpDevice;
-		mPipelineLayout = other.mPipelineLayout;
-		mCommandBuffer	= other.mCommandBuffer;
-		mFence			= other.mFence;
+		mpDevice			= other.mpDevice;
+		mNowPipelineData	= other.mNowPipelineData;
+		mCommandBuffer		= other.mCommandBuffer;
+		mFence				= other.mFence;
 
 		other.mCommandBuffer	= VK_NULL_HANDLE;
 		other.mFence			= VK_NULL_HANDLE;
@@ -108,8 +109,7 @@ namespace Hence
 		return *this;
 	}
 
-
-	Result VulkanCommand::begin(VulkanRenderPass& renderpass, const std::uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const std::optional<DepthClearValue>& dcv) noexcept
+	Result VulkanCommand::begin() noexcept
 	{
 		// begin
 		VkCommandBufferBeginInfo bi
@@ -134,6 +134,11 @@ namespace Hence
 			return Result(static_cast<std::int32_t>(res));
 		}
 
+		return Result();
+	}
+
+	Result VulkanCommand::beginRenderPass(VulkanRenderPass& renderpass, const std::uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const std::optional<DepthClearValue>& dcv) noexcept
+	{
 
 		// renderpass
 		VkRect2D area{};
@@ -217,11 +222,16 @@ namespace Hence
 		return Result();
 	}
 
-	Result VulkanCommand::end() noexcept
+	Result VulkanCommand::endRenderPass() noexcept
 	{
-
 		vkCmdEndRenderPass(mCommandBuffer);
 
+		return Result();
+	}
+
+
+	Result VulkanCommand::end() noexcept
+	{
 		vkEndCommandBuffer(mCommandBuffer);
 
 		return Result();
@@ -230,16 +240,33 @@ namespace Hence
 	Result VulkanCommand::setGraphicsPipeline(VulkanGraphicsPipeline& pipeline) noexcept
 	{
 		vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline.getVkPipeline());
-		mPipelineLayout = pipeline.getVkPipelineLayout();
+		mNowPipelineData = NowPipelineData
+		{ 
+			.layout = pipeline.getVkPipelineLayout(),
+			.bindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+		};
 
 		return Result();
 	}
+
+	Result VulkanCommand::setComputePipeline(VulkanComputePipeline& pipeline) noexcept
+	{
+		vkCmdBindPipeline(mCommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline.getVkPipeline());
+		mNowPipelineData = NowPipelineData
+		{
+			.layout = pipeline.getVkPipelineLayout(),
+			.bindPoint = VK_PIPELINE_BIND_POINT_COMPUTE,
+		};
+
+		return Result();
+	}
+
 
 	Result VulkanCommand::setBindGroup(VulkanBindGroup& bindGroup) noexcept
 	{
 		const auto& sets = bindGroup.getDescriptorSets();
 
-		if (!mPipelineLayout)
+		if (!mNowPipelineData)
 		{
 			Logger::error("set pipeline first!");
 			return Result(0);
@@ -248,8 +275,8 @@ namespace Hence
 		vkCmdBindDescriptorSets
 		(
 			mCommandBuffer,
-			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			*mPipelineLayout,
+			mNowPipelineData->bindPoint,
+			mNowPipelineData->layout,
 			0,
 			static_cast<std::uint32_t>(sets.size()),
 			sets.data(),
@@ -291,6 +318,14 @@ namespace Hence
 
 		return Result();
 	}
+
+	Result VulkanCommand::dispatch(const std::uint32_t groupCountX, const std::uint32_t groupCountY, const std::uint32_t groupCountZ) noexcept
+	{
+		vkCmdDispatch(mCommandBuffer, groupCountX, groupCountY, groupCountZ);
+
+		return Result();
+	}
+
 
 	Result VulkanCommand::barrier(VulkanImage& image, const ImageLayout src, const ImageLayout dst) noexcept
 	{

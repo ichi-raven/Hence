@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{745ce6c2-69a6-40a2-812a-9fd31f3e30f9}</ProjectGuid>
     <RootNamespace>Hence</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -271,6 +271,7 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanBindGroup.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanBindLayout.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanBuffer.cpp" />
+    <ClCompile Include="..\src\API\Vulkan\VulkanComputePipeline.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanDevice.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanGraphicsPipeline.cpp" />
     <ClCompile Include="..\src\API\Vulkan\VulkanImage.cpp" />
@@ -297,6 +298,7 @@
     <None Include="..\src\BindLayout.inl" />
     <None Include="..\src\Buffer.inl" />
     <None Include="..\src\Command.inl" />
+    <None Include="..\src\ComputePipeline.inl" />
     <None Include="..\src\GraphicsPipeline.inl" />
     <None Include="..\src\Image.inl" />
     <None Include="..\src\RenderPass.inl" />
@@ -309,6 +311,7 @@
     <None Include="..\src\Window.inl" />
     <None Include="testShaders\shader.frag" />
     <None Include="testShaders\shader.vert" />
+    <None Include="testShaders\testComp.comp" />
     <None Include="testShaders\testFrag.frag" />
     <None Include="testShaders\testFrag2.frag" />
   </ItemGroup>

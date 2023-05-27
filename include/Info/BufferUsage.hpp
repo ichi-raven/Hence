@@ -20,6 +20,7 @@ namespace Hence
 	enum class BufferUsageBit : std::int32_t
 	{
 		Uniform = 0x00000010,
+		Storage = 0x00000020,
 		Index	= 0x00000040,
 		Vertex	= 0x00000080,
 	};

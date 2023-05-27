@@ -82,12 +82,14 @@ Result render
 
 int main()
 {
-	constexpr std::uint32_t kWidth = 1920;
-	constexpr std::uint32_t kHeight = 1080;
+	constexpr std::uint32_t kWidth = 640;
+	constexpr std::uint32_t kHeight = 480;
 	constexpr std::uint32_t kFrameBufferCount = 3;
 	constexpr std::string_view kWindowName = "testWindow";
-	constexpr bool kVSyncEnable = true;
+	constexpr bool kVSyncEnable = false;
 	constexpr bool kFullScreen = false;
+
+	constexpr std::uint32_t kComputeSize = 1000000;
 
 	Device<API> device;
 
@@ -143,9 +145,9 @@ int main()
 	Sampler sampler(device, SamplerInfo{});
 
 	Shader vs(device, "testShaders/shader.vert");
-	Shader fs(device, "testShaders/testFrag.frag");
+	Shader fs(device, "testShaders/testFrag2.frag");
 	//Shader fs(device, "testShaders/shader.frag");
-
+	Shader cs(device, "testShaders/testComp.comp");
 
 	BindLayout bl(device, vs, fs);
 	BindGroup bg(device, bl);
@@ -199,6 +201,17 @@ int main()
 		rp,
 		bl, vs, fs);
 
+	Buffer storageBuffer(vramAllocator, BufferInfo
+		{
+			.memorySize = sizeof(std::uint32_t) * kComputeSize,
+			.usage{BufferUsageBit::Storage},
+			.hostVisible = true,
+		});
+
+	BindLayout cbl(device, cs);
+	BindGroup cbg(device, cbl);
+	cbg.bind(0, 0, storageBuffer);
+	ComputePipeline cp(device, cbl, cs);
 
 	ColorClearValue ccv = std::array<float, 4>{ 0.9f, 0.0f, 0.0f, 1.f};
 	DepthClearValue dcv
@@ -213,7 +226,7 @@ int main()
 	
 	for (std::size_t i = 0; i < kFrameBufferCount; ++i)
 	{
-		commands[i]								= std::move(Command(device));
+		commands[i]						= std::move(Command(device));
 		renderCompletedSemaphores[i]	= std::move(Semaphore(device));
 		frameBufferReadySemaphores[i]	= std::move(Semaphore(device));
 	}
@@ -222,10 +235,18 @@ int main()
 
 	auto recordingProc = [&](Command<API>& command, const std::uint32_t imageIndex) -> Result
 	{
-		command.begin(rp, imageIndex, ccv, dcv);
+		command.begin();
+
+		command.beginRenderPass(rp, imageIndex, ccv, dcv);
 		command.setGraphicsPipeline(gp);
 		command.setBindGroup(bg);
 		command.render(4, 1, 0, 0);
+		command.endRenderPass();
+		
+		command.setComputePipeline(cp);
+		command.setBindGroup(cbg);
+		command.dispatch(kComputeSize, 1, 1);
+
 		command.end();
 
 		return Result();
@@ -235,7 +256,7 @@ int main()
 	std::uint32_t elapsedFrame = 0;
 	constexpr std::size_t avgSize = 60;
 	std::array<double, avgSize> times = {};
-	double time = 0, deltatime = 0;
+	double time = 0, deltaTime = 0;
 	std::chrono::high_resolution_clock::time_point now, prev = std::chrono::high_resolution_clock::now();
 
 	std::cout << "now running\n";
@@ -247,8 +268,8 @@ int main()
 		
 		{
 			now = std::chrono::high_resolution_clock::now();
-			time += times[elapsedFrame % avgSize] = std::chrono::duration_cast<std::chrono::microseconds>(now - prev).count() / 1000000.;
-			deltatime = times[elapsedFrame % avgSize];
+			time += deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - prev).count() / 1000000.;
+			times[elapsedFrame % avgSize] = deltaTime;
 		}
 
 		{// write
@@ -256,7 +277,7 @@ int main()
 			{
 				.iResolution = { kWidth, kHeight, 1.f, 0},
 				.iMouse = {static_cast<float>(mx), static_cast<float>(my) , 0.f, 0.f},
-				.iTime = static_cast<float>(time) * 10.f
+				.iTime = static_cast<float>(time)
 			};
 
 			buffer.writeData(ArrayProxy(1, &data));
@@ -271,6 +292,24 @@ int main()
 				currentFrameIndex,
 				recordingProc
 			);
+
+
+		{// read
+			storageBuffer.readData<std::uint32_t>([](std::uint32_t* ptr, std::size_t size)
+				{
+					std::cout << "compute val : " << ptr[0] << "\n";
+					bool flag = true;
+					for (int i = 0; i < kComputeSize; ++i)
+					{
+						if (ptr[i] != 42)
+						{
+							flag = false;
+						}
+					}
+
+					std::cout << (flag ? "OK" : "NG") << "\n";
+				});
+		}
 
 		{
 			currentFrameIndex = (currentFrameIndex + 1) % kFrameBufferCount;

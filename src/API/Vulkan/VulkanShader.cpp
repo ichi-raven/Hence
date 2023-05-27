@@ -156,13 +156,13 @@ namespace Hence
 
         EShLanguage translateShaderStage(std::string_view filepath)
         {
-            if (filepath.ends_with("vert")) return EShLangVertex;
-            else if (filepath.ends_with("frag")) return EShLangFragment;
-            else if (filepath.ends_with("comp")) return EShLangCompute;
-            else if (filepath.ends_with("rgen")) return EShLangRayGenNV;
-            else if (filepath.ends_with("rmiss")) return EShLangMissNV;
-            else if (filepath.ends_with("rchit")) return EShLangClosestHitNV;
-            else if (filepath.ends_with("rahit")) return EShLangAnyHitNV;
+            if (filepath.ends_with("vert"))         return EShLangVertex;
+            else if (filepath.ends_with("frag"))    return EShLangFragment;
+            else if (filepath.ends_with("comp"))    return EShLangCompute;
+            else if (filepath.ends_with("rgen"))    return EShLangRayGenNV;
+            else if (filepath.ends_with("rmiss"))   return EShLangMissNV;
+            else if (filepath.ends_with("rchit"))   return EShLangClosestHitNV;
+            else if (filepath.ends_with("rahit"))   return EShLangAnyHitNV;
             else assert(!"Unknown shader stage");
 
             return static_cast<EShLanguage>(0);//ˆê‰ž(‚µ‚ç‚ñ)

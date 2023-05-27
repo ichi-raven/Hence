@@ -82,6 +82,15 @@ namespace Hence
 		return mImpl->writeData(data);
 	}
 
+	template<typename API>
+	template <typename DataType>
+	Result Buffer<API>::readData(const std::function<void(DataType* ptr, std::size_t size)>& readFunc) noexcept
+	{
+		assert(mImpl || "invalid buffer! (allocate first!)");
+
+		return mImpl->readData(readFunc);
+	}
+
 }
 
 #endif

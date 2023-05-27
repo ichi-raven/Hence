@@ -80,7 +80,7 @@ namespace Hence
             .dstBinding = binding,
             .dstArrayElement = 0,
             .descriptorCount = 1,
-            .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+            .descriptorType = buffer.getDescriptorType(),
             .pBufferInfo = &std::get<0>(mDescriptorSetInfos[set][binding])
         };
 

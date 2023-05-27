@@ -42,12 +42,14 @@ namespace Hence
 				{
 				case ResourceType::UniformBuffer:
 					b.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-					//++ubcount;
+					break;
+
+				case ResourceType::StorageBuffer:
+					b.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 					break;
 
 				case ResourceType::CombinedImageSampler:
 					b.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-					//++ctcount;
 					break;
 
 				case ResourceType::Sampler:

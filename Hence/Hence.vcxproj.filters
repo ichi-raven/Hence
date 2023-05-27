@@ -452,6 +452,9 @@
     <ClCompile Include="..\src\API\Vulkan\VulkanCommand.cpp">
       <Filter>ソース ファイル\API\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\API\Vulkan\VulkanComputePipeline.cpp">
+      <Filter>ソース ファイル\API\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\BindGroup.inl">
@@ -513,6 +516,12 @@
     </None>
     <None Include="testShaders\testFrag2.frag">
       <Filter>リソース ファイル\shaders</Filter>
+    </None>
+    <None Include="testShaders\testComp.comp">
+      <Filter>リソース ファイル\shaders</Filter>
+    </None>
+    <None Include="..\src\ComputePipeline.inl">
+      <Filter>ソース ファイル</Filter>
     </None>
   </ItemGroup>
 </Project>

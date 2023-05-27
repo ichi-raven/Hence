@@ -48,11 +48,27 @@ namespace Hence
 	}
 
 	template<typename API>
-	Result Command<API>::begin(RenderPass<API>& renderpass, const uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const DepthClearValue& dcv) noexcept
+	Result Command<API>::begin() noexcept
+	{
+		assert(mImpl || !"invalid command! (construct with device first!)");
+
+		return mImpl->begin();
+	}
+
+	template<typename API>
+	Result Command<API>::beginRenderPass(RenderPass<API>& renderpass, const uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const DepthClearValue& dcv) noexcept
 	{
 		assert(mImpl || !"invalid command! (construct with device first!)");
 		
-		return mImpl->begin(renderpass.getInternalImpl(), frameBufferIndex, ccvs, dcv);
+		return mImpl->beginRenderPass(renderpass.getInternalImpl(), frameBufferIndex, ccvs, dcv);
+	}
+
+	template<typename API>
+	Result Command<API>::endRenderPass() noexcept
+	{
+		assert(mImpl || !"invalid command! (construct with device first!)");
+
+		return mImpl->endRenderPass();
 	}
 
 	template<typename API>
@@ -69,6 +85,14 @@ namespace Hence
 		assert(mImpl || !"invalid command! (construct with device first!)");
 
 		return mImpl->setGraphicsPipeline(pipeline.getInternalImpl());
+	}
+
+	template<typename API>
+	Result Command<API>::setComputePipeline(ComputePipeline<API>& pipeline) noexcept
+	{
+		assert(mImpl || !"invalid command! (construct with device first!)");
+
+		return mImpl->setComputePipeline(pipeline.getInternalImpl());
 	}
 
 	template<typename API>
@@ -108,6 +132,15 @@ namespace Hence
 
 		return mImpl->renderIndexed(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 	}
+
+	template<typename API>
+	Result Command<API>::dispatch(const std::uint32_t groupCountX, const std::uint32_t groupCountY, const std::uint32_t groupCountZ) noexcept
+	{
+		assert(mImpl || !"invalid command! (construct with device first!)");
+
+		return mImpl->dispatch(groupCountX, groupCountY, groupCountZ);
+	}
+
 
 	template<typename API>
 	Result Command<API>::barrier(Image<API>& image, ImageLayout from, ImageLayout to) noexcept

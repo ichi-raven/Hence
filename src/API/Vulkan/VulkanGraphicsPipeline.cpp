@@ -22,8 +22,15 @@ namespace Hence
 
 	VulkanGraphicsPipeline::~VulkanGraphicsPipeline() noexcept
 	{
-		vkDestroyPipelineLayout(mpDevice->getDevice(), mPipelineLayout, nullptr);
-		vkDestroyPipeline(mpDevice->getDevice(), mPipeline, nullptr);
+		if (mPipelineLayout != VK_NULL_HANDLE)
+		{
+			vkDestroyPipelineLayout(mpDevice->getDevice(), mPipelineLayout, nullptr);
+		}
+
+		if (mPipeline != VK_NULL_HANDLE)
+		{
+			vkDestroyPipeline(mpDevice->getDevice(), mPipeline, nullptr);
+		}
 	}
 
 	VkPipeline VulkanGraphicsPipeline::getVkPipeline() noexcept

@@ -66,6 +66,9 @@ namespace Hence
         template <typename DataType>
         Result writeData(const ArrayProxy<DataType> data);
 
+        template <typename DataType>
+        Result readData(const std::function<void(DataType* ptr, std::size_t size)>& readFunc) noexcept;
+
     private:
         using APIVRAMAllocator = APITrait<API>::VRAMAllocatorImpl;
 

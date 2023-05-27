@@ -81,15 +81,20 @@ namespace Hence
         /** 
          * @brief コマンド書き込み開始
          *  
-         * @param renderpass 描画を行うRenderPass
          */
-        Result begin(RenderPass<API>& renderpass, const uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const DepthClearValue& dcv) noexcept;
+        Result begin() noexcept;
 
         /** 
-         * @brief コンピュートモードでコマンド書き込み開始
+         * @brief RenderPass開始
          *  
+         * @param renderpass 描画を行うRenderPass
          */
-        Result beginCompute() noexcept;
+        Result beginRenderPass(RenderPass<API>& renderpass, const uint32_t frameBufferIndex, ArrayProxy<ColorClearValue> ccvs, const DepthClearValue& dcv) noexcept;
+
+        /**
+         * @brief  RenderPass終了
+         */
+        Result endRenderPass() noexcept;
 
         /** 
          * @brief コマンド書き込み終了
@@ -145,6 +150,8 @@ namespace Hence
         Result render(const std::uint32_t vertexCount, const std::uint32_t instanceCount, const std::uint32_t firstVertex, const std::uint32_t firstInstance) noexcept;
 
         Result renderIndexed(const std::uint32_t indexCount, const std::uint32_t instanceCount, const std::uint32_t firstIndex, const std::uint32_t vertexOffset, const std::uint32_t firstInstance) noexcept;
+
+        Result dispatch(const std::uint32_t groupCountX, const std::uint32_t groupCountY, const std::uint32_t groupCountZ) noexcept;
 
         Result barrier(Image<API>& image, ImageLayout from, ImageLayout to) noexcept;
 

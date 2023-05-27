@@ -8,7 +8,6 @@
 #ifndef HENCE_API_VULKAN_VULKANGRAPHICSPIPELINE_HPP_
 #define HENCE_API_VULKAN_VULKANGRAPHICSPIPELINE_HPP_
 
-#include <vulkan/vulkan.hpp>
 
 #include "../../Info/ShaderStage.hpp"
 #include "../../Info/Format.hpp"
@@ -17,6 +16,8 @@
 #include "../../Utility/Result.hpp"
 
 #include "VulkanShader.hpp"
+
+#include <vulkan/vulkan.hpp>
 
 namespace Hence
 {

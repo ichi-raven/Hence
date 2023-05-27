@@ -9,18 +9,18 @@
 #include "../../../include/Utility/Logger.hpp"
 
 #include "../../../include/API/Vulkan/VulkanBuffer.hpp"
-#include "../../../include/API/Vulkan/Utility/Macro.hpp"
 
 #include <cstdlib>
 
 namespace Hence
 {
-	VulkanBuffer::VulkanBuffer(VulkanDevice* pVulkanDevice, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize size, VkDeviceSize offset) noexcept
+	VulkanBuffer::VulkanBuffer(VulkanDevice* pVulkanDevice, VkBuffer buffer, VkDeviceMemory memory, VkDeviceSize size, VkDeviceSize offset, VkDescriptorType descriptorType) noexcept
 		: mpDevice(pVulkanDevice)
 		, mBuffer(buffer)
 		, mMemory(memory)
 		, mSize(size)
 		, mOffset(offset)
+		, mDescriptorType(descriptorType)
 	{
 		assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
 	}
@@ -38,6 +38,7 @@ namespace Hence
 		mMemory = std::move(other.mMemory);
 		mSize	= std::move(other.mSize);
 		mOffset = std::move(other.mOffset);
+		mDescriptorType = std::move(other.mDescriptorType);
 
 		other.mBuffer = VK_NULL_HANDLE;
 		other.mMemory = VK_NULL_HANDLE;
@@ -49,6 +50,7 @@ namespace Hence
 		mMemory		= std::move(other.mMemory);
 		mSize		= std::move(other.mSize);
 		mOffset		= std::move(other.mOffset);
+		mDescriptorType = std::move(other.mDescriptorType);
 
 		other.mBuffer = VK_NULL_HANDLE;
 		other.mMemory = VK_NULL_HANDLE;
@@ -73,6 +75,8 @@ namespace Hence
 		return Result();
 	}
 
+
+
 	VkBuffer VulkanBuffer::getVkBuffer() noexcept
 	{
 		return mBuffer;
@@ -92,4 +96,10 @@ namespace Hence
 	{
 		return mOffset;
 	}
+
+	VkDescriptorType VulkanBuffer::getDescriptorType() const noexcept
+	{
+		return mDescriptorType;
+	}
+
 }

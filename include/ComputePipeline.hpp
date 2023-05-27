@@ -14,21 +14,25 @@ namespace Hence
     {
     public:
 
-        using Impl = APITrait<API>::BindGroupImpl;
-
-        ComputePipeline(Device<API>& device);
-        ~ComputePipeline();
+        using Impl = APITrait<API>::ComputePipelineImpl;
+        
+        ComputePipeline() noexcept;
+        ComputePipeline(Device<API>& device, BindLayout<API>& bindLayout, Shader<API>& shader) noexcept;
+        ~ComputePipeline() noexcept;
 
         NONCOPYABLE(ComputePipeline)
 
-        const Impl& getInternalImpl() const;
+        Impl& getInternalImpl() noexcept;
 
     private:
-        using APIDevice = APITrait<API>::Device;
+        //using APIDevice = APITrait<API>::Device;
 
-        APIDevice& mAPIDevice;
-        Impl mImpl;
+        //APIDevice& mAPIDevice;
+        std::optional<Impl> mImpl;
     };
 }
 
+#include "../src/ComputePipeline.inl"
+
 #endif
+
