@@ -37,49 +37,6 @@ struct ShaderToy
 using namespace Hence;
 using API = Vulkan;
 
-template<typename API, std::uint32_t kFrameBufferNum>
-Result render
-	(
-		Window<API>& window,
-		std::array<Command<API>,	kFrameBufferNum>& commands, 
-		std::array<Semaphore<API>,	kFrameBufferNum>& renderCompletedSemaphores,
-		std::array<Semaphore<API>,	kFrameBufferNum>& frameBufferReadySemaphores,
-		const std::uint32_t frameIndex,
-		std::function<Result(Command<API>&, const std::uint32_t)> commandRecordingProc
-	)
-{
-	assert
-	(
-		(
-			commands.size() == renderCompletedSemaphores.size()
-			&&
-			commands.size() == frameBufferReadySemaphores.size()
-		)
-		|| !"invalid commands or semaphores size!"
-	);
-
-	const std::uint32_t imageIndex = window.acquireNextImage(frameBufferReadySemaphores[frameIndex]);
-
-	auto& command = commands[frameIndex];
-
-	if (FAILED(res, commandRecordingProc(command, imageIndex)))
-	{
-		return res;
-	}
-
-	if (FAILED(res, command.execute(frameBufferReadySemaphores[frameIndex], renderCompletedSemaphores[frameIndex])))
-	{
-		return res;
-	}
-
-	if (FAILED(res, window.present(imageIndex, renderCompletedSemaphores[frameIndex])))
-	{
-		return res;
-	}
-
-	return Result();
-}
-
 int main()
 {
 	constexpr std::uint32_t kWidth = 640;
@@ -145,7 +102,7 @@ int main()
 	Sampler sampler(device, SamplerInfo{});
 
 	Shader vs(device, "testShaders/shader.vert");
-	Shader fs(device, "testShaders/testFrag2.frag");
+	Shader fs(device, "testShaders/testFrag.frag");
 	//Shader fs(device, "testShaders/shader.frag");
 	Shader cs(device, "testShaders/testComp.comp");
 
@@ -231,8 +188,6 @@ int main()
 		frameBufferReadySemaphores[i]	= std::move(Semaphore(device));
 	}
 
-	std::uint32_t currentFrameIndex = 0;
-
 	auto recordingProc = [&](Command<API>& command, const std::uint32_t imageIndex) -> Result
 	{
 		command.begin();
@@ -252,7 +207,7 @@ int main()
 		return Result();
 	};
 
-	//FPSŒv‘ª
+	std::uint32_t currentFrameIndex = 0;
 	std::uint32_t elapsedFrame = 0;
 	constexpr std::size_t avgSize = 60;
 	std::array<double, avgSize> times = {};
@@ -293,22 +248,11 @@ int main()
 				recordingProc
 			);
 
-
 		{// read
-			//storageBuffer.readData<std::uint32_t>([](std::uint32_t* ptr, std::size_t size)
-			//	{
-			//		std::cout << "compute val : " << ptr[0] << "\n";
-			//		bool flag = true;
-			//		for (int i = 0; i < kComputeSize; ++i)
-			//		{
-			//			if (ptr[i] != 42)
-			//			{
-			//				flag = false;
-			//			}
-			//		}
-
-			//		std::cout << (flag ? "OK" : "NG") << "\n";
-			//	});
+			storageBuffer.readData<std::uint32_t>([](std::uint32_t* ptr, std::size_t size)
+				{
+					std::cout << "compute val : " << ptr[955793] << "\n";
+				});
 		}
 
 		{

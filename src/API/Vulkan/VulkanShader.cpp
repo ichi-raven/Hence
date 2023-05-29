@@ -135,6 +135,7 @@ namespace Hence
             Resources.limits.generalSamplerIndexing = 1;
             Resources.limits.generalVariableIndexing = 1;
             Resources.limits.generalConstantMatrixVectorIndexing = 1;
+            Resources.limits.generalUniformIndexing = true;
 
             return Resources;
         }
@@ -171,6 +172,8 @@ namespace Hence
         std::vector<unsigned int> compileText(EShLanguage stage,
             const std::string& shaderSource)
         {
+            const static auto defaultResource = InitResources();
+
             glslang::InitializeProcess();
 
             const char* shaderStrings[1];
@@ -183,7 +186,6 @@ namespace Hence
             shader.setStrings(shaderStrings, 1);
 
             EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
-            auto defaultResource = InitResources();
             if (!shader.parse(&defaultResource, 100, false, messages))
             {
                 Logger::error("shader {} : \ncompile error! : {}", shaderSource, shader.getInfoLog());

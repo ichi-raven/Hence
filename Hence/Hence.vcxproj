@@ -240,6 +240,7 @@
     <ClInclude Include="..\include\Sampler.hpp" />
     <ClInclude Include="..\include\Semaphore.hpp" />
     <ClInclude Include="..\include\Shader.hpp" />
+    <ClInclude Include="..\include\UserUtility.hpp" />
     <ClInclude Include="..\include\Utility\ArrayProxy.hpp" />
     <ClInclude Include="..\include\Utility\Constants.hpp" />
     <ClInclude Include="..\include\Utility\Either.hpp" />

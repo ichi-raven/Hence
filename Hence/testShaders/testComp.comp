@@ -7,9 +7,22 @@ layout(binding = 0) buffer Data
     uint val[];
 } data;
 
+uint isPrime(uint n)
+{
+    for (int i = 2; i * i < n; ++i)
+    {
+        if (n % i == 0)
+        {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
 void main()
 {
-    int index = int(gl_GlobalInvocationID.x);
+    uint index = uint(gl_GlobalInvocationID.x);
     //data.val[index] = 42;
-    data.val[index] = index * index - index;
+    data.val[index] = isPrime(index);
 }

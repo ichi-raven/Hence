@@ -25,4 +25,6 @@
 #include "VRAMAllocator.hpp"
 #include "Window.hpp"
 
+#include "UserUtility.hpp"
+
 #endif
