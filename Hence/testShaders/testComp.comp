@@ -23,6 +23,5 @@ uint isPrime(uint n)
 void main()
 {
     uint index = uint(gl_GlobalInvocationID.x);
-    //data.val[index] = 42;
     data.val[index] = isPrime(index);
 }

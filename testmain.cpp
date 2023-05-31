@@ -52,12 +52,12 @@ int main()
 
 	Window window(device, WindowInfo
 		{
-			.width = kWidth,
-			.height = kHeight,
-			.frameCount = kFrameBufferCount,
+			.width				= kWidth,
+			.height				= kHeight,
+			.frameCount		= kFrameBufferCount,
 			.windowName = kWindowName,
-			.vsync = kVSyncEnable,
-			.fullScreen = kFullScreen
+			.vsync				= kVSyncEnable,
+			.fullScreen		= kFullScreen
 		});
 
 	VRAMAllocator vramAllocator(device);
@@ -73,8 +73,8 @@ int main()
 		ShaderToy data
 		{
 			.iResolution = { kWidth, kHeight, 1.f, 0},
-			.iMouse = {0.f, 0.f, 0.f, 0.f},
-			.iTime = 0.f
+			.iMouse		= {0.f, 0.f, 0.f, 0.f},
+			.iTime			= 0.f
 		};
 
 		buffer.writeData(ArrayProxy(1, &data));
@@ -103,7 +103,6 @@ int main()
 
 	Shader vs(device, "testShaders/shader.vert");
 	Shader fs(device, "testShaders/testFrag.frag");
-	//Shader fs(device, "testShaders/shader.frag");
 	Shader cs(device, "testShaders/testComp.comp");
 
 	BindLayout bl(device, vs, fs);
@@ -113,48 +112,9 @@ int main()
 
 	RenderPass rp(device, window);
 
-	GraphicsPipeline gp(device, GraphicsPipelineInfo
-		{
-			.colorBlendingState
-			{
-				.logicOp = std::nullopt,
-				.attachments = std::vector<ColorBlendAttachment>(1,
-					ColorBlendAttachment
-					{
-						.blendEnable = false,
-						.srcColor = BlendFactor::One,
-						.dstColor = BlendFactor::Zero,
-						.colorBlendOp = BlendOp::Add,
-						.srcAlpha = BlendFactor::One,
-						.dstAlpha = BlendFactor::Zero,
-						.alphaBlendOp = BlendOp::Add,
-						.colorWriteMask = {ColorComponent{ColorComponentBit::R | ColorComponentBit::G | ColorComponentBit::B | ColorComponentBit::A}},
-					}),
-				.blendConstants = {0},
-			},
-			.depthStencilState
-			{
-				.depthTestEnable = true,
-				.depthWriteEnable = true,
-				.depthCompareOp = CompareOp::Less,
-				.stencilTestEnable = false
-			},
-			.multiSampleState
-			{
-				.rasterizationSamples = SampleCount(SampleCountFlag::b1),
-			},
-			.rasterizerState
-			{
-				.depthClampEnable = false,
-				.polygonMode = PolygonMode::Fill,
-				.cullMode = CullMode::None,
-				.frontFace = FrontFace::CCW,
-				.lineWidth = 1.f,
-			},
-			.topology{Topology::TriangleStrip},
-			.viewport = std::nullopt,
-			.scissor = std::nullopt
-		},
+	auto gpi = GraphicsPipelineInfo::getDefaultVal();
+	gpi.topology = Topology::TriangleStrip;
+	GraphicsPipeline gp(device,  gpi,
 		rp,
 		bl, vs, fs);
 
@@ -249,10 +209,10 @@ int main()
 			);
 
 		{// read
-			storageBuffer.readData<std::uint32_t>([](std::uint32_t* ptr, std::size_t size)
-				{
-					std::cout << "compute val : " << ptr[955793] << "\n";
-				});
+			//storageBuffer.readData<std::uint32_t>([](std::uint32_t* ptr, std::size_t size)
+			//	{
+			//		std::cout << "compute val : " << ptr[955793] << "\n";
+			//	});
 		}
 
 		{
