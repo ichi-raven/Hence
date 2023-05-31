@@ -13,11 +13,6 @@
 #include <chrono>
 #include <numeric>
 
-struct Vertex
-{
-	float pos[3];
-};
-
 template <typename T>
 struct RGBA
 {
@@ -43,7 +38,7 @@ int main()
 	constexpr std::uint32_t kHeight = 480;
 	constexpr std::uint32_t kFrameBufferCount = 3;
 	constexpr std::string_view kWindowName = "testWindow";
-	constexpr bool kVSyncEnable = false;
+	constexpr bool kVSyncEnable = true;
 	constexpr bool kFullScreen = false;
 
 	constexpr std::uint32_t kComputeSize = 1000000;
@@ -69,23 +64,11 @@ int main()
 			.hostVisible = true,
 		});
 
-	{// write
-		ShaderToy data
-		{
-			.iResolution = { kWidth, kHeight, 1.f, 0},
-			.iMouse		= {0.f, 0.f, 0.f, 0.f},
-			.iTime			= 0.f
-		};
-
-		buffer.writeData(ArrayProxy(1, &data));
-	}
-
 	Image image(vramAllocator, ImageInfo
 		{
 			.width = 128,
 			.height = 128,
 			.depth = 1,
-			.sizeOfChannel = 4,
 			.format = Format::R8G8B8A8Unorm,
 			.dimension = Dimension::two,
 			.usage{ImageUsageBit::Sampled},
@@ -221,7 +204,6 @@ int main()
 			prev = now;
 		}
 	}
-
 	
 	std::cerr << "fps : " << 1. / (std::accumulate(times.begin(), times.end(), 0.) / static_cast<double>(avgSize)) << "\n";
 

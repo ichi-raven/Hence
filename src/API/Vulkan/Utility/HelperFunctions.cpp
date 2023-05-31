@@ -14,14 +14,16 @@ namespace Hence
 {
 	Result setImageMemoryBarrier(VkCommandBuffer command, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageAspectFlags aspectFlags) noexcept
 	{
-        VkImageMemoryBarrier imb{};
-        imb.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-        imb.oldLayout = oldLayout;
-        imb.newLayout = newLayout;
-        imb.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-        imb.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-        imb.subresourceRange = { aspectFlags, 0, 1, 0, 1 };
-        imb.image = image;
+        VkImageMemoryBarrier imb
+        {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+            .oldLayout = oldLayout,
+            .newLayout = newLayout,
+            .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+            .image = image,
+            .subresourceRange = { aspectFlags, 0, 1, 0, 1 },
+        };
 
         // final stage that write to resource in pipelines
         VkPipelineStageFlags srcStage = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;

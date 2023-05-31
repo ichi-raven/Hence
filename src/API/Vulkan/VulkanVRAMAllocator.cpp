@@ -224,7 +224,8 @@ namespace Hence
 		VkImageAspectFlags aspectFlag = VK_IMAGE_ASPECT_COLOR_BIT;
 		{
 			VkImageViewCreateInfo ci{};
-			ci.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			ci.sType  = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			ci.pNext = nullptr;
 
 			switch (imageInfo.dimension)
 			{
@@ -324,7 +325,7 @@ namespace Hence
 
 		//VulkanImage rtn(mDevice, image, memory, imageView, extent, imageInfo.sizeOfChannel);
 
-		return Either<VulkanImage, Result>(std::move(VulkanImage(mpDevice, image, memory, imageView, ci.format, extent, imageInfo.sizeOfChannel)));
+		return Either<VulkanImage, Result>(std::move(VulkanImage(mpDevice, image, memory, imageView, ci.format, extent)));
 	}
 
 	void VulkanVRAMAllocator::deallocate(VulkanBuffer& vulkanBuffer) noexcept

@@ -485,7 +485,7 @@ namespace Hence
 
 		VkExtent3D extent{ mSwapchainExtent.width, mSwapchainExtent.height, 1 };
 
-		mDepthBuffer.emplace(mpDevice, image, memory, imageView, VK_FORMAT_D32_SFLOAT, extent, 1u);
+		mDepthBuffer.emplace(mpDevice, image, memory, imageView, VK_FORMAT_D32_SFLOAT, extent);
 
 		return Result();
 	}

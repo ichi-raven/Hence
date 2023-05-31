@@ -14,14 +14,13 @@
 
 namespace Hence
 {
-	VulkanImage::VulkanImage(VulkanDevice* pVulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView imageView, VkFormat format, const VkExtent3D& extent, std::uint32_t sizeOfChannel) noexcept
+	VulkanImage::VulkanImage(VulkanDevice* pVulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView imageView, VkFormat format, const VkExtent3D& extent) noexcept
 		: mpDevice(pVulkanDevice)
         , mImage(image)
 		, mMemory(memory)
 		, mImageView(imageView)
         , mFormat(format)
         , mExtent(extent)
-        , mSizeOfChannel(sizeOfChannel)
 	{
         assert(pVulkanDevice != nullptr || !"vulkan device is nullptr!");
     }
@@ -41,7 +40,6 @@ namespace Hence
         mImageView      = std::move(other.mImageView);
         mFormat         = other.mFormat;
         mExtent         = other.mExtent;
-        mSizeOfChannel  = other.mSizeOfChannel;
 
         other.mImage = VK_NULL_HANDLE;
         other.mMemory = VK_NULL_HANDLE;
@@ -55,7 +53,6 @@ namespace Hence
         mImageView      = std::move(other.mImageView);
         mFormat         = other.mFormat;
         mExtent         = other.mExtent;
-        mSizeOfChannel  = other.mSizeOfChannel;
 
         other.mImage = VK_NULL_HANDLE;
         other.mMemory = VK_NULL_HANDLE;
@@ -70,8 +67,8 @@ namespace Hence
 
         // ‚±‚ê‚ð‚Ç‚¤‚â‚Á‚ÄŽó‚¯Žæ‚é‚©‚ª–â‘è
 
-        const std::size_t imageSize = 
-            static_cast<size_t>(mExtent.width) * mExtent.height * mExtent.depth * mSizeOfChannel;
+        const std::size_t imageSize =
+            static_cast<size_t>(mExtent.width) * mExtent.height * mExtent.depth * getSizeOfFormat(static_cast<Hence::Format>(mFormat));
         
         VkBuffer        stagingBuffer = VK_NULL_HANDLE;
         VkDeviceMemory  stagingMemory = VK_NULL_HANDLE;

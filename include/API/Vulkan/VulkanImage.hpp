@@ -21,7 +21,7 @@ namespace Hence
 	{
 	public:
 
-		VulkanImage(VulkanDevice* pVulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView view, VkFormat format, const VkExtent3D& extent, std::uint32_t sizeOfChannel) noexcept;
+		VulkanImage(VulkanDevice* pVulkanDevice, VkImage image, VkDeviceMemory memory, VkImageView view, VkFormat format, const VkExtent3D& extent) noexcept;
 
 		~VulkanImage() noexcept;
 
