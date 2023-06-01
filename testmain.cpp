@@ -96,7 +96,7 @@ int main()
 	RenderPass rp(device, window);
 
 	auto gpi = GraphicsPipelineInfo::getDefaultVal();
-	gpi.topology = Topology::TriangleStrip;
+	//gpi.topology = Topology::TriangleStrip;
 	GraphicsPipeline gp(device,  gpi,
 		rp,
 		bl, vs, fs);
@@ -181,6 +181,7 @@ int main()
 			buffer.writeData(ArrayProxy(1, &data));
 		}
 
+		// 描画コマンドの書き込み、実行及びフレームバッファの同期を行う
 		render<API, kFrameBufferCount>
 			(
 				window,
